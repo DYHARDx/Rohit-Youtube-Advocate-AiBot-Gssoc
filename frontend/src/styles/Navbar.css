@@ -44,6 +44,55 @@
   font-size: 1.6rem;
   color: var(--main-text-color);
 }
-.theme-toggle-nav:hover { 
-  color: var(--primary-accent); 
+
+.theme-toggle-nav:hover {
+  color: var(--primary-accent);
+}
+
+.hamburger {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+  cursor: pointer;
+  z-index: 201;
+}
+
+.hamburger:hover {
+  color: var(--primary-accent);
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
   }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: 250px;
+    background: var(--navbar-background);
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    gap: 1.5rem;
+    transition: right 0.3s ease-in-out;
+    z-index: 200;
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links li a {
+    font-size: 1.2rem;
+  }
+
+  .theme-toggle-nav {
+    font-size: 1.8rem;
+  }
+}
