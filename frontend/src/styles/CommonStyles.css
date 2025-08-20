@@ -32,8 +32,9 @@
   font-size: 1rem;
 }
 
-.section-container textarea:focus, .input-field:focus {
-  outline: none; 
+.section-container textarea:focus,
+.input-field:focus {
+  outline: none;
   border-color: var(--primary-accent-hover);
 }
 
@@ -86,4 +87,78 @@
   margin-bottom: 1rem;
   color: var(--main-text-color);
   font-size: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .section-container {
+    padding: 3rem 4rem;
+  }
+
+  .section-container h3 {
+    font-size: 2.2rem;
+  }
+
+  .section-container textarea,
+  .input-field {
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-container {
+    padding: 2rem;
+  }
+
+  .section-container h3 {
+    font-size: 2rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-container textarea,
+  .input-field {
+    font-size: 0.9rem;
+    padding: 0.9rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .result-card {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-container {
+    padding: 1.5rem;
+  }
+
+  .section-container h3 {
+    font-size: 1.75rem;
+  }
+
+  .section-container textarea,
+  .input-field {
+    font-size: 0.85rem;
+    padding: 0.8rem;
+  }
+
+  .btn-primary {
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .checkbox-label {
+    font-size: 0.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
