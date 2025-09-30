@@ -1,10 +1,9 @@
-// // src/components/InvoiceGenerator.jsx
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import { jsPDF } from "jspdf";
 import "../styles/CommonStyles.css";
 
-export default function InvoiceGenerator() {
+const InvoiceGenerator = () => {
   const [inputs, setInputs] = useState({
     brand: "",
     service: "",
@@ -14,7 +13,7 @@ export default function InvoiceGenerator() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
     setInputs((prev) => ({
       ...prev,
@@ -22,22 +21,69 @@ export default function InvoiceGenerator() {
     }));
   };
 
+  const validateInputs = () => {
+    if (!inputs.brand.trim() || !inputs.service.trim() || !inputs.amount) {
+      setResult("⚠️ Please fill in all required fields.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateInputs()) {
+      return;
+    }
+    
     setLoading(true);
-    const response = await postData("/api/invoice/generate", inputs);
-    setLoading(false);
-    setResult(
-      response.error
-        ? `❌ Error: ${response.error}`
-        : response.invoice_text || "No invoice returned."
-    );
+    setResult(""); // Clear previous results
+    
+    try {
+      const response = await postData("/api/invoice/generate", inputs);
+      
+      if (response.error) {
+        setResult(`❌ Error: ${response.error}`);
+      } else {
+        setResult(response.invoice_text || "No invoice returned.");
+      }
+    } catch (error) {
+      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text(result, 10, 20);
     doc.save(`invoice_${inputs.brand.replace(/\s+/g, "_")}.pdf`);
+  };
+
+  const renderResult = () => {
+    if (loading) {
+      return "⏳ Generating invoice...";
+    }
+    
+    if (result) {
+      return (
+        <>
+          <div style={{ whiteSpace: "pre-wrap" }}>{result}</div>
+          {!result.startsWith("❌") && (
+            <button
+              onClick={downloadPDF}
+              className="btn-primary"
+              style={{ marginTop: "1rem" }}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Download PDF"}
+            </button>
+          )}
+        </>
+      );
+    }
+    
+    return "Generated invoice will appear here...";
   };
 
   return (
@@ -55,25 +101,28 @@ export default function InvoiceGenerator() {
           id="brand"
           type="text"
           value={inputs.brand}
-          onChange={handleChange}
+          onChange={handleInputChange}
           placeholder="Brand or Sponsor"
           className="input-field"
+          disabled={loading}
         />
         <input
           id="service"
           type="text"
           value={inputs.service}
-          onChange={handleChange}
+          onChange={handleInputChange}
           placeholder="Service Description"
           className="input-field"
+          disabled={loading}
         />
         <input
           id="amount"
           type="number"
           value={inputs.amount}
-          onChange={handleChange}
+          onChange={handleInputChange}
           placeholder="Amount"
           className="input-field"
+          disabled={loading}
         />
 
         <label className="checkbox-label">
@@ -81,30 +130,22 @@ export default function InvoiceGenerator() {
             id="include_gst"
             type="checkbox"
             checked={inputs.include_gst}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            disabled={loading}
           />
           <span>Include GST (18%)</span>
         </label>
 
-        <button type="submit" className="btn-primary">
-          Generate Invoice
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Generating..." : "Generate Invoice"}
         </button>
       </form>
 
-      {result && (
-        <div className="result-card" style={{ whiteSpace: "pre-wrap" }}>
-          {result}
-          {!loading && !result.startsWith("❌") && (
-            <button
-              onClick={downloadPDF}
-              className="btn-primary"
-              style={{ marginTop: "1rem" }}
-            >
-              Download PDF
-            </button>
-          )}
-        </div>
-      )}
+      <div className="result-card">
+        {renderResult()}
+      </div>
     </section>
   );
-}
+};
+
+export default InvoiceGenerator;

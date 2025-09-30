@@ -1,24 +1,59 @@
-// // src/components/AMA.jsx
-
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-export default function AMA() {
+const AMA = () => {
   const [question, setQuestion] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleQuestionChange = (e) => {
+    setQuestion(e.target.value);
+  };
+
+  const validateInput = () => {
+    if (!question.trim()) {
+      setResult("⚠️ Please enter your question.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateInput()) {
+      return;
+    }
+    
     setLoading(true);
-    const response = await postData("/api/ama/ask", { question });
-    setLoading(false);
-    setResult(
-      response.error
-        ? `❌ Error: ${response.error}`
-        : response.answer || "No answer returned."
-    );
+    setResult(""); // Clear previous results
+    
+    try {
+      const response = await postData("/api/ama/ask", { question });
+      
+      if (response.error) {
+        setResult(`❌ Error: ${response.error}`);
+      } else {
+        setResult(response.answer || "No answer returned.");
+      }
+    } catch (error) {
+      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderResult = () => {
+    if (loading) {
+      return "⏳ Consulting YouTube Advisor...";
+    }
+    
+    if (result) {
+      return result;
+    }
+    
+    return "Advisor response will appear here...";
   };
 
   return (
@@ -34,14 +69,19 @@ export default function AMA() {
         <textarea
           rows={4}
           value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          onChange={handleQuestionChange}
           placeholder="Ask your question"
+          disabled={loading}
         />
-        <button type="submit" className="btn-primary">
-          Ask YouTube Advisor
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Asking..." : "Ask YouTube Advisor"}
         </button>
       </form>
-      <div className="result-card">{loading ? "⏳ Thinking..." : result}</div>
+      <div className="result-card">
+        {renderResult()}
+      </div>
     </section>
   );
-}
+};
+
+export default AMA;
