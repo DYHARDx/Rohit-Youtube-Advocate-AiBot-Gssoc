@@ -1,24 +1,53 @@
-// // src/components/ContentSafetyChecker.jsx
-
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-export default function ContentSafetyChecker() {
+const ContentSafetyChecker = () => {
   const [script, setScript] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleScriptChange = (e) => {
+    setScript(e.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate input
+    if (!script.trim()) {
+      setResult("⚠️ Please enter content to check.");
+      return;
+    }
+    
     setLoading(true);
-    const response = await postData("/api/content/check", { text: script });
-    setLoading(false);
-    setResult(
-      response.error
-        ? `❌ Error: ${response.error}`
-        : response.report || "No report returned."
-    );
+    setResult(""); // Clear previous results
+    
+    try {
+      const response = await postData("/api/content/check", { text: script });
+      
+      if (response.error) {
+        setResult(`❌ Error: ${response.error}`);
+      } else {
+        setResult(response.report || "No report returned.");
+      }
+    } catch (error) {
+      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderResult = () => {
+    if (loading) {
+      return "⏳ Checking content safety...";
+    }
+    
+    if (result) {
+      return result;
+    }
+    
+    return "Results will appear here...";
   };
 
   return (
@@ -34,14 +63,19 @@ export default function ContentSafetyChecker() {
         <textarea
           rows={6}
           value={script}
-          onChange={(e) => setScript(e.target.value)}
+          onChange={handleScriptChange}
           placeholder="Paste your content here..."
+          disabled={loading}
         />
-        <button type="submit" className="btn-primary">
-          Check Content Safety
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Checking..." : "Check Content Safety"}
         </button>
       </form>
-      <div className="result-card">{loading ? "⏳ Checking..." : result}</div>
+      <div className="result-card">
+        {renderResult()}
+      </div>
     </section>
   );
-}
+};
+
+export default ContentSafetyChecker;
