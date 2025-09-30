@@ -1,5 +1,3 @@
-// // src/components/ContentSafetyChecker.jsx
-
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
@@ -9,16 +7,39 @@ export default function ContentSafetyChecker() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleScriptChange = (event) => {
+    setScript(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
+    if (!script.trim()) {
+      setResult("Please enter some content to check.");
+      return;
+    }
+    
     setLoading(true);
-    const response = await postData("/api/content/check", { text: script });
-    setLoading(false);
-    setResult(
-      response.error
-        ? `❌ Error: ${response.error}`
-        : response.report || "No report returned."
-    );
+    setResult("");
+    
+    try {
+      const response = await postData("/api/content/check", { text: script });
+      
+      if (response.error) {
+        setResult(`❌ Error: ${response.error}`);
+      } else {
+        setResult(response.report || "No report returned.");
+      }
+    } catch (error) {
+      setResult(`❌ Unexpected error occurred: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClear = () => {
+    setScript("");
+    setResult("");
   };
 
   return (
@@ -34,14 +55,31 @@ export default function ContentSafetyChecker() {
         <textarea
           rows={6}
           value={script}
-          onChange={(e) => setScript(e.target.value)}
+          onChange={handleScriptChange}
           placeholder="Paste your content here..."
+          disabled={loading}
         />
-        <button type="submit" className="btn-primary">
-          Check Content Safety
-        </button>
+        <div className="button-group">
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? "Checking..." : "Check Content Safety"}
+          </button>
+          <button type="button" className="btn-secondary" onClick={handleClear} disabled={loading}>
+            Clear
+          </button>
+        </div>
       </form>
-      <div className="result-card">{loading ? "⏳ Checking..." : result}</div>
+      <div className="result-card">
+        {loading ? (
+          <div className="loading-indicator">
+            <span className="spinner"></span>
+            Analyzing content for YouTube policy compliance...
+          </div>
+        ) : (
+          <div className="result-content" style={{ whiteSpace: "pre-wrap" }}>
+            {result}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
