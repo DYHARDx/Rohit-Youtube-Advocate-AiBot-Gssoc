@@ -1,27 +1,59 @@
-// // src/components/ContractExplainer.jsx
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-export default function ContractExplainer() {
+const ContractExplainer = () => {
   const [text, setText] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleTextChange = (e) => {
+    setText(e.target.value);
+  };
+
+  const validateInput = () => {
     if (!text.trim()) {
       setResult("⚠️ Please paste your contract text.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateInput()) {
       return;
     }
+    
     setLoading(true);
-    const response = await postData("/api/contract/simplify", { text });
-    setLoading(false);
-    setResult(
-      response.error
-        ? `❌ Error: ${response.error}`
-        : response.summary || "No summary returned."
-    );
+    setResult(""); // Clear previous results
+    
+    try {
+      const response = await postData("/api/contract/simplify", { text });
+      
+      if (response.error) {
+        setResult(`❌ Error: ${response.error}`);
+      } else {
+        setResult(response.summary || "No summary returned.");
+      }
+    } catch (error) {
+      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderResult = () => {
+    if (loading) {
+      return "⏳ Simplifying contract...";
+    }
+    
+    if (result) {
+      return result;
+    }
+    
+    return "Simplified contract will appear here...";
   };
 
   return (
@@ -37,14 +69,19 @@ export default function ContractExplainer() {
         <textarea
           rows={6}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleTextChange}
           placeholder="Paste contract text here..."
+          disabled={loading}
         />
-        <button type="submit" className="btn-primary">
-          Simplify Contract
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Simplifying..." : "Simplify Contract"}
         </button>
       </form>
-      <div className="result-card">{loading ? "⏳ Processing..." : result}</div>
+      <div className="result-card">
+        {renderResult()}
+      </div>
     </section>
   );
-}
+};
+
+export default ContractExplainer;
