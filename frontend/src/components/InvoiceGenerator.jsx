@@ -68,12 +68,11 @@ const InvoiceGenerator = () => {
     if (result) {
       return (
         <>
-          <div style={{ whiteSpace: "pre-wrap" }}>{result}</div>
+          <div className="invoice-result">{result}</div>
           {!result.startsWith("❌") && (
             <button
               onClick={downloadPDF}
-              className="btn-primary"
-              style={{ marginTop: "1rem" }}
+              className="btn-primary download-btn"
               disabled={loading}
             >
               {loading ? "Processing..." : "Download PDF"}
@@ -83,60 +82,66 @@ const InvoiceGenerator = () => {
       );
     }
     
-    return "Generated invoice will appear here...";
+    return <div className="placeholder-text">Generated invoice will appear here...</div>;
   };
 
+  const renderFormFields = () => (
+    <>
+      <input
+        id="brand"
+        type="text"
+        value={inputs.brand}
+        onChange={handleInputChange}
+        placeholder="Brand or Sponsor"
+        className="input-field"
+        disabled={loading}
+      />
+      <input
+        id="service"
+        type="text"
+        value={inputs.service}
+        onChange={handleInputChange}
+        placeholder="Service Description"
+        className="input-field"
+        disabled={loading}
+      />
+      <input
+        id="amount"
+        type="number"
+        value={inputs.amount}
+        onChange={handleInputChange}
+        placeholder="Amount"
+        className="input-field"
+        disabled={loading}
+      />
+
+      <label className="checkbox-label">
+        <input
+          id="include_gst"
+          type="checkbox"
+          checked={inputs.include_gst}
+          onChange={handleInputChange}
+          disabled={loading}
+          className="gst-checkbox"
+        />
+        <span className="gst-label">Include GST (18%)</span>
+      </label>
+    </>
+  );
+
   return (
-    <section className="section-container">
-      <h3>
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+    <section className="section-container invoice-generator">
+      <h3 className="section-title">
+        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none">
           <rect width="38" height="38" rx="10" />
           <polygon points="15,12 28,19 15,26" />
         </svg>
         YouTube Invoice Generator
       </h3>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          id="brand"
-          type="text"
-          value={inputs.brand}
-          onChange={handleInputChange}
-          placeholder="Brand or Sponsor"
-          className="input-field"
-          disabled={loading}
-        />
-        <input
-          id="service"
-          type="text"
-          value={inputs.service}
-          onChange={handleInputChange}
-          placeholder="Service Description"
-          className="input-field"
-          disabled={loading}
-        />
-        <input
-          id="amount"
-          type="number"
-          value={inputs.amount}
-          onChange={handleInputChange}
-          placeholder="Amount"
-          className="input-field"
-          disabled={loading}
-        />
-
-        <label className="checkbox-label">
-          <input
-            id="include_gst"
-            type="checkbox"
-            checked={inputs.include_gst}
-            onChange={handleInputChange}
-            disabled={loading}
-          />
-          <span>Include GST (18%)</span>
-        </label>
-
-        <button type="submit" className="btn-primary" disabled={loading}>
+      <form onSubmit={handleSubmit} className="invoice-form">
+        {renderFormFields()}
+        <button type="submit" className="btn-primary generate-btn" disabled={loading}>
           {loading ? "Generating..." : "Generate Invoice"}
         </button>
       </form>
