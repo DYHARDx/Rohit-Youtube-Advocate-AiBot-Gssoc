@@ -7,46 +7,57 @@ const ContentSafetyChecker = () => {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Update state when user types in the text area
   const handleScriptChange = (e) => {
     setScript(e.target.value);
   };
 
+  // Process form submission and content safety analysis
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate input
+    // Validate that content has been entered
     if (!script.trim()) {
       setResult("⚠️ Please enter content to check.");
       return;
     }
     
+    // Set loading state and clear previous results
     setLoading(true);
-    setResult(""); // Clear previous results
+    setResult("");
     
     try {
+      // Send content to backend for safety analysis
       const response = await postData("/api/content/check", { text: script });
       
+      // Process the API response
       if (response.error) {
         setResult(`❌ Error: ${response.error}`);
       } else {
         setResult(response.report || "No report returned.");
       }
     } catch (error) {
+      // Handle any unexpected errors
       setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
     } finally {
+      // Always reset loading state
       setLoading(false);
     }
   };
 
+  // Determine what to display in the results area
   const renderResult = () => {
+    // Show loading message during API request
     if (loading) {
       return "⏳ Checking content safety...";
     }
     
+    // Display results if available
     if (result) {
       return result;
     }
     
+    // Show placeholder text
     return "Results will appear here...";
   };
 
