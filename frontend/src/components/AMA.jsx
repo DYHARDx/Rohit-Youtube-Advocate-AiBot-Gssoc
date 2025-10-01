@@ -7,10 +7,12 @@ const AMA = () => {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Handle changes to the question input field
   const handleQuestionChange = (e) => {
     setQuestion(e.target.value);
   };
 
+  // Validate user input before submission
   const validateInput = () => {
     if (!question.trim()) {
       setResult("⚠️ Please enter your question.");
@@ -19,40 +21,51 @@ const AMA = () => {
     return true;
   };
 
+  // Handle form submission and API communication
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate input before proceeding
     if (!validateInput()) {
       return;
     }
     
+    // Set loading state and clear previous results
     setLoading(true);
-    setResult(""); // Clear previous results
+    setResult("");
     
     try {
+      // Send question to backend API
       const response = await postData("/api/ama/ask", { question });
       
+      // Handle API response
       if (response.error) {
         setResult(`❌ Error: ${response.error}`);
       } else {
         setResult(response.answer || "No answer returned.");
       }
     } catch (error) {
+      // Handle unexpected errors
       setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
     } finally {
+      // Reset loading state
       setLoading(false);
     }
   };
 
+  // Render the appropriate result based on state
   const renderResult = () => {
+    // Show loading indicator when request is in progress
     if (loading) {
       return "⏳ Consulting YouTube Advisor...";
     }
     
+    // Display result if available
     if (result) {
       return result;
     }
     
+    // Show placeholder text
     return "Advisor response will appear here...";
   };
 
