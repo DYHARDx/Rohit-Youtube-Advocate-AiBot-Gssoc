@@ -2,99 +2,109 @@ import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-const AMA = () => {
-  const [question, setQuestion] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+const YouTubeAdvisorAMA = () => {
+  const [userQuestion, setUserQuestion] = useState("");
+  const [advisorResponse, setAdvisorResponse] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Handle changes to the question input field
-  const handleQuestionChange = (e) => {
-    setQuestion(e.target.value);
+  // Handle input changes in the question field
+  const handleInputChange = (e) => {
+    setUserQuestion(e.target.value);
   };
 
-  // Validate user input before submission
-  const validateInput = () => {
-    if (!question.trim()) {
-      setResult("⚠️ Please enter your question.");
+  // Validate user input before processing
+  const validateUserInput = () => {
+    if (!userQuestion.trim()) {
+      setAdvisorResponse("⚠️ Please enter a valid question before submitting.");
       return false;
     }
     return true;
   };
 
-  // Handle form submission and API communication
-  const handleSubmit = async (e) => {
+  // Process form submission and communicate with backend API
+  const handleFormSubmission = async (e) => {
     e.preventDefault();
     
-    // Validate input before proceeding
-    if (!validateInput()) {
+    // Validate user input before proceeding with API call
+    if (!validateUserInput()) {
       return;
     }
     
-    // Set loading state and clear previous results
-    setLoading(true);
-    setResult("");
+    // Update loading state and clear previous responses
+    setIsLoading(true);
+    setAdvisorResponse("");
     
     try {
-      // Send question to backend API
-      const response = await postData("/api/ama/ask", { question });
+      // Send user question to backend API endpoint
+      const apiResponse = await postData("/api/ama/ask", { question: userQuestion });
       
-      // Handle API response
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
+      // Process and display API response
+      if (apiResponse.error) {
+        setAdvisorResponse(`❌ API Error: ${apiResponse.error}`);
       } else {
-        setResult(response.answer || "No answer returned.");
+        setAdvisorResponse(apiResponse.answer || "No response received from advisor.");
       }
-    } catch (error) {
-      // Handle unexpected errors
-      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } catch (networkError) {
+      // Handle network or unexpected errors
+      setAdvisorResponse(`❌ Network Error: ${networkError.message || "Connection failed"}`);
     } finally {
-      // Reset loading state
-      setLoading(false);
+      // Reset loading state regardless of outcome
+      setIsLoading(false);
     }
   };
 
-  // Render the appropriate result based on state
-  const renderResult = () => {
-    // Show loading indicator when request is in progress
-    if (loading) {
-      return "⏳ Consulting YouTube Advisor...";
+  // Render appropriate content based on component state
+  const renderResponseContent = () => {
+    // Display loading indicator during API request
+    if (isLoading) {
+      return (
+        <div className="loading-indicator">
+          <span className="spinner"></span>
+          Consulting YouTube Policy Advisor...
+        </div>
+      );
     }
     
-    // Display result if available
-    if (result) {
-      return result;
+    // Display advisor response when available
+    if (advisorResponse) {
+      return advisorResponse;
     }
     
-    // Show placeholder text
-    return "Advisor response will appear here...";
+    // Default placeholder text
+    return "Your advisor's response will appear in this section...";
   };
 
   return (
-    <section className="section-container">
-      <h3>
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
-          <rect width="38" height="38" rx="10" />
-          <polygon points="15,12 28,19 15,26" />
+    <section className="section-container advisor-section">
+      <h3 className="section-heading">
+        <svg className="heading-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+          <rect width="38" height="38" rx="10" fill="currentColor" />
+          <polygon points="15,12 28,19 15,26" fill="white" />
         </svg>
-        YouTube AMA
+        YouTube Policy Advisor
       </h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmission} className="advisor-form">
         <textarea
           rows={4}
-          value={question}
-          onChange={handleQuestionChange}
-          placeholder="Ask your question"
-          disabled={loading}
+          value={userQuestion}
+          onChange={handleInputChange}
+          placeholder="Enter your YouTube policy question here..."
+          disabled={isLoading}
+          className="question-input"
         />
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Asking..." : "Ask YouTube Advisor"}
+        <button 
+          type="submit" 
+          className="submit-button primary" 
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing Request..." : "Consult Advisor"}
         </button>
       </form>
-      <div className="result-card">
-        {renderResult()}
+      <div className="response-container result-card">
+        {renderResponseContent()}
       </div>
     </section>
   );
 };
 
-export default AMA;
+export default YouTubeAdvisorAMA;
