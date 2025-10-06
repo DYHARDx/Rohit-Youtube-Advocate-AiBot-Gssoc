@@ -2,56 +2,50 @@ import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-// 🎯 CONTENT SAFETY CHECKER COMPONENT
-// ===================================
-// AI-powered content safety analysis for YouTube creators
-const ContentSafetyChecker = () => {
-  // 🎯 STATE MANAGEMENT
-  // ===================
-  const [script, setScript] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // 🎯 INPUT HANDLER
-  // ================
-  // Update state when user types in the text area
-  const handleScriptChange = (e) => {
-    setScript(e.target.value);
+const ContentSafetyAnalyzer = () => {
+  const [contentText, setContentText] = useState("");
+  const [analysisResult, setAnalysisResult] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Handle content input changes in the text area
+  const handleContentChange = (e) => {
+    setContentText(e.target.value);
   };
 
-  // 🎯 FORM SUBMISSION HANDLER
-  // ===========================
-  // Process form submission and content safety analysis
-  const handleSubmit = async (e) => {
+  // Validate content before processing safety analysis
+  const validateContent = () => {
+    if (!contentText.trim()) {
+      setAnalysisResult("⚠️ Please provide content for safety analysis.");
+      return false;
+    }
+    return true;
+  };
+
+  // Process form submission and content safety evaluation
+  const handleAnalysisRequest = async (e) => {
     e.preventDefault();
     
-    // 🎯 INPUT VALIDATION
-    // ===================
-    // Validate that content has been entered
-    if (!script.trim()) {
-      setResult("⚠️ Please enter content to check.");
+    // Validate content input before proceeding
+    if (!validateContent()) {
       return;
     }
     
-    // 🎨 DEBUG: Content safety analysis initiated
-    // Set loading state and clear previous results
-    setLoading(true);
-    setResult("");
+    // Update analysis state and clear previous results
+    setIsAnalyzing(true);
+    setAnalysisResult("");
     
     try {
-      // 🎯 API INTEGRATION
-      // ==================
-      // Send content to backend for safety analysis
-      const response = await postData("/api/content/check", { text: script });
+      // Submit content to backend safety analysis API
+      const apiResponse = await postData("/api/content/check", { text: contentText });
       
-      // 🎯 RESPONSE PROCESSING
-      // ======================
-      // Process the API response
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
+      // Handle and display API response
+      if (apiResponse.error) {
+
       } else {
-        setResult(response.report || "No report returned.");
+        setAnalysisResult(apiResponse.report || "No safety report generated.");
       }
+
     } catch (error) {
       // 🎯 ERROR HANDLING
       // =================
@@ -104,9 +98,11 @@ const ContentSafetyChecker = () => {
         >
           <rect width="38" height="38" rx="10" />
           <polygon points="15,12 28,19 15,26" />
+
         </svg>
-        YouTube Content Safety Checker
+        Content Safety Analyzer
       </h3>
+
       
       {/* 🎯 CONTENT INPUT FORM */}
       <form onSubmit={handleSubmit} role="form" aria-label="Content safety check form">
@@ -137,9 +133,32 @@ const ContentSafetyChecker = () => {
         aria-atomic="true"
       >
         {renderResult()}
+=======
+      <form onSubmit={handleAnalysisRequest} className="safety-form">
+        <textarea
+          rows={6}
+          value={contentText}
+          onChange={handleContentChange}
+          placeholder="Enter your video script or content for safety evaluation..."
+          disabled={isAnalyzing}
+          className="content-input"
+        />
+        <button 
+          type="submit" 
+          className="analyze-button primary" 
+          disabled={isAnalyzing}
+        >
+          {isAnalyzing ? "Analyzing Content..." : "Run Safety Check"}
+        </button>
+      </form>
+      <div className="analysis-output result-card">
+        {renderAnalysisOutput()}
+
       </div>
     </section>
   );
 };
 
+
 export default ContentSafetyChecker;
+

@@ -5,110 +5,111 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-# Load environment variables (make sure .env file exists)
+# Load environment configuration variables
 load_dotenv()
 
-# Constants
-FAISS_DB_PATH = "vectorstore/db_faiss"
-OLLAMA_MODEL_NAME = "deepseek-r1:1.5b"
-GROQ_MODEL = "deepseek-r1-distill-llama-70b"  # or "deepseek-coder:6.7b-instruct"
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Application Constants and Configuration
+FAISS_VECTOR_DB_PATH = "vectorstore/db_faiss"
+OLLAMA_EMBEDDING_MODEL = "deepseek-r1:1.5b"
+GROQ_LLM_MODEL = "deepseek-r1-distill-llama-70b"  # Alternative: "deepseek-coder:6.7b-instruct"
+GROQ_API_KEY_VALUE = os.getenv("GROQ_API_KEY")
 
-# Step 1: Load FAISS Vector DB
-
-
-def load_faiss_db():
-    embeddings = OllamaEmbeddings(model=OLLAMA_MODEL_NAME)
+# Step 1: Initialize and Load FAISS Vector Database
+def initialize_vector_database():
+    """Initialize embeddings and load FAISS vector store from local directory"""
+    embedding_model = OllamaEmbeddings(model=OLLAMA_EMBEDDING_MODEL)
     return FAISS.load_local(
-        FAISS_DB_PATH,
-        embeddings=embeddings,
+        FAISS_VECTOR_DB_PATH,
+        embeddings=embedding_model,
         allow_dangerous_deserialization=True
     )
 
-# Step 2: Setup LLM with Groq
-
-
-def setup_llm():
+# Step 2: Configure and Setup LLM with Groq
+def configure_llm_model():
+    """Configure and return the Groq LLM instance with specified parameters"""
     return ChatGroq(
-        api_key=GROQ_API_KEY,
-        model_name=GROQ_MODEL,
+        api_key=GROQ_API_KEY_VALUE,
+        model_name=GROQ_LLM_MODEL,
         temperature=0.2
     )
 
-# Step 3: Get context from retrieved documents
+# Step 3: Extract context from retrieved documents
+def extract_document_context(retrieved_docs):
+    """Combine page content from multiple documents into single context string"""
+    return "\n\n".join([doc.page_content for doc in retrieved_docs])
 
 
-def get_context(docs):
-    return "\n\n".join([doc.page_content for doc in docs])
+# Enhanced RAG prompt template with improved formatting
+LEGAL_ASSISTANT_PROMPT = """
+You are a specialized legal AI assistant designed to help content creators understand complex contracts by translating legal jargon into clear, plain English.
+Use only the information provided in the contract text. Do not make assumptions or generate legal advice beyond the given context.
+Always respond in a **professional, assertive tone** and ensure **complete legal clarity** while simplifying complex terms. 
+Your primary objective is to make contractual terms transparent and easily understandable for creators without legal backgrounds.
 
+**Required Response Format:**
+Contract Summary:
+- Provide a high-level overview explaining the contract's purpose and main focus areas.
 
-# Step 4: Use RAG prompt template
-PROMPT_TEMPLATE = """
-You are a legal AI assistant designed to help content creators understand contracts by simplifying complex legal language into clear, plain English.
-Use only the information provided in the contract text. Do not make assumptions or generate legal advice beyond the context.
-Always respond in a **formal, assertive tone** and ensure **full legal clarity** while simplifying. 
-Your goal is to make the terms transparent and easily understandable for a non-lawyer creator.
+Key Legal Terms Explained:
+- Break down important terms, rights, obligations, timelines, financial clauses, ownership details, or penalties.
+- Highlight any sections requiring special attention (exclusivity clauses, indemnity provisions, automatic renewal terms).
 
-**Structure your response in this format:**
-Summary:
-- Give a high-level explanation of what the contract or clause is about.
-
-Key Terms Explained:
-- Bullet out and explain any important terms, rights, obligations, timelines, fees, ownership clauses, or penalties.
-- Flag anything that may require special attention (e.g., exclusivity, indemnity, automatic renewals).
-
-Plain English Version:
-- Rewrite the entire clause/section in simple, everyday language while preserving all its meaning.
+Simplified Plain English Version:
+- Rewrite the entire clause or section using simple, everyday language while preserving all legal meaning and intent.
 
 ---
 
-Example 1:
+Example Demonstration 1:
 
-Contract Text:
+Original Contract Text:
 "The Creator hereby grants the Platform an irrevocable, worldwide, royalty-free license to use, reproduce, modify, and distribute their content across any media now known or later developed."
 
-Answer:
-Summary:
-This clause talks about how the platform can use the creator’s content.
+Assistant Response:
+Contract Summary:
+This section outlines how the platform can utilize the creator's uploaded content.
 
-Key Terms Explained:
-- "Irrevocable": Cannot be withdrawn once granted.
-- "Royalty-free": You won’t get paid each time your content is used.
-- "Worldwide": Applies globally.
-- "Any media": Includes all current and future formats (e.g., YouTube, podcasts, VR, etc.).
+Key Legal Terms Explained:
+- "Irrevocable": Rights cannot be revoked once granted.
+- "Royalty-free": No ongoing payments for content usage.
+- "Worldwide": Global application of rights.
+- "Any media": Includes all current and future distribution channels.
 
-Plain English Version:
-Once you upload content to the platform, they can use it anywhere, however they like, without paying you—and you can’t take back those rights.
+Simplified Plain English Version:
+Once you upload content, the platform can use it anywhere in the world, in any format (including future technologies), without paying you additional fees—and you cannot revoke these permissions.
 
 ---
 
-Now simplify the following contract in the same format:
+Now process the following contract text using the same structured approach:
 
-Question: {question}
-Context: {context}
+User Question: {question}
+Retrieved Context: {context}
 
-Answer:
+Assistant Response:
 """
 
 
-def ask_question(llm, vector_db, query):
-    docs = vector_db.similarity_search(query)
-    context = get_context(docs)
-    prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    chain = prompt | llm
-    return chain.invoke({"question": query, "context": context})
+def process_legal_query(llm_instance, vector_database, user_query):
+    """Process user query using RAG pipeline and return AI response"""
+    retrieved_documents = vector_database.similarity_search(user_query)
+    document_context = extract_document_context(retrieved_documents)
+    prompt_template = ChatPromptTemplate.from_template(LEGAL_ASSISTANT_PROMPT)
+    rag_chain = prompt_template | llm_instance
+    return rag_chain.invoke({"question": user_query, "context": document_context})
 
 
-# 🔁 Run the pipeline
+# 🚀 Main execution pipeline
 if __name__ == "__main__":
-    query = input("Ask your legal question: ")
+    user_question = input("Enter your legal contract question: ")
 
-    print("[+] Loading FAISS vector database...")
-    db = load_faiss_db()
+    print("[🔧] Initializing FAISS vector database...")
+    vector_db = initialize_vector_database()
 
-    print("[+] Setting up Groq LLM...")
-    llm = setup_llm()
+    print("[⚙️] Configuring Groq LLM model...")
+    groq_llm = configure_llm_model()
 
-    print("[+] Answering your question...\n")
-    response = ask_question(llm, db, query)
-    print("💡 AI Answer:\n", response)
+    print("[💭] Processing your legal query...\n")
+    ai_response = process_legal_query(groq_llm, vector_db, user_question)
+    print("💡 Legal Assistant Response:\n", ai_response)
+    
+    # Additional logging for debugging purposes
+    print(f"\n[📊] Query processing completed for: '{user_question[:50]}...'")

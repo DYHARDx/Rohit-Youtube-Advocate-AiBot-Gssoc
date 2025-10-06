@@ -1,4 +1,5 @@
-.hero {
+/* ===== HERO SECTION STYLES - ENHANCED VERSION ===== */
+.hero-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -6,39 +7,99 @@
   background: linear-gradient(to right, #f0f4ff, #eaf2ff);
   border-radius: 16px;
   margin-bottom: 40px;
+  /* Additional styling for better visual appeal */
 }
 
-.hero-text {
+/* Hero text content styling */
+.hero-content {
   max-width: 50%;
+  /* Content width constraint */
 }
 
-.hero-text h1 {
+.hero-content .hero-title {
   font-size: 36px;
   color: #1a1a1a;
   margin-bottom: 20px;
+  font-weight: 700;
+  /* Enhanced title styling */
 }
 
-.hero-text p {
+.hero-content .hero-description {
   font-size: 18px;
   color: #333;
   margin-bottom: 24px;
+  line-height: 1.6;
+  /* Improved text readability */
 }
 
-.hero-button {
+/* Primary call-to-action button */
+.hero-cta-button {
   display: inline-block;
   padding: 12px 24px;
   background-color: #4f46e5;
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  /* Enhanced button styling */
 }
 
-.hero-button:hover {
+.hero-cta-button:hover {
   background-color: #3730a3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  /* Improved hover effects */
 }
 
-.hero-image img {
+/* Hero image container styling */
+.hero-visual {
   max-width: 400px;
   height: auto;
+  /* Image container constraints */
+}
+
+.hero-visual img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  /* Added subtle rounding for images */
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 40px 24px;
+    /* Mobile layout adjustments */
+  }
+  
+  .hero-content {
+    max-width: 100%;
+    margin-bottom: 32px;
+    /* Full width on mobile */
+  }
+  
+  .hero-visual {
+    max-width: 300px;
+    /* Adjusted image size for mobile */
+  }
+}
+
+/* Additional animation for future enhancements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-container {
+  animation: fadeInUp 0.6s ease-out;
+  /* Added entrance animation */
 }
