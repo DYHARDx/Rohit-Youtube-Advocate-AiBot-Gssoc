@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
+
 const ContentSafetyAnalyzer = () => {
   const [contentText, setContentText] = useState("");
   const [analysisResult, setAnalysisResult] = useState("");
@@ -40,49 +41,99 @@ const ContentSafetyAnalyzer = () => {
       
       // Handle and display API response
       if (apiResponse.error) {
-        setAnalysisResult(`❌ Analysis Error: ${apiResponse.error}`);
+
       } else {
         setAnalysisResult(apiResponse.report || "No safety report generated.");
       }
-    } catch (networkError) {
-      // Handle network or unexpected errors
-      setAnalysisResult(`❌ System Error: ${networkError.message || "Analysis service unavailable"}`);
+
+    } catch (error) {
+      // 🎯 ERROR HANDLING
+      // =================
+      // Handle any unexpected errors
+      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
     } finally {
-      // Reset analysis state regardless of outcome
-      setIsAnalyzing(false);
+      // 🎯 CLEANUP
+      // ===========
+      // Always reset loading state
+      setLoading(false);
     }
   };
 
-  // Render appropriate content based on component state
-  const renderAnalysisOutput = () => {
-    // Display loading state during analysis
-    if (isAnalyzing) {
-      return (
-        <div className="analysis-loading">
-          <span className="loading-spinner"></span>
-          Scanning content for policy compliance...
-        </div>
-      );
+  // 🎯 RESULT RENDERER
+  // ==================
+  // Determine what to display in the results area
+  const renderResult = () => {
+    // 🎯 LOADING STATE
+    // ================
+    // Show loading message during API request
+    if (loading) {
+      return "⏳ Checking content safety...";
     }
     
-    // Display analysis results when available
-    if (analysisResult) {
-      return analysisResult;
+    // 🎯 RESULTS DISPLAY
+    // ==================
+    // Display results if available
+    if (result) {
+      return result;
     }
     
-    // Default placeholder message
-    return "Safety analysis results will be displayed here...";
+    // 🎯 PLACEHOLDER STATE
+    // ====================
+    // Show placeholder text
+    return "Results will appear here...";
   };
 
   return (
-    <section className="section-container safety-analyzer-section">
-      <h3 className="section-title">
-        <svg className="title-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
-          <rect width="38" height="38" rx="10" fill="currentColor" />
-          <polygon points="15,12 28,19 15,26" fill="white" />
+    <section className="section-container" aria-labelledby="content-safety-title">
+      {/* 🎯 COMPONENT HEADER */}
+      <h3 id="content-safety-title">
+        <svg 
+          className="h3-icon" 
+          width="32" 
+          height="32" 
+          viewBox="0 0 38 38" 
+          fill="none" 
+          style={{ marginRight: "10px" }}
+          aria-hidden="true"
+        >
+          <rect width="38" height="38" rx="10" />
+          <polygon points="15,12 28,19 15,26" />
+
         </svg>
         Content Safety Analyzer
       </h3>
+
+      
+      {/* 🎯 CONTENT INPUT FORM */}
+      <form onSubmit={handleSubmit} role="form" aria-label="Content safety check form">
+        <textarea
+          rows={6}
+          value={script}
+          onChange={handleScriptChange}
+          placeholder="Paste your content here for safety analysis..."
+          disabled={loading}
+          aria-label="Content to check for safety"
+          aria-required="true"
+        />
+        <button 
+          type="submit" 
+          className="btn-primary" 
+          disabled={loading}
+          aria-label={loading ? "Checking content safety" : "Check content safety"}
+        >
+          {loading ? "Checking..." : "Check Content Safety"}
+        </button>
+      </form>
+      
+      {/* 🎯 RESULTS DISPLAY */}
+      <div 
+        className="result-card" 
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {renderResult()}
+=======
       <form onSubmit={handleAnalysisRequest} className="safety-form">
         <textarea
           rows={6}
@@ -102,9 +153,12 @@ const ContentSafetyAnalyzer = () => {
       </form>
       <div className="analysis-output result-card">
         {renderAnalysisOutput()}
+
       </div>
     </section>
   );
 };
 
-export default ContentSafetyAnalyzer;
+
+export default ContentSafetyChecker;
+
