@@ -1,13 +1,15 @@
-/* ===== HERO SECTION STYLES - ENHANCED VERSION ===== */
+/* ===== HERO SECTION STYLES - THEME-AWARE VERSION ===== */
 .hero-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 60px 40px;
-  background: linear-gradient(to right, #f0f4ff, #eaf2ff);
+  background: var(--card-background);
+  border: 2px solid var(--input-border-color);
   border-radius: 16px;
   margin-bottom: 40px;
-  /* Additional styling for better visual appeal */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  /* Theme-aware styling with smooth transitions */
 }
 
 /* Hero text content styling */
@@ -18,38 +20,43 @@
 
 .hero-content .hero-title {
   font-size: 36px;
-  color: #1a1a1a;
+  color: var(--main-text-color);
   margin-bottom: 20px;
   font-weight: 700;
-  /* Enhanced title styling */
+  transition: color 0.3s ease;
+  /* Theme-aware title styling */
 }
 
 .hero-content .hero-description {
   font-size: 18px;
-  color: #333;
+  color: var(--main-text-color);
   margin-bottom: 24px;
   line-height: 1.6;
-  /* Improved text readability */
+  opacity: 0.8;
+  transition: color 0.3s ease;
+  /* Theme-aware description with subtle opacity */
 }
 
 /* Primary call-to-action button */
 .hero-cta-button {
   display: inline-block;
   padding: 12px 24px;
-  background-color: #4f46e5;
-  color: #fff;
+  background-color: var(--primary-accent);
+  color: var(--primary-text-on-accent);
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s ease;
   font-weight: 600;
-  /* Enhanced button styling */
+  border: 2px solid var(--primary-accent);
+  /* Theme-aware button styling */
 }
 
 .hero-cta-button:hover {
-  background-color: #3730a3;
+  background-color: var(--primary-accent-hover);
+  border-color: var(--primary-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  /* Improved hover effects */
+  box-shadow: 0 4px 12px var(--image-shadow);
+  /* Theme-aware hover effects */
 }
 
 /* Hero image container styling */
