@@ -25,6 +25,10 @@ body.light {
   --primary-text-on-accent: #ffffff;
   --input-border-color: #ced4da;
   --image-shadow: rgba(0, 0, 0, 0.1);
+  --secondary-text-color: #6c757d;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --error-color: #dc3545;
 }
 
 /* 🎯 DARK THEME VARIABLES
@@ -46,6 +50,10 @@ body.dark {
   --primary-text-on-accent: #000000;
   --input-border-color: #00ffff;
   --image-shadow: rgba(0, 255, 255, 0.1);
+  --secondary-text-color: #b3b3b3;
+  --success-color: #00ff88;
+  --warning-color: #ffaa00;
+  --error-color: #ff4444;
 }
 
 /* ========== GLOBAL & LAYOUT STYLES ========== */
