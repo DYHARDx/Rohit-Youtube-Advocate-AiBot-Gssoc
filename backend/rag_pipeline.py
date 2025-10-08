@@ -1,216 +1,191 @@
-# ==================== ENVIRONMENT CONFIGURATION ====================
 import os
 from dotenv import load_dotenv
+
+# LangChain / model imports
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
-# 🚀 Load environment variables (make sure .env file exists)
-load_dotenv()
+# ==================== ENVIRONMENT & CONFIG ====================
+load_dotenv()  # load .env file if present
 
-# 🎯 TODO: Add environment variable validation
-# 🎯 TODO: Implement configuration management system
-
-# ==================== CONSTANTS & CONFIGURATION ====================
-# Constants
+# --- Constants (unified names) ---
 FAISS_DB_PATH = "vectorstore/db_faiss"
 OLLAMA_MODEL_NAME = "deepseek-r1:1.5b"
-GROQ_MODEL = "deepseek-r1-distill-llama-70b"  # or "deepseek-coder:6.7b-instruct"
+GROQ_MODEL_NAME = "deepseek-r1-distill-llama-70b"  # alternative: "deepseek-coder:6.7b-instruct"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-# 🎯 Model configuration constants
 MODEL_CONFIG = {
     "temperature": 0.2,
     "max_tokens": 2048,
-    "timeout": 30
+    "timeout": 30,
 }
 
-# 🎯 Debug configuration
 DEBUG_MODE = True
 
 # ==================== VECTOR DATABASE OPERATIONS ====================
-# Step 1: Load FAISS Vector DB
-def load_faiss_db():
+
+def initialize_vector_database(path: str = FAISS_DB_PATH):
+    """Initialize Ollama embeddings and load FAISS vectorstore from local directory.
+
+    Returns:
+        FAISS vectorstore instance
+    Raises:
+        Exception: If loading fails
     """
-    📚 Load the FAISS vector database with Ollama embeddings
-    Returns: FAISS vector store instance
-    Raises: Exception if database loading fails
-    """
-    # 🎯 Initialize embeddings model
-    embeddings = OllamaEmbeddings(model=OLLAMA_MODEL_NAME)
-    
-    # 🚀 Debug logging
-    if DEBUG_MODE:
-        print("🔧 Loading FAISS database from:", FAISS_DB_PATH)
-    
-    return FAISS.load_local(
-        FAISS_DB_PATH,
-        embeddings=embeddings,
-        allow_dangerous_deserialization=True
-    )
+    try:
+        if DEBUG_MODE:
+            print("🔧 Initializing Ollama embeddings with model:", OLLAMA_MODEL_NAME)
+        embedding_model = OllamaEmbeddings(model=OLLAMA_MODEL_NAME)
+
+        if DEBUG_MODE:
+            print("🔧 Loading FAISS database from:", path)
+
+        vector_db = FAISS.load_local(
+            path,
+            embeddings=embedding_model,
+            allow_dangerous_deserialization=True,
+        )
+
+        if DEBUG_MODE:
+            print("✅ FAISS vector database loaded successfully")
+
+        return vector_db
+
+    except Exception as e:
+        print("❌ Failed to load FAISS vector database:", str(e))
+        raise
+
 
 # ==================== LLM SETUP & CONFIGURATION ====================
-# Step 2: Setup LLM with Groq
-def setup_llm():
+
+def configure_llm_model(api_key: str = GROQ_API_KEY, model_name: str = GROQ_MODEL_NAME):
+    """Configure and return the Groq LLM instance.
+
+    Performs a basic API key check and returns a ChatGroq instance.
     """
-    🧠 Initialize and configure the Groq language model
-    Returns: Configured ChatGroq instance
-    Raises: Exception if API key is missing or invalid
-    """
-    # 🎯 API key validation placeholder
-    if not GROQ_API_KEY:
-        print("⚠️  GROQ_API_KEY not found in environment variables")
-        # 🎯 TODO: Add proper error handling
-    
-    # 🚀 Initialize Groq LLM with configuration
-    llm = ChatGroq(
-        api_key=GROQ_API_KEY,
-        model_name=GROQ_MODEL,
-        temperature=MODEL_CONFIG["temperature"]
-        # 🎯 TODO: Add additional model parameters
-    )
-    
+    if not api_key:
+        # don't crash silently — inform the user and continue (tests or offline dev may not have key)
+        print("⚠️  GROQ_API_KEY not found in environment variables. LLM calls will likely fail.")
+
     if DEBUG_MODE:
-        print("🔧 LLM configured with model:", GROQ_MODEL)
-    
+        print("🔧 Configuring Groq LLM with model:", model_name)
+
+    llm = ChatGroq(
+        api_key=api_key,
+        model_name=model_name,
+        temperature=MODEL_CONFIG.get("temperature", 0.2),
+        # additional parameters like max_tokens/timeouts can be added here if supported
+    )
+
     return llm
 
+
 # ==================== CONTEXT PROCESSING ====================
-# Step 3: Get context from retrieved documents
-def get_context(docs):
-    """
-    📄 Process and concatenate document contents for context
-    Args:
-        docs: List of retrieved documents
-    Returns: Concatenated context string
-    """
-    # 🎯 TODO: Add document filtering based on relevance scores
-    # 🎯 TODO: Implement context length optimization
-    
-    context = "\n\n".join([doc.page_content for doc in docs])
-    
+
+def extract_document_context(retrieved_docs):
+    """Combine page content from multiple documents into a single context string."""
+    if not retrieved_docs:
+        return ""
+    context = "\n\n".join([getattr(doc, "page_content", str(doc)) for doc in retrieved_docs])
+
     if DEBUG_MODE:
-        print(f"📊 Retrieved {len(docs)} documents for context")
+        print(f"📊 Retrieved {len(retrieved_docs)} documents for context")
         print(f"📝 Context length: {len(context)} characters")
-    
+
     return context
 
+
 # ==================== PROMPT TEMPLATE SYSTEM ====================
-# Step 4: Use RAG prompt template
-PROMPT_TEMPLATE = """
-You are a legal AI assistant designed to help content creators understand contracts by simplifying complex legal language into clear, plain English.
-Use only the information provided in the contract text. Do not make assumptions or generate legal advice beyond the context.
-Always respond in a **formal, assertive tone** and ensure **full legal clarity** while simplifying. 
-Your goal is to make the terms transparent and easily understandable for a non-lawyer creator.
 
-**Structure your response in this format:**
-Summary:
-- Give a high-level explanation of what the contract or clause is about.
+LEGAL_ASSISTANT_PROMPT = """
+You are a specialized legal AI assistant designed to help content creators understand complex contracts by translating legal jargon into clear, plain English. Use only the information provided in the contract text. Do not make assumptions or generate legal advice beyond the given context. Always respond in a **professional, assertive tone** and ensure **complete legal clarity** while simplifying complex terms.
 
-Key Terms Explained:
-- Bullet out and explain any important terms, rights, obligations, timelines, fees, ownership clauses, or penalties.
-- Flag anything that may require special attention (e.g., exclusivity, indemnity, automatic renewals).
+**Required Response Format:**
+Contract Summary:
+- Provide a high-level overview explaining the contract's purpose and main focus areas.
 
-Plain English Version:
-- Rewrite the entire clause/section in simple, everyday language while preserving all its meaning.
+Key Legal Terms Explained:
+- Break down important terms, rights, obligations, timelines, financial clauses, ownership details, or penalties.
+- Highlight any sections requiring special attention (exclusivity clauses, indemnity provisions, automatic renewal terms).
+
+Simplified Plain English Version:
+- Rewrite the entire clause or section using simple, everyday language while preserving all legal meaning and intent.
 
 ---
+Now process the following contract text using the same structured approach:
 
-Example 1:
+User Question: {question}
+Retrieved Context: {context}
 
-Contract Text:
-"The Creator hereby grants the Platform an irrevocable, worldwide, royalty-free license to use, reproduce, modify, and distribute their content across any media now known or later developed."
-
-Answer:
-Summary:
-This clause talks about how the platform can use the creator's content.
-
-Key Terms Explained:
-- "Irrevocable": Cannot be withdrawn once granted.
-- "Royalty-free": You won't get paid each time your content is used.
-- "Worldwide": Applies globally.
-- "Any media": Includes all current and future formats (e.g., YouTube, podcasts, VR, etc.).
-
-Plain English Version:
-Once you upload content to the platform, they can use it anywhere, however they like, without paying you—and you can't take back those rights.
-
----
-
-Now simplify the following contract in the same format:
-
-Question: {question}
-Context: {context}
-
-Answer:
+Assistant Response:
 """
 
-# 🎯 TODO: Add multiple prompt templates for different use cases
-# 🎯 TODO: Implement prompt versioning system
 
 # ==================== RAG PIPELINE EXECUTION ====================
-def ask_question(llm, vector_db, query):
-    """
-    ❓ Execute the RAG pipeline to answer legal questions
+
+def process_legal_query(llm_instance, vector_database, user_query: str):
+    """Process a user query using a RAG pipeline and return the LLM response.
+
     Args:
-        llm: Initialized language model
-        vector_db: FAISS vector database
-        query: User question string
-    Returns: AI-generated response
+        llm_instance: Initialized LLM (ChatGroq)
+        vector_database: FAISS vectorstore instance
+        user_query: The user's question about the contract
+
+    Returns:
+        Model-generated response string
     """
-    # 🔍 Retrieve relevant documents
-    docs = vector_db.similarity_search(query)
-    
-    # 📄 Process context from documents
-    context = get_context(docs)
-    
-    # 🎯 Create prompt template
-    prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    
-    # 🔗 Build processing chain
-    chain = prompt | llm
-    
-    if DEBUG_MODE:
-        print("🔧 Executing RAG pipeline...")
-        print(f"📝 Query: {query}")
-    
-    # 🚀 Invoke the chain
-    return chain.invoke({"question": query, "context": context})
+    # Retrieve similar documents (you can pass a k parameter if desired)
+    try:
+        retrieved_documents = []
+        if vector_database is not None:
+            retrieved_documents = vector_database.similarity_search(user_query)
+        else:
+            if DEBUG_MODE:
+                print("⚠️  No vector database provided; proceeding without retrieved context.")
+
+        document_context = extract_document_context(retrieved_documents)
+
+        prompt_template = ChatPromptTemplate.from_template(LEGAL_ASSISTANT_PROMPT)
+        rag_chain = prompt_template | llm_instance
+
+        if DEBUG_MODE:
+            print("🔧 Executing RAG pipeline...")
+            print("📝 Query:", user_query)
+
+        # invoke the chain
+        return rag_chain.invoke({"question": user_query, "context": document_context})
+
+    except Exception as e:
+        print("❌ Error while processing legal query:", str(e))
+        raise
+
 
 # ==================== MAIN EXECUTION BLOCK ====================
-# 🔁 Run the pipeline
 if __name__ == "__main__":
-    # 🎯 TODO: Add command-line argument parsing
-    # 🎯 TODO: Implement interactive mode
-    
-    query = input("Ask your legal question: ")
-    
-    if DEBUG_MODE:
-        print("\n" + "="*50)
-        print("🚀 Starting RAG Pipeline Execution")
-        print("="*50)
+    try:
+        print("[🔧] Initializing FAISS vector database...")
+        vector_db = None
+        try:
+            vector_db = initialize_vector_database()
+        except Exception:
+            print("[!] Continuing without a vector DB. You can still run local tests but RAG will be disabled.")
 
-    print("[+] Loading FAISS vector database...")
-    db = load_faiss_db()
+        print("[⚙️] Configuring Groq LLM model...")
+        groq_llm = configure_llm_model()
 
-    print("[+] Setting up Groq LLM...")
-    llm = setup_llm()
+        user_question = input("Enter your legal contract question: ")
 
-    print("[+] Answering your question...\n")
-    response = ask_question(llm, db, query)
-    
-    if DEBUG_MODE:
-        print("\n" + "="*50)
-        print("✅ Pipeline Execution Complete")
-        print("="*50)
-    
-    print("💡 AI Answer:\n", response)
+        print("[💭] Processing your legal query...\n")
+        ai_response = process_legal_query(groq_llm, vector_db, user_question)
 
-# 🎯 Future enhancement placeholders
-# TODO: Add response caching mechanism
-# TODO: Implement conversation history
-# TODO: Add response quality metrics
-# TODO: Create batch processing mode
-# TODO: Add API endpoint wrapper
+        print("\n💡 Legal Assistant Response:\n", ai_response)
 
-# ==================== END OF ENHANCEMENTS ====================
+        # Additional logging for debugging purposes
+        print(f"\n[📊] Query processing completed for: '{user_question[:50]}...'")
+
+    except KeyboardInterrupt:
+        print("\nExecution cancelled by user.")
+    except Exception as main_e:
+        print("Unexpected error in main execution:", str(main_e))
