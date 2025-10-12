@@ -5,7 +5,7 @@
   <!-- ==================== META & CONFIGURATION ==================== -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rohit Advocate - Creator Legal AI Assistant</title>
+  <title>Rohit Advocate - Creator Legal AI Assistant | Enhanced Version</title>
   
   <!-- 🎯 SEO & Accessibility Meta Tags -->
   <meta name="description" content="Legal AI assistant for content creators - contract reviews, copyright clarity, and YouTube policy support">
@@ -43,26 +43,26 @@
     }
 
     /* 🎯 Animated button hover effect */
-    .btn-primary {
+    .primary-button {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-primary:hover {
+    .primary-button:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
       background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
     }
 
     /* 🎨 Enhanced result cards */
-    .result-card {
+    .result-container {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       border: 2px solid #e2e8f0;
       transition: all 0.3s ease;
     }
 
-    .result-card:hover {
+    .result-container:hover {
       border-color: #3b82f6;
       transform: translateY(-1px);
     }
@@ -70,6 +70,22 @@
     /* 🎯 Debug utility for development */
     .debug-outline {
       outline: 1px dashed #ff6ec4;
+    }
+    
+    /* Additional animation for better UX */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-fade-in {
+      animation: fadeInUp 0.5s ease-out;
     }
   </style>
 </head>
@@ -88,13 +104,10 @@
 
       <!-- 🎯 Desktop Navigation -->
       <nav class="hidden xl:flex space-x-8 text-gray-700 font-semibold" aria-label="Primary">
-        <a href="#contract" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Explain My
-          Contract</a>
-        <a href="#content-safety" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Content Safety
-          Checker</a>
+        <a href="#contract" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Explain My Contract</a>
+        <a href="#content-safety" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Content Safety Checker</a>
         <a href="#invoice" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Invoice Generator</a>
-        <a href="#policy-guard" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">YouTube Policy
-          Guard</a>
+        <a href="#policy-guard" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">YouTube Policy Guard</a>
         <a href="#ama" class="hover:text-blue-600 transition-all duration-200 hover:scale-105">Ask Rohit Anything</a>
       </nav>
 
@@ -114,18 +127,16 @@
       class="fixed top-0 left-0 w-3/4 max-w-sm h-full bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out xl:hidden z-50"
       aria-label="Mobile navigation">
       <div class="px-4 py-5 border-b border-gray-200 flex justify-between items-center">
-        <h2 class="text-lg font-bold text-gray-800">Menu</h2>
+        <h2 class="text-lg font-bold text-gray-800">Navigation Menu</h2>
         <button id="close-menu-button" aria-label="Close menu" class="text-gray-600 hover:text-red-500">
           <i class="fas fa-times fa-lg"></i>
         </button>
       </div>
       <div class="py-4">
         <a href="#contract" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">Explain My Contract</a>
-        <a href="#content-safety" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">Content Safety
-          Checker</a>
+        <a href="#content-safety" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">Content Safety Checker</a>
         <a href="#invoice" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">Invoice Generator</a>
-        <a href="#policy-guard" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">YouTube Policy
-          Guard</a>
+        <a href="#policy-guard" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">YouTube Policy Guard</a>
         <a href="#ama" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 font-semibold">Ask Rohit Anything</a>
       </div>
     </nav>
@@ -134,13 +145,12 @@
   <!-- ==================== MAIN CONTENT AREA ==================== -->
   <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20">
     <!-- 🎯 Hero Section -->
-    <section class="text-center max-w-3xl mx-auto hero-gradient rounded-2xl p-8 text-white shadow-2xl">
+    <section class="text-center max-w-3xl mx-auto hero-gradient rounded-2xl p-8 text-white shadow-2xl animate-fade-in">
       <img src="/backend/static/Images/rohit_pfp.jpg" alt="Portrait of Rohit Negi"
         class="mx-auto rounded-full mb-6 shadow-2xl border-4 border-white" width="200" height="200" />
       <h2 class="text-4xl font-extrabold mb-4">Rohit Advocate</h2>
       <p class="text-lg opacity-90">
-        The legal AI assistant built for content creators. From contract reviews to copyright clarity and YouTube policy
-        support — we empower digital voices with accessible legal help.
+        The legal AI assistant built specifically for content creators. From contract reviews to copyright clarity and YouTube policy support — we empower digital voices with accessible legal help.
       </p>
       <!-- 🎯 TODO: Add call-to-action buttons -->
     </section>
@@ -157,18 +167,17 @@
       </h3>
       <form id="contract-form" class="space-y-6">
         <div>
-          <label for="contract-text" class="block text-gray-700 font-semibold mb-3 text-lg">Paste your contract
-            text</label>
+          <label for="contract-text" class="block text-gray-700 font-semibold mb-3 text-lg">Paste your contract text</label>
           <textarea id="contract-text" placeholder="Paste contract text here..." rows="6"
             class="w-full rounded-xl border-2 border-gray-300 p-4 resize-y focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
         </div>
-        <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
+        <button type="submit" class="primary-button text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
           <i class="fas fa-magic mr-2"></i>
-          <strong>SIMPLIFY CONTRACT</strong>
+          <strong>ANALYZE CONTRACT</strong>
         </button>
       </form>
       <div id="contract-result"
-        class="result-card mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
+        class="result-container mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
         aria-live="polite"></div>
     </section>
 
@@ -182,18 +191,17 @@
       </h3>
       <form id="content-safety-form" class="space-y-6">
         <div>
-          <label for="script-text" class="block text-gray-700 font-semibold mb-3 text-lg">Paste your video script or
-            content text</label>
+          <label for="script-text" class="block text-gray-700 font-semibold mb-3 text-lg">Paste your video script or content text</label>
           <textarea id="script-text" placeholder="Paste your script or content here..." rows="6"
             class="w-full rounded-xl border-2 border-gray-300 p-4 resize-y focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
         </div>
-        <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
+        <button type="submit" class="primary-button text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
           <i class="fas fa-check-circle mr-2"></i>
           <strong>CHECK CONTENT SAFETY</strong>
         </button>
       </form>
       <div id="content-safety-result"
-        class="result-card mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
+        class="result-container mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
         aria-live="polite"></div>
     </section>
 
@@ -228,13 +236,13 @@
             <span class="text-gray-700 font-semibold text-lg">Include GST (18%)</span>
           </label>
         </div>
-        <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
+        <button type="submit" class="primary-button text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
           <i class="fas fa-file-invoice mr-2"></i>
-          <strong>GENERATE INVOICE</strong>
+          <strong>CREATE INVOICE</strong>
         </button>
       </form>
       <div id="invoice-result"
-        class="result-card mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[160px] font-mono"
+        class="result-container mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[160px] font-mono"
         aria-live="polite"></div>
     </section>
 
@@ -248,18 +256,17 @@
       </h3>
       <form id="policy-guard-form" class="space-y-6 max-w-3xl">
         <div>
-          <label for="policy-question" class="block text-gray-700 font-semibold mb-3 text-lg">Ask about YouTube policies
-            or demonetization</label>
+          <label for="policy-question" class="block text-gray-700 font-semibold mb-3 text-lg">Ask about YouTube policies or demonetization</label>
           <input type="text" id="policy-question" placeholder="E.g., Why was my video demonetized?" required
             class="w-full rounded-xl border-2 border-gray-300 p-4 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
         </div>
-        <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
+        <button type="submit" class="primary-button text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
           <i class="fas fa-search mr-2"></i>
-          <strong>GET POLICY EXPLANATION</strong>
+          <strong>GET POLICY HELP</strong>
         </button>
       </form>
       <div id="policy-guard-result"
-        class="result-card mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
+        class="result-container mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
         aria-live="polite"></div>
     </section>
 
@@ -277,13 +284,13 @@
           <textarea id="ama-question" placeholder="E.g., How much should I charge for 10k views?" rows="4" required
             class="w-full rounded-xl border-2 border-gray-300 p-4 resize-y focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"></textarea>
         </div>
-        <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
+        <button type="submit" class="primary-button text-white px-8 py-4 rounded-xl font-bold text-lg w-full sm:w-auto">
           <i class="fas fa-question-circle mr-2"></i>
-          <strong>ASK ROHIT</strong>
+          <strong>ASK QUESTION</strong>
         </button>
       </form>
       <div id="ama-result"
-        class="result-card mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
+        class="result-container mt-8 rounded-xl p-6 text-gray-800 whitespace-pre-wrap min-h-[120px] font-medium"
         aria-live="polite"></div>
     </section>
   </main>
@@ -296,8 +303,7 @@
       </p>
 
       <p class="text-sm max-w-2xl mx-auto text-gray-500">
-        Our mission is to be the legal guardian for every YouTuber and content creator facing challenges in the digital
-        world.
+        Our mission is to be the legal guardian for every YouTuber and content creator facing challenges in the digital world.
         From copyright strikes to unfair demonetization — we're here to help, guide, and protect.
       </p>
 
@@ -352,7 +358,7 @@
     /**
      * 🎯 Open mobile navigation menu
      */
-    function openMenu() {
+    function openMobileMenu() {
       mobileMenu.classList.remove('-translate-x-full');
       mobileMenu.classList.add('translate-x-0');
       backdrop.classList.remove('hidden');
@@ -366,7 +372,7 @@
     /**
      * 🎯 Close mobile navigation menu
      */
-    function closeMenu() {
+    function closeMobileMenu() {
       mobileMenu.classList.remove('translate-x-0');
       mobileMenu.classList.add('-translate-x-full');
       backdrop.classList.add('hidden');
@@ -377,12 +383,12 @@
 
     // 🎯 Mobile menu event listeners
     menuButton.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.contains('translate-x-0');
-      isOpen ? closeMenu() : openMenu();
+      const isMenuOpen = mobileMenu.classList.contains('translate-x-0');
+      isMenuOpen ? closeMobileMenu() : openMobileMenu();
     });
 
-    closeButton.addEventListener('click', closeMenu);
-    backdrop.addEventListener('click', closeMenu);
+    closeButton.addEventListener('click', closeMobileMenu);
+    backdrop.addEventListener('click', closeMobileMenu);
 
     // ==================== API UTILITY FUNCTIONS ====================
     /**
@@ -391,12 +397,12 @@
      * @param {Object} data - Request payload
      * @returns {Promise<Object>} Response data
      */
-    async function postData(url = "", data = {}) {
+    async function postJSONData(url = "", data = {}) {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), CONFIG.apiTimeout);
 
-        const response = await fetch(url, {
+        const apiResponse = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -407,10 +413,10 @@
         
         clearTimeout(timeoutId);
         
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+        if (!apiResponse.ok) {
+          throw new Error(`Server error: ${apiResponse.status}`);
         }
-        return await response.json();
+        return await apiResponse.json();
       } catch (error) {
         if (error.name === 'AbortError') {
           return { error: "Request timeout - please try again" };
@@ -424,11 +430,11 @@
      * @param {HTMLElement} element - Target element to show loading
      * @param {string} message - Loading message text
      */
-    function showLoading(element, message) {
+    function displayLoading(element, loadingMessage) {
       element.innerHTML = `
         <div class="flex items-center justify-center space-x-3 text-blue-600">
           <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span class="font-semibold">${message}</span>
+          <span class="font-semibold">${loadingMessage}</span>
         </div>
       `;
     }
@@ -463,7 +469,7 @@
 
     contractForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoading(contractResult, "Processing your contract...");
+      displayLoading(contractResult, "Analyzing your contract...");
       const contractText = document.getElementById("contract-text").value.trim();
 
       if (!contractText) {
@@ -472,12 +478,12 @@
       }
 
       // 🎯 POST contract text to backend endpoint
-      const res = await postData("/api/contract/simplify", { text: contractText });
+      const apiResponse = await postJSONData("/api/contract/simplify", { text: contractText });
 
-      if (res.error) {
-        showError(contractResult, `Error: ${res.error}`);
+      if (apiResponse.error) {
+        showError(contractResult, `Error: ${apiResponse.error}`);
       } else {
-        showSuccess(contractResult, "Contract Analysis:", res.summary || "No summary returned.");
+        showSuccess(contractResult, "Contract Analysis:", apiResponse.summary || "No summary returned.");
       }
     });
 
@@ -487,7 +493,7 @@
 
     contentSafetyForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoading(contentSafetyResult, "Checking content safety...");
+      displayLoading(contentSafetyResult, "Checking content safety...");
       const scriptText = document.getElementById("script-text").value.trim();
 
       if (!scriptText) {
@@ -496,12 +502,12 @@
       }
 
       // 🎯 POST script text to backend endpoint
-      const res = await postData("/api/content/check", { text: scriptText });
+      const apiResponse = await postJSONData("/api/content/check", { text: scriptText });
 
-      if (res.error) {
-        showError(contentSafetyResult, `Error: ${res.error}`);
+      if (apiResponse.error) {
+        showError(contentSafetyResult, `Error: ${apiResponse.error}`);
       } else {
-        showSuccess(contentSafetyResult, "Safety Report:", res.report || "No report returned.");
+        showSuccess(contentSafetyResult, "Safety Report:", apiResponse.report || "No report returned.");
       }
     });
 
@@ -511,33 +517,33 @@
 
     invoiceForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoading(invoiceResult, "Generating your invoice...");
+      displayLoading(invoiceResult, "Creating your invoice...");
 
-      const brand = document.getElementById("brand-name").value.trim();
-      const service = document.getElementById("service-desc").value.trim();
-      const amount = parseFloat(document.getElementById("amount").value);
+      const brandName = document.getElementById("brand-name").value.trim();
+      const serviceDescription = document.getElementById("service-desc").value.trim();
+      const amountValue = parseFloat(document.getElementById("amount").value);
       const includeGST = document.getElementById("include-gst").checked;
 
       // 🎯 Input validation
-      if (!brand || !service || isNaN(amount) || amount < 0) {
+      if (!brandName || !serviceDescription || isNaN(amountValue) || amountValue < 0) {
         showError(invoiceResult, "Please fill all required fields correctly.");
         return;
       }
 
-      const res = await postData("/api/invoice/generate", {
-        brand,
-        service,
-        amount,
+      const apiResponse = await postJSONData("/api/invoice/generate", {
+        brand: brandName,
+        service: serviceDescription,
+        amount: amountValue,
         include_gst: includeGST,
       });
 
-      if (res.error) {
-        showError(invoiceResult, `Error: ${res.error}`);
+      if (apiResponse.error) {
+        showError(invoiceResult, `Error: ${apiResponse.error}`);
       } else {
-        const invoiceText = res.invoice_text || "No invoice returned.";
+        const invoiceContent = apiResponse.invoice_text || "No invoice returned.";
         invoiceResult.innerHTML = `
           <div class="text-green-600 font-semibold">📄 Invoice Generated:</div>
-          <div class="mt-3 whitespace-pre-wrap font-mono">${invoiceText}</div>
+          <div class="mt-3 whitespace-pre-wrap font-mono">${invoiceContent}</div>
           <button
             id="download-pdf"
             class="mt-4 inline-flex items-center bg-blue-600 text-white px-3 py-1.5 text-sm rounded-md hover:bg-blue-700 transition"
@@ -545,7 +551,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
             </svg>
-            <p class="text-sm font-medium text-white bg-blue-600 px-3 py-1.5 rounded-md">Download Now</p>
+            <p class="text-sm font-medium text-white">Download PDF</p>
           </button>
         `;
 
@@ -553,12 +559,12 @@
         setTimeout(() => {
           document.getElementById("download-pdf").addEventListener("click", () => {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("courier", "normal");
-            doc.setFontSize(12);
-            doc.text(invoiceText, 10, 20);
-            const filename = `invoice_${brand.replace(/\s+/g, "_").toLowerCase()}.pdf`;
-            doc.save(filename);
+            const pdfDoc = new jsPDF();
+            pdfDoc.setFont("courier", "normal");
+            pdfDoc.setFontSize(12);
+            pdfDoc.text(invoiceContent, 10, 20);
+            const fileName = `invoice_${brandName.replace(/\s+/g, "_").toLowerCase()}.pdf`;
+            pdfDoc.save(fileName);
           });
         }, 0);
       }
@@ -570,21 +576,21 @@
 
     policyGuardForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoading(policyGuardResult, "Fetching policy information...");
-      const question = document.getElementById("policy-question").value.trim();
+      displayLoading(policyGuardResult, "Fetching policy information...");
+      const policyQuestion = document.getElementById("policy-question").value.trim();
 
-      if (!question) {
+      if (!policyQuestion) {
         showError(policyGuardResult, "Please enter your question.");
         return;
       }
 
       // 🎯 POST question to backend endpoint
-      const res = await postData("/api/youtube/policy", { question });
+      const apiResponse = await postJSONData("/api/youtube/policy", { question: policyQuestion });
 
-      if (res.error) {
-        showError(policyGuardResult, `Error: ${res.error}`);
+      if (apiResponse.error) {
+        showError(policyGuardResult, `Error: ${apiResponse.error}`);
       } else {
-        showSuccess(policyGuardResult, "Policy Explanation:", res.answer || "No answer returned.");
+        showSuccess(policyGuardResult, "Policy Explanation:", apiResponse.answer || "No answer returned.");
       }
     });
 
@@ -594,21 +600,21 @@
 
     amaForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoading(amaResult, "Rohit is thinking...");
-      const question = document.getElementById("ama-question").value.trim();
+      displayLoading(amaResult, "Rohit is thinking...");
+      const amaQuestion = document.getElementById("ama-question").value.trim();
 
-      if (!question) {
+      if (!amaQuestion) {
         showError(amaResult, "Please enter your question.");
         return;
       }
 
       // 🎯 POST question to backend endpoint
-      const res = await postData("/api/ama/ask", { question });
+      const apiResponse = await postJSONData("/api/ama/ask", { question: amaQuestion });
 
-      if (res.error) {
-        showError(amaResult, `Error: ${res.error}`);
+      if (apiResponse.error) {
+        showError(amaResult, `Error: ${apiResponse.error}`);
       } else {
-        showSuccess(amaResult, "Rohit's Answer:", res.answer || "No answer returned.");
+        showSuccess(amaResult, "Rohit's Answer:", apiResponse.answer || "No answer returned.");
       }
     });
 
