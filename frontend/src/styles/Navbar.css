@@ -1,21 +1,26 @@
+/* ===== NAVBAR COMPONENT ===== */
 .navbar {
+  --navbar-padding-x: 32px;
+  --navbar-padding-y: 16px;
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--navbar-background);
-  padding: 16px 32px;
+  padding: var(--navbar-padding-y) var(--navbar-padding-x);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-
+/* Logo Styles */
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-accent);
 }
 
+/* Navigation Links */
 .nav-links {
   list-style: none;
   display: flex;
@@ -27,58 +32,75 @@
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s ease-in-out;
 }
 
 .nav-links li a:hover {
   color: var(--primary-accent);
 }
 
-.main-content {
-  padding: 2rem;
-}
-
+/* Theme Toggle Button */
 .theme-toggle-nav {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.6rem;
   color: var(--main-text-color);
+  transition: color 0.2s ease-in-out;
 }
 
 .theme-toggle-nav:hover {
   color: var(--primary-accent);
 }
 
+/* Hamburger Menu */
 .hamburger {
+  --hamburger-size: 2rem;
+  
   display: none;
-  font-size: 2rem;
+  font-size: var(--hamburger-size);
   background: none;
   border: none;
   color: var(--main-text-color);
   cursor: pointer;
   z-index: 201;
+  transition: color 0.2s ease-in-out;
 }
 
 .hamburger:hover {
   color: var(--primary-accent);
 }
 
+/* Main Content Area */
+.main-content {
+  padding: 2rem;
+}
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
+  .navbar {
+    --navbar-padding-x: 24px;
+    --navbar-padding-y: 12px;
+  }
+  
   .hamburger {
     display: block;
   }
 
   .nav-links {
+    --mobile-nav-width: 250px;
+    --mobile-nav-padding: 2rem;
+    
     position: fixed;
     top: 0;
     right: -100%;
     height: 100vh;
-    width: 250px;
+    width: var(--mobile-nav-width);
     background: var(--navbar-background);
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 2rem;
+    padding: var(--mobile-nav-padding);
     gap: 1.5rem;
     transition: right 0.3s ease-in-out;
     z-index: 200;
@@ -94,5 +116,24 @@
 
   .theme-toggle-nav {
     font-size: 1.8rem;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .nav-links,
+  .nav-links li a,
+  .theme-toggle-nav,
+  .hamburger {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-links li a:hover,
+  .theme-toggle-nav:hover,
+  .hamburger:hover {
+    text-decoration: underline;
   }
 }
