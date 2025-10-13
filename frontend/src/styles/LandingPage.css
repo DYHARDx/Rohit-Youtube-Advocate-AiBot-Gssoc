@@ -1,4 +1,4 @@
-/* ===== LANDING PAGE COMPONENT ===== */
+
 .landing-container {
   /* Layout */
   display: flex;
@@ -16,12 +16,16 @@
   /* Appearance */
   background: var(--container-gradient, var(--container-background));
   color: var(--main-text-color);
-  
-  /* Behavior */
-  overflow-x: hidden; /* Removes any white horizontal space */
+
+  box-sizing: border-box;
+  gap: 3rem;
+  overflow-x: hidden;
+  /* 🎨 DEBUG: Horizontal overflow prevention */
 }
 
-/* ===== HERO TEXT SECTION ===== */
+/* 🎯 HERO TEXT SECTION
+ * ==================== */
+
 .hero-text {
   flex: 1;
 }
@@ -33,6 +37,8 @@
   margin-bottom: 1rem;
 }
 
+/* 🎯 HIGHLIGHT TEXT ELEMENT
+ * ========================= */
 .hero-text .highlight {
   color: var(--highlight-color);
 }
@@ -44,7 +50,7 @@
   margin-bottom: 2rem;
 }
 
-/* ===== CALL TO ACTION BUTTON ===== */
+
 .cta-btn {
   /* Layout */
   padding: 0.9rem 1.8rem;
@@ -67,7 +73,7 @@
   background-color: var(--primary-accent-hover);
 }
 
-/* ===== HERO IMAGE SECTION ===== */
+
 .hero-image {
   flex: 1;
   display: flex;
@@ -83,9 +89,7 @@
   box-shadow: 0 4px 20px var(--image-shadow);
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
 
-/* Tablet Landscape */
 @media (max-width: 1024px) {
   .landing-container {
     padding: 2rem;
@@ -106,14 +110,16 @@
   }
 }
 
-/* Tablet Portrait & Mobile Landscape */
+
 @media (max-width: 768px) {
   .landing-container {
     flex-direction: column;
     text-align: center;
     padding: 2rem;
     height: auto;
+
     gap: 1rem;
+
   }
 
   .hero-text,
@@ -137,7 +143,7 @@
   }
 }
 
-/* Mobile Portrait */
+
 @media (max-width: 480px) {
   .landing-container {
     padding: 1.5rem;
@@ -156,6 +162,7 @@
     padding: 0.7rem 1.4rem;
   }
 }
+
 
 /* ===== ACCESSIBILITY & ENHANCEMENTS ===== */
 
@@ -183,3 +190,4 @@
     padding: 4rem 8rem;
   }
 }
+
