@@ -1,22 +1,22 @@
-/*
- * LANDING PAGE STYLES (Theme-Aware)
- * =================================
- * Component-specific styles for the landing page hero section
- * Uses CSS custom properties from theme.css for consistent theming
- */
 
-/* 🎯 MAIN LANDING CONTAINER
- * ========================= */
 .landing-container {
+  /* Layout */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  
+  /* Sizing & Spacing */
   max-width: 1440px;
-  margin: 0 auto;
   height: 100vh;
+  margin: 0 auto;
   padding: 4rem 6rem;
+  gap: 3rem;
+  box-sizing: border-box;
+  
+  /* Appearance */
   background: var(--container-gradient, var(--container-background));
   color: var(--main-text-color);
+
   box-sizing: border-box;
   gap: 3rem;
   overflow-x: hidden;
@@ -25,15 +25,16 @@
 
 /* 🎯 HERO TEXT SECTION
  * ==================== */
+
 .hero-text {
   flex: 1;
 }
 
 .hero-text h1 {
   font-size: 3.5rem;
-  margin-bottom: 1rem;
-  line-height: 1.2;
   font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
 /* 🎯 HIGHLIGHT TEXT ELEMENT
@@ -44,20 +45,26 @@
 
 .hero-text p {
   font-size: 1.25rem;
-  margin-bottom: 2rem;
-  max-width: 600px;
   line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 2rem;
 }
 
-/* 🎯 CALL-TO-ACTION BUTTON
- * ======================== */
+
 .cta-btn {
+  /* Layout */
+  padding: 0.9rem 1.8rem;
+  
+  /* Appearance */
   background-color: var(--primary-accent);
   color: var(--primary-text-on-accent);
-  padding: 0.9rem 1.8rem;
-  font-size: 1rem;
   border: none;
   border-radius: 8px;
+  
+  /* Typography */
+  font-size: 1rem;
+  
+  /* Behavior */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -66,8 +73,7 @@
   background-color: var(--primary-accent-hover);
 }
 
-/* 🎯 HERO IMAGE SECTION
- * ==================== */
+
 .hero-image {
   flex: 1;
   display: flex;
@@ -83,10 +89,7 @@
   box-shadow: 0 4px 20px var(--image-shadow);
 }
 
-/* ========== RESPONSIVE DESIGN BREAKPOINTS ========== */
 
-/* 🎯 TABLET BREAKPOINT (1024px and below)
- * ======================================= */
 @media (max-width: 1024px) {
   .landing-container {
     padding: 2rem;
@@ -107,15 +110,16 @@
   }
 }
 
-/* 🎯 SMALL TABLET BREAKPOINT (768px and below)
- * ============================================ */
+
 @media (max-width: 768px) {
   .landing-container {
     flex-direction: column;
     text-align: center;
     padding: 2rem;
     height: auto;
-    /* 🎨 DEBUG: Auto height for mobile stacking */
+
+    gap: 1rem;
+
   }
 
   .hero-text,
@@ -139,8 +143,7 @@
   }
 }
 
-/* 🎯 MOBILE BREAKPOINT (480px and below)
- * ====================================== */
+
 @media (max-width: 480px) {
   .landing-container {
     padding: 1.5rem;
@@ -160,6 +163,31 @@
   }
 }
 
-/* 🎨 DEBUG: Landing page styles compiled successfully */
-/* 📱 Responsive breakpoints: 1024px, 768px, 480px */
-/* 🎯 Theme variables in use: --container-gradient, --container-background, --main-text-color, --highlight-color, --primary-accent, --primary-text-on-accent, --primary-accent-hover, --image-shadow */
+
+/* ===== ACCESSIBILITY & ENHANCEMENTS ===== */
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .cta-btn {
+    transition: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .cta-btn {
+    border: 2px solid currentColor;
+  }
+  
+  .hero-image img {
+    box-shadow: 0 0 0 2px var(--image-shadow);
+  }
+}
+
+/* Large screen enhancements */
+@media (min-width: 1441px) {
+  .landing-container {
+    padding: 4rem 8rem;
+  }
+}
+
