@@ -1,21 +1,39 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
+import { AlertCircle } from "lucide-react"; // for error icon
 
 const LegalContractAnalyzer = () => {
   const [contractContent, setContractContent] = useState("");
   const [analysisOutput, setAnalysisOutput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [file, setFile] = useState(null);
+  const [fileError, setFileError] = useState("");
 
   // Handle contract text input changes
   const handleContractInput = (e) => {
     setContractContent(e.target.value);
   };
 
+  // Handle PDF file upload
+  const handleFileUpload = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== "application/pdf") {
+      setFileError("Please upload a valid PDF file.");
+      setFile(null);
+      return;
+    }
+
+    setFileError("");
+    setFile(selectedFile);
+  };
+
   // Validate contract content before processing
   const validateContractInput = () => {
-    if (!contractContent.trim()) {
-      setAnalysisOutput("⚠️ Please provide contract text for analysis.");
+    if (!contractContent.trim() && !file) {
+      setAnalysisOutput("⚠️ Please provide contract text or upload a PDF file.");
       return false;
     }
     return true;
@@ -24,38 +42,37 @@ const LegalContractAnalyzer = () => {
   // Process contract analysis request
   const handleContractAnalysis = async (e) => {
     e.preventDefault();
-    
-    // Validate input before proceeding with analysis
-    if (!validateContractInput()) {
-      return;
-    }
-    
-    // Update processing state and clear previous analysis
+
+    if (!validateContractInput()) return;
+
     setIsProcessing(true);
     setAnalysisOutput("");
-    
+
     try {
-      // Submit contract to backend analysis service
-      const apiResult = await postData("/api/contract/simplify", { text: contractContent });
-      
-      // Process and display analysis response
+      let payload = { text: contractContent };
+
+      // If file is uploaded, include it in payload
+      if (file) {
+        const fileText = await file.text(); // simple text extraction from PDF (for demo)
+        payload.text += `\n${fileText}`;
+      }
+
+      const apiResult = await postData("/api/contract/simplify", payload);
+
       if (apiResult.error) {
         setAnalysisOutput(`❌ Analysis Error: ${apiResult.error}`);
       } else {
         setAnalysisOutput(apiResult.summary || "No analysis generated.");
       }
     } catch (processingError) {
-      // Handle processing or network errors
       setAnalysisOutput(`❌ Processing Error: ${processingError.message || "Service unavailable"}`);
     } finally {
-      // Reset processing state
       setIsProcessing(false);
     }
   };
 
-  // Render appropriate output based on component state
+  // Render analysis content
   const renderAnalysisContent = () => {
-    // Display processing state during analysis
     if (isProcessing) {
       return (
         <div className="processing-indicator">
@@ -64,13 +81,7 @@ const LegalContractAnalyzer = () => {
         </div>
       );
     }
-    
-    // Display analysis results when available
-    if (analysisOutput) {
-      return analysisOutput;
-    }
-    
-    // Default placeholder content
+    if (analysisOutput) return analysisOutput;
     return "Contract analysis results will be displayed here...";
   };
 
@@ -92,10 +103,30 @@ const LegalContractAnalyzer = () => {
           disabled={isProcessing}
           className="contract-input"
         />
+
+        {/* PDF File Upload */}
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileUpload}
+          disabled={isProcessing}
+          className="contract-input"
+          style={{ marginTop: "10px" }}
+        />
+
+        {/* File Error Message */}
+        {fileError && (
+          <div className="flex items-center text-red-600 text-sm mt-1">
+            <AlertCircle className="w-4 h-4 mr-1" />
+            {fileError}
+          </div>
+        )}
+
         <button 
           type="submit" 
           className="analyze-contract-button primary" 
           disabled={isProcessing}
+          style={{ marginTop: "10px" }}
         >
           {isProcessing ? "Analyzing Contract..." : "Analyze Legal Terms"}
         </button>
