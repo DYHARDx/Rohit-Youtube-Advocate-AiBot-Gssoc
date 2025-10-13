@@ -133,6 +133,7 @@ const ContentSafetyAnalyzer = () => {
         aria-atomic="true"
       >
         {renderResult()}
+      </div>
 =======
       <form onSubmit={handleAnalysisRequest} className="safety-form">
         <textarea

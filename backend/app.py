@@ -1,7 +1,9 @@
 # ==================== FLASK API SERVER CONFIGURATION ====================
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 from vector_database import get_policy_response, simplify_contract, check_content_safety, generate_invoice, ask_rohit
 from flask_cors import CORS
+from weasyprint import HTML
+import io
 
 # 🚀 Initialize Flask application with static assets
 app = Flask(
@@ -96,6 +98,28 @@ def invoice():
     return jsonify({"invoice_text": invoice_text})
 
 
+@app.route("/api/invoice/download", methods=["POST"])
+def download_invoice_pdf():
+    """
+    📄 Generate and download invoice as PDF using WeasyPrint
+    POST Data: { "invoice_text": "formatted invoice text" }
+    Returns: PDF file response
+    """
+    data = request.json
+    invoice_text = data.get("invoice_text", "")
+    
+    if not invoice_text:
+        return jsonify({"error": "No invoice text provided"}), 400
+
+    html_content = f"<pre style='font-family:Courier, monospace'>{invoice_text}</pre>"
+    pdf_file = HTML(string=html_content).write_pdf()
+    return send_file(
+        io.BytesIO(pdf_file),
+        download_name="invoice.pdf",
+        mimetype="application/pdf"
+    )
+
+
 @app.route("/api/youtube/policy", methods=["POST"])
 def youtube_policy():
     """
@@ -167,6 +191,7 @@ def debug_info():
             "/api/contract/simplify",
             "/api/content/check", 
             "/api/invoice/generate",
+            "/api/invoice/download",
             "/api/youtube/policy",
             "/api/ama/ask"
         ],
