@@ -7,106 +7,132 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 import os
 
-# Load environment variables
+# Load environment configuration
 load_dotenv()
 
-# Constants
-FAISS_DB_PATH = "vectorstore/db_faiss"
-OLLAMA_MODEL_NAME = "deepseek-r1:1.5b"
-GROQ_MODEL = "deepseek-r1-distill-llama-70b"
+# Application Configuration Constants
+FAISS_VECTOR_STORE_PATH = "vectorstore/db_faiss"
+OLLAMA_EMBEDDINGS_MODEL = "deepseek-r1:1.5b"
+GROQ_LLM_MODEL_NAME = "deepseek-r1-distill-llama-70b"
 
-# Setup LLM
-llm = ChatGroq(
+# Initialize LLM with enhanced configuration
+llm_model = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
-    model=GROQ_MODEL,
+    model=GROQ_LLM_MODEL_NAME,
     temperature=0.2
 )
-# Load FAISS DB
-def load_faiss():
-    embeddings = OllamaEmbeddings(model=OLLAMA_MODEL_NAME)
-    return FAISS.load_local(FAISS_DB_PATH, embeddings=embeddings, allow_dangerous_deserialization=True)
 
-db = load_faiss()
+# Load FAISS Vector Database
+def load_faiss_database():
+    """Initialize and load FAISS vector store with embeddings"""
+    embedding_engine = OllamaEmbeddings(model=OLLAMA_EMBEDDINGS_MODEL)
+    return FAISS.load_local(
+        FAISS_VECTOR_STORE_PATH, 
+        embeddings=embedding_engine, 
+        allow_dangerous_deserialization=True
+    )
 
-# Utility to build a prompt chain
-def get_chain(template):
-    prompt = ChatPromptTemplate.from_template(template)
-    return prompt | llm | StrOutputParser()
+# Initialize database connection
+vector_database = load_faiss_database()
 
-# Function: Simplify Contract
-def simplify_contract(text):
-    template = """
-    Simplify this contract text for a content creator. Be clear, accurate, and brief:
+# Utility function to create prompt chains
+def create_prompt_chain(prompt_template):
+    """Create a processing chain from template to output"""
+    prompt_structure = ChatPromptTemplate.from_template(prompt_template)
+    return prompt_structure | llm_model | StrOutputParser()
 
-    Contract:
+# Function: Contract Simplification Service
+def simplify_contract_text(contract_content):
+    """Simplify legal contract text for content creators"""
+    contract_template = """
+    Analyze and simplify the following contract text for content creators. 
+    Provide clear, accurate, and concise explanations:
+
+    Contract Content:
     {text}
 
-    Simplified Summary:
+    Simplified Analysis:
     """
-    chain = get_chain(template)
-    return chain.invoke({"text": text})
+    processing_chain = create_prompt_chain(contract_template)
+    return processing_chain.invoke({"text": contract_content})
 
-# Function: Content Safety Check
-def check_content_safety(text):
-    template = """
-    Analyze the following content for YouTube safety and flag any potential violations (e.g., hate speech, misinformation, copyright, nudity, etc.):
+# Function: Content Safety Analysis
+def analyze_content_safety(content_text):
+    """Analyze content for YouTube policy compliance and safety"""
+    safety_template = """
+    Evaluate the following content for potential YouTube policy violations including:
+    - Hate speech or harassment
+    - Misinformation or false claims
+    - Copyright infringement risks
+    - Inappropriate or explicit material
+    - Other community guideline violations
 
-    Content:
+    Content to Analyze:
     {text}
 
-    Report:
+    Safety Assessment:
     """
-    chain = get_chain(template)
-    return chain.invoke({"text": text})
+    analysis_chain = create_prompt_chain(safety_template)
+    return analysis_chain.invoke({"text": content_text})
 
-# Function: Generate Invoice
-def generate_invoice(brand, service, amount, include_gst):
-    gst_text = " including 18% GST" if include_gst else ""
-    final_amount = round(amount * 1.18, 2) if include_gst else amount
+# Function: Professional Invoice Generation
+def create_professional_invoice(brand_name, service_description, amount_value, include_gst_tax):
+    """Generate formatted invoice with optional GST calculation"""
+    gst_note = " (including 18% GST)" if include_gst_tax else ""
+    total_amount = round(amount_value * 1.18, 2) if include_gst_tax else amount_value
 
-    return f"""
-    INVOICE
-    -------------
-    Brand/Sponsor: {brand}
-    Service: {service}
-    Amount: ₹{final_amount:.2f}{gst_text}
-    Thank you for your collaboration!
+    invoice_template = f"""
+    PROFESSIONAL INVOICE
+    --------------------
+    Client/Brand: {brand_name}
+    Service Provided: {service_description}
+    Total Amount: ₹{total_amount:.2f}{gst_note}
+    
+    Payment Terms: Due upon receipt
+    Thank you for your business collaboration!
     """
+    return invoice_template
 
-# Function: Get Policy Response (RAG)
-def get_policy_response(question):
-    context_docs = db.similarity_search(question)
-    context = "\n\n".join([doc.page_content for doc in context_docs])
+# Function: YouTube Policy Query Handler (RAG)
+def handle_policy_query(user_question):
+    """Process YouTube policy questions using RAG pipeline"""
+    relevant_docs = vector_database.similarity_search(user_question)
+    context_data = "\n\n".join([doc.page_content for doc in relevant_docs])
 
-    template = """
-    Use the context below to answer the user's YouTube policy question.
-    Do not guess or hallucinate answers.
+    policy_template = """
+    You are a YouTube policy expert. Use the provided context to answer the user's question accurately.
+    Base your response strictly on the available information without speculation.
 
-    Question: {question}
-    Context:
+    User Question: {question}
+    Policy Context:
     {context}
 
-    Answer:
+    Expert Response:
     """
-    chain = get_chain(template)
-    return chain.invoke({"question": question, "context": context})
+    policy_chain = create_prompt_chain(policy_template)
+    return policy_chain.invoke({"question": user_question, "context": context_data})
 
-# Function: Ask Rohit Anything (RAG)
-def ask_rohit(question):
-    context_docs = db.similarity_search(question)
-    context = "\n\n".join([doc.page_content for doc in context_docs])
+# Function: Legal Assistant Query Handler (RAG)
+def process_legal_assistant_query(user_query):
+    """Handle general legal questions for content creators using RAG"""
+    retrieved_documents = vector_database.similarity_search(user_query)
+    document_context = "\n\n".join([doc.page_content for doc in retrieved_documents])
 
-    template = """
-    You're a legal assistant AI trained on YouTube community guidelines.
-    Use the context below to answer the creator's question clearly.
+    assistant_template = """
+    You are Rohit Advocate, a legal AI assistant specializing in YouTube and content creator legal matters.
+    Provide helpful, accurate responses based on the available legal context.
 
-    Question: {question}
-    Context:
+    Creator Question: {question}
+    Legal Context:
     {context}
 
-    Answer:
+    Assistant Response:
     """
-    chain = get_chain(template)
-    return chain.invoke({"question": question, "context": context})
+    assistant_chain = create_prompt_chain(assistant_template)
+    return assistant_chain.invoke({"question": user_query, "context": document_context})
 
-
+# Additional utility function for enhanced logging
+def log_processing_status(function_name, status="completed"):
+    """Log processing status for monitoring purposes"""
+    print(f"[📊] {function_name} execution {status}")
+    return True

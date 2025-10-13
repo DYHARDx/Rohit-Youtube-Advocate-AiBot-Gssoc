@@ -1,9 +1,12 @@
 /*
-  IMPORTANT: The global styles for '*', 'html', and 'body' have been removed.
-  These general styles should only live in your 'theme.css' file to avoid conflicts.
-*/
-/* LandingPage.css  (Theme-Aware)*/
+ * LANDING PAGE STYLES (Theme-Aware)
+ * =================================
+ * Component-specific styles for the landing page hero section
+ * Uses CSS custom properties from theme.css for consistent theming
+ */
 
+/* 🎯 MAIN LANDING CONTAINER
+ * ========================= */
 .landing-container {
   display: flex;
   align-items: center;
@@ -17,10 +20,11 @@
   box-sizing: border-box;
   gap: 3rem;
   overflow-x: hidden;
-  /* removes any white horizontal space */
+  /* 🎨 DEBUG: Horizontal overflow prevention */
 }
 
-
+/* 🎯 HERO TEXT SECTION
+ * ==================== */
 .hero-text {
   flex: 1;
 }
@@ -32,6 +36,8 @@
   font-weight: 700;
 }
 
+/* 🎯 HIGHLIGHT TEXT ELEMENT
+ * ========================= */
 .hero-text .highlight {
   color: var(--highlight-color);
 }
@@ -43,6 +49,8 @@
   line-height: 1.6;
 }
 
+/* 🎯 CALL-TO-ACTION BUTTON
+ * ======================== */
 .cta-btn {
   background-color: var(--primary-accent);
   color: var(--primary-text-on-accent);
@@ -58,6 +66,8 @@
   background-color: var(--primary-accent-hover);
 }
 
+/* 🎯 HERO IMAGE SECTION
+ * ==================== */
 .hero-image {
   flex: 1;
   display: flex;
@@ -73,6 +83,10 @@
   box-shadow: 0 4px 20px var(--image-shadow);
 }
 
+/* ========== RESPONSIVE DESIGN BREAKPOINTS ========== */
+
+/* 🎯 TABLET BREAKPOINT (1024px and below)
+ * ======================================= */
 @media (max-width: 1024px) {
   .landing-container {
     padding: 2rem;
@@ -93,12 +107,15 @@
   }
 }
 
+/* 🎯 SMALL TABLET BREAKPOINT (768px and below)
+ * ============================================ */
 @media (max-width: 768px) {
   .landing-container {
     flex-direction: column;
     text-align: center;
     padding: 2rem;
     height: auto;
+    /* 🎨 DEBUG: Auto height for mobile stacking */
   }
 
   .hero-text,
@@ -122,6 +139,8 @@
   }
 }
 
+/* 🎯 MOBILE BREAKPOINT (480px and below)
+ * ====================================== */
 @media (max-width: 480px) {
   .landing-container {
     padding: 1.5rem;
@@ -140,3 +159,7 @@
     padding: 0.7rem 1.4rem;
   }
 }
+
+/* 🎨 DEBUG: Landing page styles compiled successfully */
+/* 📱 Responsive breakpoints: 1024px, 768px, 480px */
+/* 🎯 Theme variables in use: --container-gradient, --container-background, --main-text-color, --highlight-color, --primary-accent, --primary-text-on-accent, --primary-accent-hover, --image-shadow */
