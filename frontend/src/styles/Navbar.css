@@ -1,26 +1,36 @@
-/* ===== NAVBAR STYLES - UPDATED VERSION ===== */
-.navbar-container {
+
+/* ===== NAVBAR COMPONENT ===== */
+.navbar {
+  --navbar-padding-x: 32px;
+  --navbar-padding-y: 16px;
+  
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--navbar-background);
-  padding: 16px 32px;
+  padding: var(--navbar-padding-y) var(--navbar-padding-x);
   position: sticky;
   top: 0;
   z-index: 100;
   /* Enhanced styling for better visual hierarchy */
 }
 
+
 /* Logo styling component */
 .brand-logo {
+
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-accent);
   /* Logo styling remains consistent */
 }
 
-/* Navigation links container */
-.navigation-links {
+
+/* Navigation Links */
+.nav-links {
+
+
   list-style: none;
   display: flex;
   gap: 1.5rem;
@@ -32,13 +42,16 @@
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease; /* Added smooth transition */
+
+  transition: color 0.2s ease-in-out;
+ain
 }
 
 .navigation-links li a:hover {
   color: var(--primary-accent);
   transform: translateY(-1px); /* Subtle hover effect */
 }
+
 
 /* Main content area styling */
 .main-content-area {
@@ -48,12 +61,15 @@
 
 /* Theme toggle button in navigation */
 .theme-switcher {
+
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.6rem;
   color: var(--main-text-color);
-  transition: all 0.3s ease; /* Enhanced transition */
+6
+  transition: color 0.2s ease-in-out;
+
 }
 
 .theme-switcher:hover {
@@ -61,16 +77,22 @@
   transform: scale(1.1); /* Added scale effect */
 }
 
-/* Mobile menu hamburger icon */
-.mobile-menu-toggle {
+
+/* Hamburger Menu */
+.hamburger {
+  --hamburger-size: 2rem;
+  
+
   display: none;
-  font-size: 2rem;
+  font-size: var(--hamburger-size);
   background: none;
   border: none;
   color: var(--main-text-color);
   cursor: pointer;
   z-index: 201;
-  /* Mobile menu trigger */
+
+  transition: color 0.2s ease-in-out;
+ain
 }
 
 .mobile-menu-toggle:hover {
@@ -78,24 +100,41 @@
   transform: rotate(90deg); /* Added rotation effect */
 }
 
-/* ===== RESPONSIVE DESIGN - MOBILE OPTIMIZATION ===== */
+
+/* Main Content Area */
+.main-content {
+  padding: 2rem;
+}
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
 @media (max-width: 768px) {
-  .mobile-menu-toggle {
+  .navbar {
+    --navbar-padding-x: 24px;
+    --navbar-padding-y: 12px;
+  }
+  
+  .hamburger {
+
     display: block;
     /* Show hamburger on mobile */
   }
 
-  .navigation-links {
+
+  .nav-links {
+    --mobile-nav-width: 250px;
+    --mobile-nav-padding: 2rem;
+    
+
     position: fixed;
     top: 0;
     right: -100%;
     height: 100vh;
-    width: 250px;
+    width: var(--mobile-nav-width);
     background: var(--navbar-background);
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 2rem;
+    padding: var(--mobile-nav-padding);
     gap: 1.5rem;
     transition: right 0.3s ease-in-out;
     z-index: 200;
@@ -123,8 +162,22 @@
   }
 }
 
-/* Placeholder for future enhancements */
-.future-enhancement {
-  /* This section reserved for additional features */
-  opacity: 0; /* Hidden placeholder */
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .nav-links,
+  .nav-links li a,
+  .theme-toggle-nav,
+  .hamburger {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-links li a:hover,
+  .theme-toggle-nav:hover,
+  .hamburger:hover {
+    text-decoration: underline;
+  }
+
 }
