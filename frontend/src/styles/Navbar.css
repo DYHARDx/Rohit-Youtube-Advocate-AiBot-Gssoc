@@ -1,8 +1,10 @@
+
 /* ===== NAVBAR COMPONENT ===== */
 .navbar {
   --navbar-padding-x: 32px;
   --navbar-padding-y: 16px;
   
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -11,52 +13,76 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  /* Enhanced styling for better visual hierarchy */
 }
 
-/* Logo Styles */
-.logo {
+
+/* Logo styling component */
+.brand-logo {
+
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-accent);
+  /* Logo styling remains consistent */
 }
+
 
 /* Navigation Links */
 .nav-links {
+
+
   list-style: none;
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  /* Navigation links layout */
 }
 
-.nav-links li a {
+.navigation-links li a {
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
+
   transition: color 0.2s ease-in-out;
+ain
 }
 
-.nav-links li a:hover {
+.navigation-links li a:hover {
   color: var(--primary-accent);
+  transform: translateY(-1px); /* Subtle hover effect */
 }
 
-/* Theme Toggle Button */
-.theme-toggle-nav {
+
+/* Main content area styling */
+.main-content-area {
+  padding: 2rem;
+  /* Content padding maintained */
+}
+
+/* Theme toggle button in navigation */
+.theme-switcher {
+
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.6rem;
   color: var(--main-text-color);
+6
   transition: color 0.2s ease-in-out;
+
 }
 
-.theme-toggle-nav:hover {
+.theme-switcher:hover {
   color: var(--primary-accent);
+  transform: scale(1.1); /* Added scale effect */
 }
+
 
 /* Hamburger Menu */
 .hamburger {
   --hamburger-size: 2rem;
   
+
   display: none;
   font-size: var(--hamburger-size);
   background: none;
@@ -64,12 +90,16 @@
   color: var(--main-text-color);
   cursor: pointer;
   z-index: 201;
+
   transition: color 0.2s ease-in-out;
+ain
 }
 
-.hamburger:hover {
+.mobile-menu-toggle:hover {
   color: var(--primary-accent);
+  transform: rotate(90deg); /* Added rotation effect */
 }
+
 
 /* Main Content Area */
 .main-content {
@@ -84,13 +114,17 @@
   }
   
   .hamburger {
+
     display: block;
+    /* Show hamburger on mobile */
   }
+
 
   .nav-links {
     --mobile-nav-width: 250px;
     --mobile-nav-padding: 2rem;
     
+
     position: fixed;
     top: 0;
     right: -100%;
@@ -104,18 +138,27 @@
     gap: 1.5rem;
     transition: right 0.3s ease-in-out;
     z-index: 200;
+    /* Mobile menu styling */
   }
 
-  .nav-links.active {
+  .navigation-links.mobile-active {
     right: 0;
+    /* Active mobile menu state */
   }
 
-  .nav-links li a {
+  .navigation-links li a {
     font-size: 1.2rem;
+    /* Larger text for mobile */
   }
 
-  .theme-toggle-nav {
+  .theme-switcher {
     font-size: 1.8rem;
+    /* Larger icon for mobile */
+  }
+  
+  /* Additional mobile optimization */
+  .navbar-container {
+    padding: 12px 24px; /* Adjusted padding for mobile */
   }
 }
 
@@ -136,4 +179,5 @@
   .hamburger:hover {
     text-decoration: underline;
   }
+
 }
