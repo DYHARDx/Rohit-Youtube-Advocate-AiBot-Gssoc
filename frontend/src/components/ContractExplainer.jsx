@@ -1,87 +1,141 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
+import { AlertCircle } from "lucide-react"; // for error icon
 
-const ContractExplainer = () => {
-  const [text, setText] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+const LegalContractAnalyzer = () => {
+  const [contractContent, setContractContent] = useState("");
+  const [analysisOutput, setAnalysisOutput] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [file, setFile] = useState(null);
+  const [fileError, setFileError] = useState("");
 
-  const handleTextChange = (e) => {
-    setText(e.target.value);
+  // Handle contract text input changes
+  const handleContractInput = (e) => {
+    setContractContent(e.target.value);
   };
 
-  const validateInput = () => {
-    if (!text.trim()) {
-      setResult("⚠️ Please paste your contract text.");
+  // Handle PDF file upload
+  const handleFileUpload = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== "application/pdf") {
+      setFileError("Please upload a valid PDF file.");
+      setFile(null);
+      return;
+    }
+
+    setFileError("");
+    setFile(selectedFile);
+  };
+
+  // Validate contract content before processing
+  const validateContractInput = () => {
+    if (!contractContent.trim() && !file) {
+      setAnalysisOutput("⚠️ Please provide contract text or upload a PDF file.");
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  // Process contract analysis request
+  const handleContractAnalysis = async (e) => {
     e.preventDefault();
-    
-    if (!validateInput()) {
-      return;
-    }
-    
-    setLoading(true);
-    setResult(""); // Clear previous results
-    
+
+    if (!validateContractInput()) return;
+
+    setIsProcessing(true);
+    setAnalysisOutput("");
+
     try {
-      const response = await postData("/api/contract/simplify", { text });
-      
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
-      } else {
-        setResult(response.summary || "No summary returned.");
+      let payload = { text: contractContent };
+
+      // If file is uploaded, include it in payload
+      if (file) {
+        const fileText = await file.text(); // simple text extraction from PDF (for demo)
+        payload.text += `\n${fileText}`;
       }
-    } catch (error) {
-      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+
+      const apiResult = await postData("/api/contract/simplify", payload);
+
+      if (apiResult.error) {
+        setAnalysisOutput(`❌ Analysis Error: ${apiResult.error}`);
+      } else {
+        setAnalysisOutput(apiResult.summary || "No analysis generated.");
+      }
+    } catch (processingError) {
+      setAnalysisOutput(`❌ Processing Error: ${processingError.message || "Service unavailable"}`);
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const renderResult = () => {
-    if (loading) {
-      return "⏳ Simplifying contract...";
+  // Render analysis content
+  const renderAnalysisContent = () => {
+    if (isProcessing) {
+      return (
+        <div className="processing-indicator">
+          <span className="processing-spinner"></span>
+          Analyzing legal contract terms...
+        </div>
+      );
     }
-    
-    if (result) {
-      return result;
-    }
-    
-    return "Simplified contract will appear here...";
+    if (analysisOutput) return analysisOutput;
+    return "Contract analysis results will be displayed here...";
   };
 
   return (
-    <section className="section-container">
-      <h3>
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
-          <rect width="38" height="38" rx="10" />
-          <polygon points="15,12 28,19 15,26" />
+    <section className="section-container contract-analyzer-section">
+      <h3 className="section-header">
+        <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+          <rect width="38" height="38" rx="10" fill="currentColor" />
+          <polygon points="15,12 28,19 15,26" fill="white" />
         </svg>
-        YouTube Contract Explainer
+        Legal Contract Analyzer
       </h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleContractAnalysis} className="contract-form">
         <textarea
           rows={6}
-          value={text}
-          onChange={handleTextChange}
-          placeholder="Paste contract text here..."
-          disabled={loading}
+          value={contractContent}
+          onChange={handleContractInput}
+          placeholder="Insert your legal contract text for simplification..."
+          disabled={isProcessing}
+          className="contract-input"
         />
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Simplifying..." : "Simplify Contract"}
+
+        {/* PDF File Upload */}
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileUpload}
+          disabled={isProcessing}
+          className="contract-input"
+          style={{ marginTop: "10px" }}
+        />
+
+        {/* File Error Message */}
+        {fileError && (
+          <div className="flex items-center text-red-600 text-sm mt-1">
+            <AlertCircle className="w-4 h-4 mr-1" />
+            {fileError}
+          </div>
+        )}
+
+        <button 
+          type="submit" 
+          className="analyze-contract-button primary" 
+          disabled={isProcessing}
+          style={{ marginTop: "10px" }}
+        >
+          {isProcessing ? "Analyzing Contract..." : "Analyze Legal Terms"}
         </button>
       </form>
-      <div className="result-card">
-        {renderResult()}
+      <div className="analysis-display result-card">
+        {renderAnalysisContent()}
       </div>
     </section>
   );
 };
 
-export default ContractExplainer;
+export default LegalContractAnalyzer;

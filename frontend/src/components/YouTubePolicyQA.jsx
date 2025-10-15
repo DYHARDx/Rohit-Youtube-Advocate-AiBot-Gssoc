@@ -2,88 +2,98 @@ import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-const YouTubePolicyQA = () => {
-  const [question, setQuestion] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+const YouTubePolicyAdvisor = () => {
+  const [policyQuestion, setPolicyQuestion] = useState("");
+  const [policyAnswer, setPolicyAnswer] = useState("");
+  const [isResearching, setIsResearching] = useState(false);
 
-  const handleQuestionChange = (e) => {
-    setQuestion(e.target.value);
+  const handlePolicyInputChange = (e) => {
+    setPolicyQuestion(e.target.value);
   };
 
-  const validateInput = () => {
-    if (!question.trim()) {
-      setResult("⚠️ Please enter a question about YouTube policy.");
+  const validatePolicyInput = () => {
+    if (!policyQuestion.trim()) {
+      setPolicyAnswer("⚠️ Please enter a question about YouTube policies.");
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handlePolicyResearch = async (e) => {
     e.preventDefault();
     
-    if (!validateInput()) {
+    if (!validatePolicyInput()) {
       return;
     }
     
-    setLoading(true);
-    setResult(""); // Clear previous results
+    setIsResearching(true);
+    setPolicyAnswer(""); // Clear previous policy answers
     
     try {
-      const response = await postData("/api/youtube/policy", { question });
+      const researchResponse = await postData("/api/youtube/policy", { question: policyQuestion });
       
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
+      if (researchResponse.error) {
+        setPolicyAnswer(`❌ Research Error: ${researchResponse.error}`);
       } else {
-        setResult(response.answer || "No answer returned.");
+        setPolicyAnswer(researchResponse.answer || "No policy information available.");
       }
-    } catch (error) {
-      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } catch (researchError) {
+      setPolicyAnswer(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
     } finally {
-      setLoading(false);
+      setIsResearching(false);
     }
   };
 
-  const renderResult = () => {
-    if (loading) {
-      return "⏳ Analyzing YouTube policy...";
+  const renderPolicyResponse = () => {
+    if (isResearching) {
+      return (
+        <div className="research-status">
+          <span className="research-spinner"></span>
+          🔍 Researching YouTube policies...
+        </div>
+      );
     }
     
-    if (result) {
-      return result;
+    if (policyAnswer) {
+      return policyAnswer;
     }
     
-    return "Policy answers will appear here...";
+    return "Policy insights and answers will appear here...";
   };
 
   return (
-    <section className="section-container">
-      <h3>
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
-          <rect width="38" height="38" rx="10" />
-          <polygon points="15,12 28,19 15,26" />
+    <section className="section-container policy-advisor-section">
+      <h3 className="section-header">
+        <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+          <rect width="38" height="38" rx="10" fill="currentColor" />
+          <polygon points="15,12 28,19 15,26" fill="white" />
         </svg>
-        YouTube Policy Q&A
+        🛡️ YouTube Policy Advisor
       </h3>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handlePolicyResearch} className="policy-research-form">
         <textarea
           rows={4}
-          value={question}
-          onChange={handleQuestionChange}
-          placeholder="Ask a question about YouTube policy..."
-          disabled={loading}
+          value={policyQuestion}
+          onChange={handlePolicyInputChange}
+          placeholder="Ask about YouTube community guidelines, monetization, or content policies..."
+          disabled={isResearching}
+          className="policy-question-input"
         />
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Analyzing..." : "Ask Policy"}
+        <button 
+          type="submit" 
+          className="research-button primary" 
+          disabled={isResearching}
+        >
+          {isResearching ? "🔍 Researching..." : "Get Policy Insights"}
         </button>
       </form>
 
-      <div className="result-card">
-        {renderResult()}
+      <div className="policy-response-container result-card">
+        {renderPolicyResponse()}
       </div>
     </section>
   );
 };
 
-export default YouTubePolicyQA;
+export default YouTubePolicyAdvisor;

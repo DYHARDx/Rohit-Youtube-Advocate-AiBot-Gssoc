@@ -3,154 +3,164 @@ import { postData } from "../utils/postData";
 import { jsPDF } from "jspdf";
 import "../styles/CommonStyles.css";
 
-const InvoiceGenerator = () => {
-  const [inputs, setInputs] = useState({
+const ProfessionalInvoiceCreator = () => {
+  const [formData, setFormData] = useState({
     brand: "",
     service: "",
     amount: "",
     include_gst: true,
   });
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [invoiceOutput, setInvoiceOutput] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleFormInputChange = (e) => {
     const { id, value, type, checked } = e.target;
-    setInputs((prev) => ({
-      ...prev,
+    setFormData((previousState) => ({
+      ...previousState,
       [id]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const validateInputs = () => {
-    if (!inputs.brand.trim() || !inputs.service.trim() || !inputs.amount) {
-      setResult("⚠️ Please fill in all required fields.");
+  const validateFormData = () => {
+    if (!formData.brand.trim() || !formData.service.trim() || !formData.amount) {
+      setInvoiceOutput("⚠️ Please complete all required form fields.");
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleInvoiceGeneration = async (e) => {
     e.preventDefault();
     
-    if (!validateInputs()) {
+    if (!validateFormData()) {
       return;
     }
     
-    setLoading(true);
-    setResult(""); // Clear previous results
+    setIsGenerating(true);
+    setInvoiceOutput(""); // Clear previous invoice results
     
     try {
-      const response = await postData("/api/invoice/generate", inputs);
+      const apiResponse = await postData("/api/invoice/generate", formData);
       
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
+      if (apiResponse.error) {
+        setInvoiceOutput(`❌ Generation Error: ${apiResponse.error}`);
       } else {
-        setResult(response.invoice_text || "No invoice returned.");
+        setInvoiceOutput(apiResponse.invoice_text || "No invoice content generated.");
       }
-    } catch (error) {
-      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } catch (processingError) {
+      setInvoiceOutput(`❌ System Error: ${processingError.message || "Invoice service unavailable"}`);
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text(result, 10, 20);
-    doc.save(`invoice_${inputs.brand.replace(/\s+/g, "_")}.pdf`);
+  const downloadInvoicePDF = () => {
+    const pdfDocument = new jsPDF();
+    pdfDocument.text(invoiceOutput, 10, 20);
+    const fileName = `invoice_${formData.brand.replace(/\s+/g, "_").toLowerCase()}.pdf`;
+    pdfDocument.save(fileName);
   };
 
-  const renderResult = () => {
-    if (loading) {
-      return "⏳ Generating invoice...";
+  const renderInvoiceContent = () => {
+    if (isGenerating) {
+      return (
+        <div className="generation-status">
+          <span className="generation-spinner"></span>
+          Creating professional invoice...
+        </div>
+      );
     }
     
-    if (result) {
+    if (invoiceOutput) {
       return (
         <>
-          <div className="invoice-result">{result}</div>
-          {!result.startsWith("❌") && (
+          <div className="invoice-display">{invoiceOutput}</div>
+          {!invoiceOutput.startsWith("❌") && (
             <button
-              onClick={downloadPDF}
-              className="btn-primary download-btn"
-              disabled={loading}
+              onClick={downloadInvoicePDF}
+              className="download-button primary"
+              disabled={isGenerating}
             >
-              {loading ? "Processing..." : "Download PDF"}
+              {isGenerating ? "Processing Download..." : "Export as PDF"}
             </button>
           )}
         </>
       );
     }
     
-    return <div className="placeholder-text">Generated invoice will appear here...</div>;
+    return <div className="invoice-placeholder">Your generated invoice will appear in this section...</div>;
   };
 
-  const renderFormFields = () => (
+  const renderInputFields = () => (
     <>
       <input
         id="brand"
         type="text"
-        value={inputs.brand}
-        onChange={handleInputChange}
-        placeholder="Brand or Sponsor"
-        className="input-field"
-        disabled={loading}
+        value={formData.brand}
+        onChange={handleFormInputChange}
+        placeholder="Enter brand or sponsor name"
+        className="form-input-field"
+        disabled={isGenerating}
       />
       <input
         id="service"
         type="text"
-        value={inputs.service}
-        onChange={handleInputChange}
-        placeholder="Service Description"
-        className="input-field"
-        disabled={loading}
+        value={formData.service}
+        onChange={handleFormInputChange}
+        placeholder="Describe service provided"
+        className="form-input-field"
+        disabled={isGenerating}
       />
       <input
         id="amount"
         type="number"
-        value={inputs.amount}
-        onChange={handleInputChange}
-        placeholder="Amount"
-        className="input-field"
-        disabled={loading}
+        value={formData.amount}
+        onChange={handleFormInputChange}
+        placeholder="Enter amount in INR"
+        className="form-input-field"
+        disabled={isGenerating}
       />
 
-      <label className="checkbox-label">
+      <label className="gst-selection-label">
         <input
           id="include_gst"
           type="checkbox"
-          checked={inputs.include_gst}
-          onChange={handleInputChange}
-          disabled={loading}
-          className="gst-checkbox"
+          checked={formData.include_gst}
+          onChange={handleFormInputChange}
+          disabled={isGenerating}
+          className="gst-selection-checkbox"
         />
-        <span className="gst-label">Include GST (18%)</span>
+        <span className="gst-option-text">Include GST taxation (18%)</span>
       </label>
     </>
   );
 
   return (
-    <section className="section-container invoice-generator">
-      <h3 className="section-title">
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none">
-          <rect width="38" height="38" rx="10" />
-          <polygon points="15,12 28,19 15,26" />
+    <section className="section-container invoice-creator-section">
+      <h3 className="section-heading">
+        <svg className="heading-icon" width="32" height="32" viewBox="0 0 38 38" fill="none">
+          <rect width="38" height="38" rx="10" fill="currentColor" />
+          <polygon points="15,12 28,19 15,26" fill="white" />
         </svg>
-        YouTube Invoice Generator
+        Professional Invoice Creator
       </h3>
 
-      <form onSubmit={handleSubmit} className="invoice-form">
-        {renderFormFields()}
-        <button type="submit" className="btn-primary generate-btn" disabled={loading}>
-          {loading ? "Generating..." : "Generate Invoice"}
+      <form onSubmit={handleInvoiceGeneration} className="invoice-creation-form">
+        {renderInputFields()}
+        <button 
+          type="submit" 
+          className="generate-invoice-button primary" 
+          disabled={isGenerating}
+        >
+          {isGenerating ? "Creating Invoice..." : "Generate Professional Invoice"}
         </button>
       </form>
 
-      <div className="result-card">
-        {renderResult()}
+      <div className="invoice-result-container result-card">
+        {renderInvoiceContent()}
       </div>
     </section>
   );
 };
 
-export default InvoiceGenerator;
+export default ProfessionalInvoiceCreator;

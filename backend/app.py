@@ -1,6 +1,12 @@
-from flask import Flask, request, jsonify, render_template
+# ==================== FLASK API SERVER CONFIGURATION ====================
+from flask import Flask, request, jsonify, render_template, send_file
 from vector_database import get_policy_response, simplify_contract, check_content_safety, generate_invoice, ask_rohit
 from flask_cors import CORS
+from weasyprint import HTML
+import io
+
+
+# 🚀 Initialize Flask Application
 
 # 🚀 Initialize Flask Application
 app = Flask(
@@ -8,106 +14,241 @@ app = Flask(
     static_folder="static",
     template_folder="templates"
 )
-CORS(app)  # Enable Cross-Origin Resource Sharing
 
+in
+
+# 🎯 TODO: Add configuration management system
+# Future enhancement: Move to config.py for better organization
+
+
+# ==================== ROUTE DEFINITIONS ====================
 
 @app.route("/")
 def index():
+
     """Serve the main advisor interface"""
+
     return render_template("advisor.html")
 
 
 @app.route("/api/contract/simplify", methods=["POST"])
-def simplify_contract_endpoint():
-    """Simplify complex contract text into understandable summary"""
-    request_data = request.json
-    contract_text = request_data.get("text", "")
+
+
+def simplify():
+    """
+    📄 Simplify complex contract text into easy-to-understand summary
+    POST Data: { "text": "contract content here" }
+    Returns: JSON with simplified contract summary
+    """
+    data = request.json
+    text = data.get("text", "")
     
-    if not contract_text:
-        return jsonify({"error": "Contract text content is required"})
+    # 🎯 Input validation
+    if not text:
+        return jsonify({"error": "Contract text is required"}), 400
     
-    simplified_summary = simplify_contract(contract_text)
-    return jsonify({"summary": simplified_summary})
+    # 🚀 Process contract simplification
+    summary = simplify_contract(text)
+    
+    # 🎨 TODO: Add caching mechanism for repeated requests
+    return jsonify({"summary": summary})
 
 
 @app.route("/api/content/check", methods=["POST"])
-def content_safety_check():
-    """Analyze content for safety compliance and guidelines"""
-    request_data = request.json
-    content_text = request_data.get("text", "")
+def content_check():
+    """
+    🔍 Analyze content for safety and compliance
+    POST Data: { "text": "content to analyze" }
+    Returns: JSON with safety report and recommendations
+    """
+    data = request.json
+    text = data.get("text", "")
     
-    if not content_text:
-        return jsonify({"error": "Content text is required for analysis"})
+    if not text:
+        return jsonify({"error": "Content text is required for analysis"}), 400
     
-    safety_report = check_content_safety(content_text)
-    return jsonify({"report": safety_report})
+    # 🛡️ Generate content safety report
+    report = check_content_safety(text)
+    
+    # 🎯 Debug logging placeholder
+    # print(f"🔍 Content safety check completed for {len(text)} characters")
+    
+    return jsonify({"report": report})
 
 
 @app.route("/api/invoice/generate", methods=["POST"])
-def generate_invoice_endpoint():
-    """Generate professional invoice text based on provided details"""
-    request_data = request.json
-    
+def invoice():
+    """
+    🧾 Generate professional invoice text
+    POST Data: { "brand": "Brand Name", "service": "Service Description", "amount": 100.0, "include_gst": true }
+    Returns: JSON with formatted invoice text
+    """
+    data = request.json
     try:
-        brand_name = request_data["brand"]
-        service_description = request_data["service"]
-        invoice_amount = float(request_data["amount"])
-        gst_inclusion = request_data.get("include_gst", False)
-    except (KeyError, ValueError):
-        return jsonify({"error": "Invalid input parameters provided"})
+        # 📊 Extract and validate invoice parameters
+        brand = data["brand"]
+        service = data["service"]
+        amount = float(data["amount"])
+        include_gst = data.get("include_gst", False)
+        
+        # 🎯 TODO: Add currency validation and formatting
+    except (KeyError, ValueError) as e:
+        # 🚨 Enhanced error reporting
+        return jsonify({"error": "Invalid input parameters", "details": str(e)}), 400
 
-    invoice_content = generate_invoice(brand_name, service_description, invoice_amount, gst_inclusion)
-    return jsonify({"invoice_text": invoice_content})
+    # 🧾 Generate invoice text
+    invoice_text = generate_invoice(brand, service, amount, include_gst)
+    
+    return jsonify({"invoice_text": invoice_text})
+
+
+
+@app.route("/api/invoice/download", methods=["POST"])
+def download_invoice_pdf():
+    """
+    📄 Generate and download invoice as PDF using WeasyPrint
+    POST Data: { "invoice_text": "formatted invoice text" }
+    Returns: PDF file response
+    """
+    data = request.json
+    invoice_text = data.get("invoice_text", "")
+    
+    if not invoice_text:
+        return jsonify({"error": "No invoice text provided"}), 400
+
+    html_content = f"<pre style='font-family:Courier, monospace'>{invoice_text}</pre>"
+    pdf_file = HTML(string=html_content).write_pdf()
+    return send_file(
+        io.BytesIO(pdf_file),
+        download_name="invoice.pdf",
+        mimetype="application/pdf"
+    )
 
 
 @app.route("/api/youtube/policy", methods=["POST"])
-def youtube_policy_query():
-    """Handle YouTube policy-related questions and provide answers"""
-    request_data = request.json
-    policy_question = request_data.get("question", "")
+
+def youtube_policy():
+    """
+    📺 Get YouTube policy guidance and recommendations
+    POST Data: { "question": "policy question" }
+    Returns: JSON with policy answer and guidance
+    """
+    data = request.json
+    question = data.get("question", "")
     
-    if not policy_question:
-        return jsonify({"error": "Policy question is required"})
+    if not question:
+        return jsonify({"error": "Policy question is required"}), 400
     
-    policy_answer = get_policy_response(policy_question)
-    return jsonify({"answer": policy_answer})
+    # 🎬 Get policy response from vector database
+    answer = get_policy_response(question)
+    
+    # 🎯 TODO: Add response caching for common questions
+    return jsonify({"answer": answer})
 
 
 @app.route("/api/ama/ask", methods=["POST"])
-def ask_me_anything():
-    """Process Ask Me Anything questions and generate responses"""
-    request_data = request.json
-    user_question = request_data.get("question", "")
+def ama():
+    """
+    💬 Ask Me Anything - Get responses from Rohit's knowledge base
+    POST Data: { "question": "question for Rohit" }
+    Returns: JSON with personalized answer
+    """
+    data = request.json
+    question = data.get("question", "")
     
-    if not user_question:
-        return jsonify({"error": "Question input is required"})
+    if not question:
+        return jsonify({"error": "Question is required for AMA"}), 400
     
-    expert_answer = ask_rohit(user_question)
-    return jsonify({"answer": expert_answer})
+    # 🧠 Get response from Rohit's knowledge base
+    answer = ask_rohit(question)
+    
+    return jsonify({"answer": answer})
+
 
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
-    """Health check endpoint for monitoring application status"""
+
+
+    """
+    ❤️ Health check endpoint for monitoring and load balancers
+    Returns: JSON with service status and version info
+    """
+    # 🎯 TODO: Add database connection check
+    # 🎯 TODO: Add external service dependency checks
+    
     return jsonify({
-        "status": "operational",
-        "service": "Legal Advisor API",
-        "version": "1.0.0"
+        "status": "healthy",
+        "service": "Flask API Server",
+        "version": "1.0.0",
+        "timestamp": "2024-01-01T00:00:00Z"  # 🎯 TODO: Add dynamic timestamp
     })
 
 
+@app.route("/api/debug/info", methods=["GET"])
+def debug_info():
+    """
+    🔧 Debug endpoint for development and troubleshooting
+    Returns: JSON with system information and configuration
+    """
+    # 🎯 Note: This endpoint is for development purposes only
+    # 🚨 Should be disabled in production environments
+    
+    return jsonify({
+        "debug": True,
+        "endpoints": [
+            "/api/contract/simplify",
+            "/api/content/check", 
+            "/api/invoice/generate",
+            "/api/invoice/download",
+            "/api/youtube/policy",
+            "/api/ama/ask"
+        ],
+        "note": "Development debug endpoint"
+    })
+
+
+# ==================== ERROR HANDLING ENHANCEMENTS ====================
+
 @app.errorhandler(404)
-def not_found_error(error):
-    """Handle 404 errors with custom response"""
-    return jsonify({"error": "Endpoint not found"}), 404
+def not_found(error):
+    """
+    🚨 Handle 404 errors with consistent JSON response
+    """
+    return jsonify({"error": "Endpoint not found", "code": 404}), 404
+
+
 
 
 @app.errorhandler(500)
 def internal_error(error):
-    """Handle 500 errors with custom response"""
-    return jsonify({"error": "Internal server error occurred"}), 500
 
 
-# 🎯 Application Entry Point
+    🚨 Handle 500 errors with user-friendly message
+    """
+    # 🎯 TODO: Add error logging and monitoring integration
+    return jsonify({"error": "Internal server error", "code": 500}), 500
+
+
+# ==================== APPLICATION INITIALIZATION ====================
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    """
+    🚀 Main application entry point
+    """
+    # 🎯 Development server configuration
+    # 🚨 Note: debug=True should be disabled in production
+    print("🎯 Starting Flask API Server...")
+    print("📡 Server running on http://localhost:5000")
+    print("🔧 Debug mode: ENABLED")
+    
+    app.run(debug=True)
+
+# 🎯 Future enhancement placeholder
+# TODO: Add application factory pattern for better testing
+# TODO: Implement proper configuration management
+# TODO: Add request/response logging middleware
+# TODO: Implement rate limiting for API endpoints
+
+# ==================== END OF ENHANCEMENTS ====================
+

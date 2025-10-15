@@ -2,25 +2,29 @@ import React from "react";
 import heroImg from "../assets/hero1.png";
 import "../styles/LandingPage.css";
 
-const LandingPage = () => {
+const HomePageHero = () => {
   return (
-    <div className="landing-container">
-      <div className="hero-text">
-        <h1>
-          Your <span className="highlight">AI powered</span> legal assistant
+    <div className="landing-page-container">
+      <div className="hero-content-section">
+        <h1 className="hero-main-heading">
+          Your <span className="accent-highlight">AI-Powered</span> Legal Companion
         </h1>
-        <p>
-          Simplify legal tasks like policy reviews, invoice generation, content
-          moderation, and more using smart AI tools.
+        <p className="hero-description-text">
+          Streamline legal workflows including policy analysis, invoice creation, 
+          content safety evaluation, and more using advanced AI technology.
         </p>
-        <button className="cta-btn">Get Started</button>
+        <button className="primary-cta-button">Start Exploring</button>
       </div>
 
-      <div className="hero-image">
-        <img src={heroImg} alt="Hero" />
+      <div className="hero-visual-section">
+        <img 
+          src={heroImg} 
+          alt="AI Legal Assistant Visualization" 
+          className="hero-main-image"
+        />
       </div>
     </div>
   );
 };
 
-export default LandingPage;
+export default HomePageHero;
