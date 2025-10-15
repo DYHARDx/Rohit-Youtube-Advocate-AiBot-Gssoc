@@ -7,6 +7,9 @@ import io
 
 
 # 🚀 Initialize Flask Application
+# ================================
+# This section initializes the Flask application with necessary configurations
+# Static and template folders are configured for serving frontend assets
 
 # 🚀 Initialize Flask Application
 app = Flask(
@@ -15,25 +18,23 @@ app = Flask(
     template_folder="templates"
 )
 
-in
-
 # 🎯 TODO: Add configuration management system
 # Future enhancement: Move to config.py for better organization
-
+# Suggestion: Consider using environment-specific configuration files
 
 # ==================== ROUTE DEFINITIONS ====================
 
 @app.route("/")
 def index():
-
-    """Serve the main advisor interface"""
-
+    """
+    🏠 Serve the main advisor interface
+    Returns: Rendered HTML template for the main page
+    """
+    # 🎨 DEBUG: Main page accessed - tracking user engagement
     return render_template("advisor.html")
 
 
 @app.route("/api/contract/simplify", methods=["POST"])
-
-
 def simplify():
     """
     📄 Simplify complex contract text into easy-to-understand summary
@@ -43,14 +44,15 @@ def simplify():
     data = request.json
     text = data.get("text", "")
     
-    # 🎯 Input validation
+    # 🎯 Input validation to ensure contract text is provided
     if not text:
         return jsonify({"error": "Contract text is required"}), 400
     
-    # 🚀 Process contract simplification
+    # 🚀 Process contract simplification using NLP pipeline
     summary = simplify_contract(text)
     
     # 🎨 TODO: Add caching mechanism for repeated requests
+    # Enhancement idea: Implement Redis cache for frequently requested contracts
     return jsonify({"summary": summary})
 
 
@@ -64,15 +66,16 @@ def content_check():
     data = request.json
     text = data.get("text", "")
     
+    # 🎯 Validate that content text is provided for analysis
     if not text:
         return jsonify({"error": "Content text is required for analysis"}), 400
     
-    # 🛡️ Generate content safety report
+    # 🛡️ Generate content safety report using policy engine
     report = check_content_safety(text)
     
     # 🎯 Debug logging placeholder
     # print(f"🔍 Content safety check completed for {len(text)} characters")
-    
+    # 🎨 DEBUG: Content safety analysis completed successfully
     return jsonify({"report": report})
 
 
@@ -92,13 +95,15 @@ def invoice():
         include_gst = data.get("include_gst", False)
         
         # 🎯 TODO: Add currency validation and formatting
+        # Future enhancement: Support multiple currencies and localization
     except (KeyError, ValueError) as e:
-        # 🚨 Enhanced error reporting
+        # 🚨 Enhanced error reporting for invalid input parameters
         return jsonify({"error": "Invalid input parameters", "details": str(e)}), 400
 
-    # 🧾 Generate invoice text
+    # 🧾 Generate invoice text using template engine
     invoice_text = generate_invoice(brand, service, amount, include_gst)
     
+    # 🎨 DEBUG: Invoice generation completed for brand {brand}
     return jsonify({"invoice_text": invoice_text})
 
 
@@ -113,9 +118,11 @@ def download_invoice_pdf():
     data = request.json
     invoice_text = data.get("invoice_text", "")
     
+    # 🎯 Validate that invoice text is provided for PDF generation
     if not invoice_text:
         return jsonify({"error": "No invoice text provided"}), 400
 
+    # 📄 Convert invoice text to PDF format using WeasyPrint
     html_content = f"<pre style='font-family:Courier, monospace'>{invoice_text}</pre>"
     pdf_file = HTML(string=html_content).write_pdf()
     return send_file(
@@ -126,7 +133,6 @@ def download_invoice_pdf():
 
 
 @app.route("/api/youtube/policy", methods=["POST"])
-
 def youtube_policy():
     """
     📺 Get YouTube policy guidance and recommendations
@@ -136,13 +142,15 @@ def youtube_policy():
     data = request.json
     question = data.get("question", "")
     
+    # 🎯 Validate that policy question is provided
     if not question:
         return jsonify({"error": "Policy question is required"}), 400
     
-    # 🎬 Get policy response from vector database
+    # 🎬 Get policy response from vector database using RAG pipeline
     answer = get_policy_response(question)
     
     # 🎯 TODO: Add response caching for common questions
+    # Enhancement: Implement LRU cache for frequently asked policy questions
     return jsonify({"answer": answer})
 
 
@@ -156,26 +164,27 @@ def ama():
     data = request.json
     question = data.get("question", "")
     
+    # 🎯 Validate that question is provided for AMA session
     if not question:
         return jsonify({"error": "Question is required for AMA"}), 400
     
-    # 🧠 Get response from Rohit's knowledge base
+    # 🧠 Get response from Rohit's knowledge base using semantic search
     answer = ask_rohit(question)
     
+    # 🎨 DEBUG: AMA response generated successfully
     return jsonify({"answer": answer})
 
 
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
-
-
     """
     ❤️ Health check endpoint for monitoring and load balancers
     Returns: JSON with service status and version info
     """
     # 🎯 TODO: Add database connection check
     # 🎯 TODO: Add external service dependency checks
+    # Enhancement: Add detailed health metrics for monitoring dashboards
     
     return jsonify({
         "status": "healthy",
@@ -193,6 +202,7 @@ def debug_info():
     """
     # 🎯 Note: This endpoint is for development purposes only
     # 🚨 Should be disabled in production environments
+    # Security reminder: Ensure this endpoint is not exposed in production
     
     return jsonify({
         "debug": True,
@@ -214,7 +224,12 @@ def debug_info():
 def not_found(error):
     """
     🚨 Handle 404 errors with consistent JSON response
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 404 status code
     """
+    # 🎨 DEBUG: 404 error occurred - endpoint not found
     return jsonify({"error": "Endpoint not found", "code": 404}), 404
 
 
@@ -222,13 +237,27 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-
-
+    """
     🚨 Handle 500 errors with user-friendly message
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 500 status code
     """
     # 🎯 TODO: Add error logging and monitoring integration
+    # Enhancement: Integrate with Sentry or similar error tracking service
+    # 🎨 DEBUG: 500 internal server error occurred
     return jsonify({"error": "Internal server error", "code": 500}), 500
 
+
+# ==================== UTILITY FUNCTIONS ====================
+# 🎯 Placeholder for future enhancements and utility functions
+def future_enhancement_placeholder():
+    """
+    🎯 Placeholder function for future enhancements
+    This function is intentionally left empty for future implementation
+    """
+    pass
 
 # ==================== APPLICATION INITIALIZATION ====================
 
@@ -249,6 +278,6 @@ if __name__ == "__main__":
 # TODO: Implement proper configuration management
 # TODO: Add request/response logging middleware
 # TODO: Implement rate limiting for API endpoints
+# TODO: Add API versioning support for backward compatibility
 
 # ==================== END OF ENHANCEMENTS ====================
-
