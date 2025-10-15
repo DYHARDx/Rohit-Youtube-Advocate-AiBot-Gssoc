@@ -2,86 +2,109 @@ import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import "../styles/CommonStyles.css";
 
-const ContractExplainer = () => {
-  const [text, setText] = useState("");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+const LegalContractAnalyzer = () => {
+  const [contractContent, setContractContent] = useState("");
+  const [analysisOutput, setAnalysisOutput] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleTextChange = (e) => {
-    setText(e.target.value);
+  // Handle contract text input changes
+  const handleContractInput = (e) => {
+    setContractContent(e.target.value);
   };
 
-  const validateInput = () => {
-    if (!text.trim()) {
-      setResult("⚠️ Please paste your contract text.");
+  // Validate contract content before processing
+  const validateContractInput = () => {
+    if (!contractContent.trim()) {
+      setAnalysisOutput("⚠️ Please provide contract text for analysis.");
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  // Process contract analysis request
+  const handleContractAnalysis = async (e) => {
     e.preventDefault();
     
-    if (!validateInput()) {
+    // Validate input before proceeding with analysis
+    if (!validateContractInput()) {
       return;
     }
     
-    setLoading(true);
-    setResult(""); // Clear previous results
+    // Update processing state and clear previous analysis
+    setIsProcessing(true);
+    setAnalysisOutput("");
     
     try {
-      const response = await postData("/api/contract/simplify", { text });
+      // Submit contract to backend analysis service
+      const apiResult = await postData("/api/contract/simplify", { text: contractContent });
       
-      if (response.error) {
-        setResult(`❌ Error: ${response.error}`);
+      // Process and display analysis response
+      if (apiResult.error) {
+        setAnalysisOutput(`❌ Analysis Error: ${apiResult.error}`);
       } else {
-        setResult(response.summary || "No summary returned.");
+        setAnalysisOutput(apiResult.summary || "No analysis generated.");
       }
-    } catch (error) {
-      setResult(`❌ Unexpected error: ${error.message || "Unknown error"}`);
+    } catch (processingError) {
+      // Handle processing or network errors
+      setAnalysisOutput(`❌ Processing Error: ${processingError.message || "Service unavailable"}`);
     } finally {
-      setLoading(false);
+      // Reset processing state
+      setIsProcessing(false);
     }
   };
 
-  const renderResult = () => {
-    if (loading) {
-      return "⏳ Simplifying contract...";
+  // Render appropriate output based on component state
+  const renderAnalysisContent = () => {
+    // Display processing state during analysis
+    if (isProcessing) {
+      return (
+        <div className="processing-indicator">
+          <span className="processing-spinner"></span>
+          Analyzing legal contract terms...
+        </div>
+      );
     }
     
-    if (result) {
-      return result;
+    // Display analysis results when available
+    if (analysisOutput) {
+      return analysisOutput;
     }
     
-    return "Simplified contract will appear here...";
+    // Default placeholder content
+    return "Contract analysis results will be displayed here...";
   };
 
   return (
-    <section className="section-container">
-      <h3>
-        <svg className="h3-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
-          <rect width="38" height="38" rx="10" />
-          <polygon points="15,12 28,19 15,26" />
+    <section className="section-container contract-analyzer-section">
+      <h3 className="section-header">
+        <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+          <rect width="38" height="38" rx="10" fill="currentColor" />
+          <polygon points="15,12 28,19 15,26" fill="white" />
         </svg>
-        YouTube Contract Explainer
+        Legal Contract Analyzer
       </h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleContractAnalysis} className="contract-form">
         <textarea
           rows={6}
-          value={text}
-          onChange={handleTextChange}
-          placeholder="Paste contract text here..."
-          disabled={loading}
+          value={contractContent}
+          onChange={handleContractInput}
+          placeholder="Insert your legal contract text for simplification..."
+          disabled={isProcessing}
+          className="contract-input"
         />
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? "Simplifying..." : "Simplify Contract"}
+        <button 
+          type="submit" 
+          className="analyze-contract-button primary" 
+          disabled={isProcessing}
+        >
+          {isProcessing ? "Analyzing Contract..." : "Analyze Legal Terms"}
         </button>
       </form>
-      <div className="result-card">
-        {renderResult()}
+      <div className="analysis-display result-card">
+        {renderAnalysisContent()}
       </div>
     </section>
   );
 };
 
-export default ContractExplainer;
+export default LegalContractAnalyzer;
