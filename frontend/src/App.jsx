@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
-import ContractExplainer from "./components/ContractExplainer";
-import ContentSafetyChecker from "./components/ContentSafetyChecker";
+import LegalContractAnalyzer from "./components/ContractExplainer";
+import ContentSafetyAnalyzer from "./components/ContentSafetyChecker";
 import InvoiceGenerator from "./components/InvoiceGenerator";
-import AMA from "./components/AMA";
+import YouTubeAdvisorAMA from "./components/AMA";
 import YouTubePolicyQA from "./components/YouTubePolicyQA";
 import LandingPage from "./components/LandingPage";
 import "./styles/Navbar.css";
@@ -95,10 +95,10 @@ const AppContent = () => {
       <main className="main-content" role="main">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/content-safety" element={<ContentSafetyChecker />} />
-          <Route path="/contract-explainer" element={<ContractExplainer />} />
+          <Route path="/content-safety" element={<ContentSafetyAnalyzer />} />
+          <Route path="/contract-explainer" element={<LegalContractAnalyzer />} />
           <Route path="/invoice-generator" element={<InvoiceGenerator />} />
-          <Route path="/ama" element={<AMA />} />
+          <Route path="/ama" element={<YouTubeAdvisorAMA />} />
           <Route path="/policy-qa" element={<YouTubePolicyQA />} />
         </Routes>
       </main>
