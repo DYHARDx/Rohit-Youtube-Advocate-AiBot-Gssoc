@@ -8,25 +8,31 @@ import io
 
 # 🚀 Initialize Flask Application
 
+# 🚀 Initialize Flask Application
 app = Flask(
     __name__,
     static_folder="static",
     template_folder="templates"
 )
+
 in
 
 # 🎯 TODO: Add configuration management system
 # Future enhancement: Move to config.py for better organization
 
+
 # ==================== ROUTE DEFINITIONS ====================
 
 @app.route("/")
 def index():
-ain
+
+    """Serve the main advisor interface"""
+
     return render_template("advisor.html")
 
 
 @app.route("/api/contract/simplify", methods=["POST"])
+
 
 def simplify():
     """
@@ -96,6 +102,7 @@ def invoice():
     return jsonify({"invoice_text": invoice_text})
 
 
+
 @app.route("/api/invoice/download", methods=["POST"])
 def download_invoice_pdf():
     """
@@ -119,6 +126,7 @@ def download_invoice_pdf():
 
 
 @app.route("/api/youtube/policy", methods=["POST"])
+
 def youtube_policy():
     """
     📺 Get YouTube policy guidance and recommendations
@@ -157,8 +165,10 @@ def ama():
     return jsonify({"answer": answer})
 
 
+
 @app.route("/api/health", methods=["GET"])
 def health_check():
+
 
     """
     ❤️ Health check endpoint for monitoring and load balancers
@@ -209,8 +219,10 @@ def not_found(error):
 
 
 
+
 @app.errorhandler(500)
 def internal_error(error):
+
 
     🚨 Handle 500 errors with user-friendly message
     """
