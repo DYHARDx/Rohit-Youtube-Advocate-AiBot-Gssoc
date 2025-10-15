@@ -5,15 +5,15 @@ from flask_cors import CORS
 from weasyprint import HTML
 import io
 
-# 🚀 Initialize Flask application with static assets
+
+# 🚀 Initialize Flask Application
+
 app = Flask(
     __name__,
     static_folder="static",
     template_folder="templates"
 )
-
-# 🌐 Enable CORS for all routes
-CORS(app)
+in
 
 # 🎯 TODO: Add configuration management system
 # Future enhancement: Move to config.py for better organization
@@ -22,14 +22,12 @@ CORS(app)
 
 @app.route("/")
 def index():
-    """
-    🏠 Serve the main advisor interface
-    Returns: Rendered HTML template for the web interface
-    """
+ain
     return render_template("advisor.html")
 
 
 @app.route("/api/contract/simplify", methods=["POST"])
+
 def simplify():
     """
     📄 Simplify complex contract text into easy-to-understand summary
@@ -161,6 +159,7 @@ def ama():
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
+
     """
     ❤️ Health check endpoint for monitoring and load balancers
     Returns: JSON with service status and version info
@@ -209,9 +208,10 @@ def not_found(error):
     return jsonify({"error": "Endpoint not found", "code": 404}), 404
 
 
+
 @app.errorhandler(500)
 def internal_error(error):
-    """
+
     🚨 Handle 500 errors with user-friendly message
     """
     # 🎯 TODO: Add error logging and monitoring integration
@@ -239,3 +239,4 @@ if __name__ == "__main__":
 # TODO: Implement rate limiting for API endpoints
 
 # ==================== END OF ENHANCEMENTS ====================
+
