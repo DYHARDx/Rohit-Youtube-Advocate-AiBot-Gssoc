@@ -1,5 +1,6 @@
 import React from "react";
-import heroImage from "../assets/hero.png"; // rename your image file to hero.png and place it in /src/assets
+import heroImage from "../assets/hero.png";
+import "./HeroSection.css"; // rename your image file to hero.png and place it in /src/assets
 
 const HeroSection = () => {
   return (
@@ -23,7 +24,9 @@ const HeroSection = () => {
         <img
           src={heroImage}
           alt="Hero"
+
           className="hero-image"
+
         />
       </div>
     </section>
