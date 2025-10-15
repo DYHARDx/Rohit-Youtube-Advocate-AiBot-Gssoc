@@ -10,6 +10,7 @@ import LandingPage from "./components/LandingPage";
 import "./styles/Navbar.css";
 import "./styles/LandingPage.css";
 import './styles/theme.css';
+import './components/HeroSection.css';
 
 // 🎯 MAIN APPLICATION COMPONENT
 // ==============================

@@ -24,6 +24,9 @@ const HeroSection = () => {
         <img
           src={heroImage}
           alt="Hero"
+
+          className="hero-image"
+
         />
       </div>
     </section>
