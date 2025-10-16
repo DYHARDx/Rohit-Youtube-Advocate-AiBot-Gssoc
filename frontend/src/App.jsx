@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
 import LegalContractAnalyzer from "./components/ContractExplainer";
 import ContentSafetyAnalyzer from "./components/ContentSafetyChecker";
@@ -7,10 +7,11 @@ import InvoiceGenerator from "./components/InvoiceGenerator";
 import YouTubeAdvisorAMA from "./components/AMA";
 import YouTubePolicyQA from "./components/YouTubePolicyQA";
 import LandingPage from "./components/LandingPage";
+import Footer from "./components/Footer";
 import "./styles/Navbar.css";
 import "./styles/LandingPage.css";
+import "./styles/Footer.css";
 import './styles/theme.css';
-import './components/HeroSection.css';
 
 // 🎯 MAIN APPLICATION COMPONENT
 // ==============================
@@ -33,8 +34,7 @@ const AppContent = () => {
 
   // 🎯 MOBILE NAVIGATION HANDLERS
   // ==============================
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-  
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
   // 🎨 DEBUG: Mobile menu state management initialized
   const handleNavLinkClick = () => {
     setMenuOpen(false);
@@ -52,30 +52,31 @@ const AppContent = () => {
           className="hamburger" 
           onClick={toggleMenu} 
           aria-label="Toggle menu"
+          aria-controls="mobile-nav-menu"
           aria-expanded={menuOpen}
         >
           {menuOpen ? '✖' : '☰'}
         </button>
 
         {/* 🎯 NAVIGATION LINKS */}
-        <ul className={`nav-links ${menuOpen ? 'active' : ''}`} role="menubar">
+        <ul id="mobile-nav-menu" className={`nav-links ${menuOpen ? 'active' : ''}`} role="menubar">
           <li role="none">
-            <Link to="/" onClick={handleNavLinkClick} role="menuitem">Home</Link>
+            <NavLink to="/" onClick={handleNavLinkClick} role="menuitem">Home</NavLink>
           </li>
           <li role="none">
-            <Link to="/content-safety" onClick={handleNavLinkClick} role="menuitem">Content Safety</Link>
+            <NavLink to="/content-safety" onClick={handleNavLinkClick} role="menuitem">Content Safety</NavLink>
           </li>
           <li role="none">
-            <Link to="/contract-explainer" onClick={handleNavLinkClick} role="menuitem">Contract Explainer</Link>
+            <NavLink to="/contract-explainer" onClick={handleNavLinkClick} role="menuitem">Contract Explainer</NavLink>
           </li>
           <li role="none">
-            <Link to="/invoice-generator" onClick={handleNavLinkClick} role="menuitem">Invoice Generator</Link>
+            <NavLink to="/invoice-generator" onClick={handleNavLinkClick} role="menuitem">Invoice Generator</NavLink>
           </li>
           <li role="none">
-            <Link to="/ama" onClick={handleNavLinkClick} role="menuitem">Ask Me Anything</Link>
+            <NavLink to="/ama" onClick={handleNavLinkClick} role="menuitem">Ask Me Anything</NavLink>
           </li>
           <li role="none">
-            <Link to="/policy-qa" onClick={handleNavLinkClick} role="menuitem">Policy Q&A</Link>
+            <NavLink to="/policy-qa" onClick={handleNavLinkClick} role="menuitem">Policy Q&A</NavLink>
           </li>
           
           {/* 🎯 THEME TOGGLE BUTTON */}
@@ -103,6 +104,9 @@ const AppContent = () => {
           <Route path="/policy-qa" element={<YouTubePolicyQA />} />
         </Routes>
       </main>
+
+      {/* ========== FOOTER COMPONENT ========== */}
+      <Footer />
     </div>
   );
 };
