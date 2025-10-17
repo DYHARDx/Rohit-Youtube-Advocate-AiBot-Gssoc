@@ -5,7 +5,7 @@
 
     <!-- ========== FAVICON & APP ICONS ========== -->
     <!-- 🎯 Primary application icon for browser and mobile devices -->
-    <link rel="icon" href="/frontend/src/assets/favicon.png" type="image/png" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
 
     <!-- ========== VIEWPORT & THEME CONFIGURATION ========== -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -80,31 +80,30 @@
     <!-- ========== STRUCTURED DATA (JSON-LD) ========== -->
     <!-- 📊 Schema.org markup for search engine understanding -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "YouTube Advisor",
-        "description": "AI-powered legal assistant for YouTube content creators",
-        "url": "https://youtube-advisor.com",
-        "applicationCategory": "LegalService",
-        "operatingSystem": "Web",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "YouTube Advisor",
+          "description": "AI-powered legal assistant for YouTube content creators",
+          "url": "https://youtube-advisor.com",
+          "applicationCategory": "LegalService",
+          "operatingSystem": "Web",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "creator": { "@type": "Organization", "name": "YouTube Advisor Team" },
+          "featureList": ["Contract Analysis", "Content Safety Checks", "Automated Invoice Generation", "Legal Question Answering", "Policy Review"]
         },
-        "creator": {
-          "@type": "Organization",
-          "name": "YouTube Advisor Team"
-        },
-        "featureList": [
-          "Contract Analysis",
-          "Content Safety Checks",
-          "Automated Invoice Generation",
-          "Legal Question Answering",
-          "Policy Review"
-        ]
-      }
+        {
+          "@type": "SoftwareApplication",
+          "name": "YouTube Advisor",
+          "operatingSystem": "Web",
+          "applicationCategory": "BusinessApplication",
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "150" },
+          "offers": { "@type": "Offer", "price": "0" }
+        }
+      ]
+    }
     </script>
 
     <!-- ========== ADDITIONAL SEO TAGS ========== -->
@@ -138,27 +137,6 @@
     <!-- ========== MAIN APPLICATION SCRIPT ========== -->
     <!-- 🚀 Vite-powered React application entry point -->
     <script type="module" src="/src/main.jsx"></script>
-
-    <!-- ========== ADDITIONAL STRUCTURED DATA ========== -->
-    <!-- 📊 Software application schema for enhanced SEO -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "YouTube Advisor",
-        "operatingSystem": "Web",
-        "applicationCategory": "BusinessApplication",
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "reviewCount": "150"
-        },
-        "offers": {
-          "@type": "Offer",
-          "price": "0"
-        }
-      }
-    </script>
 
     <!-- 🎨 DEBUG: Body section configuration complete -->
   </body>
