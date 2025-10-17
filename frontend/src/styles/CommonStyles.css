@@ -136,6 +136,100 @@
   height: 1rem;
 }
 
+/* ========== NEW ERROR DISPLAY COMPONENT ========== */
+
+/* 🎯 ERROR DISPLAY STYLING
+ * ======================== */
+.error-display {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-display.error {
+  background-color: var(--error-background);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.error-display.success {
+  background-color: var(--success-background);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+}
+
+.error-display.warning {
+  background-color: var(--warning-background);
+  border: 1px solid var(--warning-color);
+  color: var(--warning-color);
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.error-message {
+  flex: 1;
+}
+
+.retry-button {
+  background-color: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.retry-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== NEW LOADING SPINNER COMPONENT ========== */
+
+/* 🎯 LOADING SPINNER STYLING
+ * ========================== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.loading-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner.spinner-small {
+  width: 1rem;
+  height: 1rem;
+}
+
+.loading-spinner.spinner-medium {
+  width: 2rem;
+  height: 2rem;
+}
+
+.loading-spinner.spinner-large {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-message {
+  font-size: 0.875rem;
+  color: var(--secondary-text-color);
+}
+
 /* ========== EXTENDED FORM ELEMENTS ========== */
 
 /* 🎯 INPUT FIELD STYLING
@@ -215,6 +309,14 @@
   .result-card {
     font-size: 0.95rem;
   }
+  
+  .error-display {
+    font-size: 0.9rem;
+  }
+  
+  .loading-message {
+    font-size: 0.8rem;
+  }
 }
 
 /* 🎯 MOBILE BREAKPOINT (480px and below)
@@ -244,6 +346,16 @@
     font-size: 0.9rem;
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .error-display {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+  
+  .loading-spinner.spinner-medium {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 

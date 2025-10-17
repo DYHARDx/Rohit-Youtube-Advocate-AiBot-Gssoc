@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -27,7 +30,8 @@ const YouTubePolicyAdvisor = () => {
   // 🎯 State management for policy question and answer functionality
   const [policyQuestion, setPolicyQuestion] = useState("");      // User policy question
   const [policyAnswer, setPolicyAnswer] = useState("");          // Policy answer from API
-  const [isResearching, setIsResearching] = useState(false);     // Research processing state
+  const { setError, clearError, setLoading, isLoading } = useError();
+  const componentId = "policy-advisor";
 
   /**
    * Handle policy question input changes
@@ -37,6 +41,7 @@ const YouTubePolicyAdvisor = () => {
   const handlePolicyInputChange = (e) => {
     // 🎨 DEBUG: Policy question updated - {e.target.value.length} characters
     setPolicyQuestion(e.target.value);
+    clearError(componentId);
   };
 
   /**
@@ -47,11 +52,19 @@ const YouTubePolicyAdvisor = () => {
   const validatePolicyInput = () => {
     // 🎯 Check if policy question is empty or only whitespace
     if (!policyQuestion.trim()) {
-      setPolicyAnswer("⚠️ Please enter a question about YouTube policies.");
+      setError(componentId, "Please enter a question about YouTube policies.");
       // 🎨 DEBUG: Policy input validation failed - no question provided
       return false;
     }
+    
+    // Check minimum length
+    if (policyQuestion.trim().length < 5) {
+      setError(componentId, "Please enter a more detailed question (at least 5 characters).");
+      return false;
+    }
+    
     // 🎨 DEBUG: Policy input validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -70,8 +83,9 @@ const YouTubePolicyAdvisor = () => {
     }
     
     // 🚀 Set researching state and clear previous answers
-    setIsResearching(true);
+    setLoading(componentId, true);
     setPolicyAnswer(""); // Clear previous policy answers
+    clearError(componentId);
     // 🎨 DEBUG: Starting policy research process
 
     try {
@@ -80,20 +94,20 @@ const YouTubePolicyAdvisor = () => {
       // 🎨 DEBUG: API response received - {researchResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (researchResponse.error) {
-        setPolicyAnswer(`❌ Research Error: ${researchResponse.error}`);
+      if (!researchResponse.success) {
+        setError(componentId, researchResponse.error || "Failed to get policy information. Please try again.");
         // 🎨 DEBUG: API returned error - {researchResponse.error}
       } else {
-        setPolicyAnswer(researchResponse.answer || "No policy information available.");
+        setPolicyAnswer(researchResponse.data.answer || "No policy information available.");
         // 🎨 DEBUG: Policy research completed successfully
       }
     } catch (researchError) {
       // 🚨 Handle network or processing errors
-      setPolicyAnswer(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
+      setError(componentId, `System Error: ${researchError.message || "Policy service unavailable"}`);
       // 🎨 DEBUG: Research error occurred - {researchError.message}
     } finally {
       // 🎯 Always reset researching state
-      setIsResearching(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Policy research process completed
     }
   };
@@ -105,13 +119,8 @@ const YouTubePolicyAdvisor = () => {
    */
   const renderPolicyResponse = () => {
     // 🔄 Show loading indicator during research
-    if (isResearching) {
-      return (
-        <div className="research-status">
-          <span className="research-spinner"></span>
-          🔍 Researching YouTube policies...
-        </div>
-      );
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Researching YouTube policies..." />;
     }
     
     // 📋 Show policy answer if available
@@ -146,7 +155,7 @@ const YouTubePolicyAdvisor = () => {
           value={policyQuestion}
           onChange={handlePolicyInputChange}
           placeholder="Ask about YouTube community guidelines, monetization, or content policies..."
-          disabled={isResearching}
+          disabled={isLoading(componentId)}
           className="policy-question-input"
         />
         
@@ -154,14 +163,15 @@ const YouTubePolicyAdvisor = () => {
         <button 
           type="submit" 
           className="research-button primary" 
-          disabled={isResearching}
+          disabled={isLoading(componentId)}
         >
-          {isResearching ? "🔍 Researching..." : "Get Policy Insights"}
+          {isLoading(componentId) ? "🔍 Researching..." : "Get Policy Insights"}
         </button>
       </form>
 
       {/* 📊 POLICY RESPONSE DISPLAY */}
       <div className="policy-response-container result-card">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderPolicyResponse()}
       </div>
     </section>

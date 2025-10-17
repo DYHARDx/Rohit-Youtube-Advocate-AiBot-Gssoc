@@ -29,6 +29,9 @@ body.light {
   --success-color: #28a745;
   --warning-color: #ffc107;
   --error-color: #dc3545;
+  --error-background: #f8d7da;
+  --success-background: #d4edda;
+  --warning-background: #fff3cd;
 }
 
 /* 🎯 DARK THEME VARIABLES
@@ -54,6 +57,9 @@ body.dark {
   --success-color: #00ff88;
   --warning-color: #ffaa00;
   --error-color: #ff4444;
+  --error-background: #3b2a2a;
+  --success-background: #2a3b2a;
+  --warning-background: #3b3b2a;
 }
 
 /* ========== GLOBAL & LAYOUT STYLES ========== */

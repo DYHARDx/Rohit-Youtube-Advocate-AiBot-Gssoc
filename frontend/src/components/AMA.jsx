@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -27,7 +30,8 @@ const YouTubeAdvisorAMA = () => {
   // 🎯 State management for AMA functionality
   const [question, setQuestion] = useState("");          // User question input
   const [response, setResponse] = useState("");          // Advisor response from API
-  const [isLoading, setIsLoading] = useState(false);     // Loading state indicator
+  const { setError, clearError, setLoading, isLoading } = useError();
+  const componentId = "advisor-ama";
 
   /**
    * Handle question input changes
@@ -37,6 +41,7 @@ const YouTubeAdvisorAMA = () => {
   const handleQuestionChange = (e) => {
     // 🎨 DEBUG: Question updated - {e.target.value.length} characters
     setQuestion(e.target.value);
+    clearError(componentId);
   };
 
   /**
@@ -47,11 +52,19 @@ const YouTubeAdvisorAMA = () => {
   const validateInput = () => {
     // 🎯 Check if question is empty or only whitespace
     if (!question.trim()) {
-      setResponse("⚠️ Please enter a valid question before submitting.");
+      setError(componentId, "Please enter a valid question before submitting.");
       // 🎨 DEBUG: Input validation failed - no question provided
       return false;
     }
+    
+    // Check minimum length
+    if (question.trim().length < 5) {
+      setError(componentId, "Please enter a more detailed question (at least 5 characters).");
+      return false;
+    }
+    
     // 🎨 DEBUG: Input validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -70,8 +83,9 @@ const YouTubeAdvisorAMA = () => {
     }
     
     // 🚀 Set loading state and clear previous response
-    setIsLoading(true);
+    setLoading(componentId, true);
     setResponse("");
+    clearError(componentId);
     // 🎨 DEBUG: Starting advisor consultation process
 
     try {
@@ -80,20 +94,20 @@ const YouTubeAdvisorAMA = () => {
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (apiResponse.error) {
-        setResponse(`❌ API Error: ${apiResponse.error}`);
+      if (!apiResponse.success) {
+        setError(componentId, apiResponse.error || "Failed to get advisor response. Please try again.");
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setResponse(apiResponse.answer || "No response received from advisor.");
+        setResponse(apiResponse.data.answer || "No response received from advisor.");
         // 🎨 DEBUG: Advisor response received successfully
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setResponse(`❌ Network Error: ${error.message || "Connection failed"}`);
+      setError(componentId, `Network Error: ${error.message || "Connection failed"}`);
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
-      setIsLoading(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Advisor consultation process completed
     }
   };
@@ -105,13 +119,8 @@ const YouTubeAdvisorAMA = () => {
    */
   const renderResponse = () => {
     // 🔄 Show loading indicator during processing
-    if (isLoading) {
-      return (
-        <div className="loading-indicator">
-          <span className="spinner"></span>
-          Consulting YouTube Policy Advisor...
-        </div>
-      );
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Consulting YouTube Policy Advisor..." />;
     }
     
     // 📋 Show response if available
@@ -146,7 +155,7 @@ const YouTubeAdvisorAMA = () => {
           value={question}
           onChange={handleQuestionChange}
           placeholder="Enter your YouTube policy question here..."
-          disabled={isLoading}
+          disabled={isLoading(componentId)}
           className="component-textarea"
           aria-label="Enter your YouTube policy question"
         />
@@ -155,15 +164,16 @@ const YouTubeAdvisorAMA = () => {
         <button 
           type="submit" 
           className="submit-button primary" 
-          disabled={isLoading}
-          aria-label={isLoading ? "Processing request" : "Consult advisor"}
+          disabled={isLoading(componentId)}
+          aria-label={isLoading(componentId) ? "Processing request" : "Consult advisor"}
         >
-          {isLoading ? "Processing Request..." : "Consult Advisor"}
+          {isLoading(componentId) ? "Processing Request..." : "Consult Advisor"}
         </button>
       </form>
       
       {/* 📊 ADVISOR RESPONSE DISPLAY */}
       <div className="response-container result-card" role="status" aria-live="polite">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderResponse()}
       </div>
     </section>
