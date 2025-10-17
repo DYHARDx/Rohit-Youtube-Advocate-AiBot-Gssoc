@@ -28,6 +28,7 @@ const YouTubePolicyAdvisor = () => {
   const [policyQuestion, setPolicyQuestion] = useState("");      // User policy question
   const [policyAnswer, setPolicyAnswer] = useState("");          // Policy answer from API
   const [isResearching, setIsResearching] = useState(false);     // Research processing state
+  const [error, setError] = useState("");                       // Error message state
 
   /**
    * Handle policy question input changes
@@ -37,6 +38,8 @@ const YouTubePolicyAdvisor = () => {
   const handlePolicyInputChange = (e) => {
     // 🎨 DEBUG: Policy question updated - {e.target.value.length} characters
     setPolicyQuestion(e.target.value);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -47,7 +50,7 @@ const YouTubePolicyAdvisor = () => {
   const validatePolicyInput = () => {
     // 🎯 Check if policy question is empty or only whitespace
     if (!policyQuestion.trim()) {
-      setPolicyAnswer("⚠️ Please enter a question about YouTube policies.");
+      setError("⚠️ Please enter a question about YouTube policies.");
       // 🎨 DEBUG: Policy input validation failed - no question provided
       return false;
     }
@@ -72,16 +75,17 @@ const YouTubePolicyAdvisor = () => {
     // 🚀 Set researching state and clear previous answers
     setIsResearching(true);
     setPolicyAnswer(""); // Clear previous policy answers
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting policy research process
 
     try {
       // 🌐 Send request to backend API for policy research
-      const researchResponse = await postData("/api/youtube/policy", { question: policyQuestion });
+      const researchResponse = await postData("/api/youtube/policy", { question: policyQuestion }, 15000);
       // 🎨 DEBUG: API response received - {researchResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (researchResponse.error) {
-        setPolicyAnswer(`❌ Research Error: ${researchResponse.error}`);
+        setError(`❌ ${researchResponse.error}`);
         // 🎨 DEBUG: API returned error - {researchResponse.error}
       } else {
         setPolicyAnswer(researchResponse.answer || "No policy information available.");
@@ -89,7 +93,7 @@ const YouTubePolicyAdvisor = () => {
       }
     } catch (researchError) {
       // 🚨 Handle network or processing errors
-      setPolicyAnswer(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
+      setError(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
       // 🎨 DEBUG: Research error occurred - {researchError.message}
     } finally {
       // 🎯 Always reset researching state
@@ -112,6 +116,11 @@ const YouTubePolicyAdvisor = () => {
           🔍 Researching YouTube policies...
         </div>
       );
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show policy answer if available

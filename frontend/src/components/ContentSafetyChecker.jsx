@@ -28,6 +28,7 @@ const ContentSafetyAnalyzer = () => {
   const [content, setContent] = useState("");              // User input content for analysis
   const [result, setResult] = useState("");               // Analysis results from API
   const [loading, setLoading] = useState(false);           // Loading state indicator
+  const [error, setError] = useState("");                 // Error message state
 
   /**
    * Handle content input changes
@@ -37,6 +38,8 @@ const ContentSafetyAnalyzer = () => {
   const handleContentChange = (e) => {
     // 🎨 DEBUG: Content updated - {e.target.value.length} characters
     setContent(e.target.value);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -47,7 +50,7 @@ const ContentSafetyAnalyzer = () => {
   const validateContent = () => {
     // 🎯 Check if content is empty or only whitespace
     if (!content.trim()) {
-      setResult("⚠️ Please provide content for safety analysis.");
+      setError("⚠️ Please provide content for safety analysis.");
       // 🎨 DEBUG: Content validation failed - no content provided
       return false;
     }
@@ -72,16 +75,17 @@ const ContentSafetyAnalyzer = () => {
     // 🚀 Set loading state and clear previous results
     setLoading(true);
     setResult("");
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting content safety analysis
 
     try {
       // 🌐 Send request to backend API for content safety check
-      const apiResponse = await postData("/api/content/check", { text: content });
+      const apiResponse = await postData("/api/content/check", { text: content }, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setResult(`❌ API Error: ${apiResponse.error}`);
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setResult(apiResponse.report || "No safety report generated.");
@@ -89,7 +93,7 @@ const ContentSafetyAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setResult(`❌ Network Error: ${error.message || "Connection failed"}`);
+      setError(`❌ Network Error: ${error.message || "Connection failed"}`);
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
@@ -112,6 +116,11 @@ const ContentSafetyAnalyzer = () => {
           Checking content safety...
         </div>
       );
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show results if available
