@@ -6,7 +6,7 @@ const Footer = () => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <footer className={`footer ${theme}`}>
+    <footer className={`footer ${theme}`} role="contentinfo">
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-section">
@@ -34,9 +34,9 @@ const Footer = () => {
           <div className="footer-section">
             <h4>Follow Us</h4>
             <div className="social-links">
-              <a href="https://twitter.com/rohit_youtube" target="_blank" rel="noopener noreferrer" aria-label="Twitter">🐦</a>
-              <a href="https://linkedin.com/in/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">💼</a>
-              <a href="https://youtube.com/@rohit-advocate" target="_blank" rel="noopener noreferrer" aria-label="YouTube">📺</a>
+              <a href="https://twitter.com/rohit_youtube" target="_blank" rel="noopener noreferrer" aria-label="Twitter (opens in new tab)">🐦</a>
+              <a href="https://linkedin.com/in/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in new tab)">💼</a>
+              <a href="https://youtube.com/@rohit-advocate" target="_blank" rel="noopener noreferrer" aria-label="YouTube (opens in new tab)">📺</a>
             </div>
           </div>
         </div>

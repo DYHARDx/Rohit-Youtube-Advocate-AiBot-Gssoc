@@ -66,11 +66,19 @@
   transition: all 0.3s ease;
   padding: 0.25rem 0;
   display: inline-block;
+  border-radius: 4px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .footer-section ul a:hover {
   color: var(--accent-color);
   transform: translateX(5px);
+}
+
+.footer-section ul a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .social-links {
@@ -90,6 +98,8 @@
   color: var(--accent-color);
   transition: all 0.3s ease;
   text-decoration: none;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .social-links a:hover {
@@ -97,6 +107,11 @@
   background: var(--accent-color);
   color: var(--primary-text-on-accent);
   box-shadow: 0 4px 8px rgba(0, 127, 255, 0.2);
+}
+
+.social-links a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .footer-bottom {
@@ -125,10 +140,19 @@
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.3s ease;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .footer-links a:hover {
   color: var(--accent-color);
+}
+
+.footer-links a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 /* Dark theme adjustments */
@@ -172,5 +196,9 @@
   .footer-section h3::after {
     left: 50%;
     transform: translateX(-50%);
+  }
+  
+  .social-links {
+    justify-content: center;
   }
 }
