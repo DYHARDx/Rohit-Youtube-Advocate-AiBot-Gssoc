@@ -254,3 +254,106 @@
    --primary-accent, --input-border-color, --input-background, 
    --primary-accent-hover, --primary-text-on-accent, --card-background */
 /* ⚡ Performance: All transitions optimized for 0.3s duration */
+
+
+#safety-title{
+  display: flex;
+  justify-self: center;
+}
+
+.submit-button{
+  display: flex;
+  justify-self: center;
+}
+
+.result-container{
+  display: flex;
+  justify-self: center;
+}
+
+#contract-title{
+  display: flex;
+  justify-self: center;
+}
+
+.section-heading{
+  display: flex;
+  justify-self: center;
+}
+
+.invoice-creation-form{
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+}
+
+#brand{
+  padding-bottom: 10px;
+}
+
+#service{
+  padding-bottom: 10px;
+}
+
+#amount{
+  padding-bottom: 10px;
+}
+
+.gst-selection-label{
+  padding-bottom:10px;
+}
+
+.invoice-placeholder{
+  display: flex;
+  justify-self: center;
+}
+
+.response-container{
+  display: flex;
+  justify-self: center;
+}
+
+.section-header{
+  display: flex;
+  justify-self: center;
+}
+
+.policy-question-input{
+  display: flex;
+  justify-self: center;
+  flex-direction: column;
+}
+
+.research-button{
+  display: flex;
+  justify-self: center;
+}
+
+.policy-response-container{
+  display: flex;
+  justify-self: center;
+}
+
+.generate-invoice-button{
+  margin-top: 1rem;
+  background-color: var(--primary-accent);
+  color: var(--primary-text-on-accent);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.research-button {
+  margin-top: 1rem;
+  background-color: var(--primary-accent);
+  color: var(--primary-text-on-accent);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
