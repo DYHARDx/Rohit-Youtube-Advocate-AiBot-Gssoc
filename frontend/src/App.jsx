@@ -8,6 +8,10 @@ import YouTubeAdvisorAMA from "./components/AMA";
 import YouTubePolicyQA from "./components/YouTubePolicyQA";
 import LandingPage from "./components/LandingPage";
 import Footer from "./components/Footer";
+import CodeOfConduct from "./pages/CodeOfConduct";
+import SecurityPolicy from "./pages/SecurityPolicy";
+import Contributing from "./pages/Contributing";
+import Learn from "./pages/Learn";
 import "./styles/Navbar.css";
 import "./styles/LandingPage.css";
 import "./styles/Footer.css";
@@ -102,6 +106,10 @@ const AppContent = () => {
           <Route path="/invoice-generator" element={<InvoiceGenerator />} />
           <Route path="/ama" element={<YouTubeAdvisorAMA />} />
           <Route path="/policy-qa" element={<YouTubePolicyQA />} />
+          <Route path="/code-of-conduct" element={<CodeOfConduct />} />
+          <Route path="/security" element={<SecurityPolicy />} />
+          <Route path="/contributing" element={<Contributing />} />
+          <Route path="/learn" element={<Learn />} />
         </Routes>
       </main>
 
