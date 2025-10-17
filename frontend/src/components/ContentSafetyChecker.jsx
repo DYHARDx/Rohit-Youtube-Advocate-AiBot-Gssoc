@@ -4,12 +4,12 @@ import "../styles/CommonStyles.css";
 
 /**
  * Content Safety Analyzer Component
- * ================================
+ * ===============================
  * 
  * This component provides functionality to:
- * - Analyze content for potential YouTube policy violations
- * - Check for safety issues including hate speech, misinformation, etc.
- * - Display safety reports to users
+ * - Analyze content for YouTube policy compliance and safety
+ * - Identify potential violations or areas of concern
+ * - Provide safety recommendations and guidance
  * 
  * Features:
  * - Text area for content input
@@ -24,147 +24,188 @@ import "../styles/CommonStyles.css";
  * )
  */
 const ContentSafetyAnalyzer = () => {
-  // 🎯 State management for content safety analysis functionality
-  const [content, setContent] = useState("");              // User input content for analysis
-  const [result, setResult] = useState("");               // Analysis results from API
-  const [loading, setLoading] = useState(false);           // Loading state indicator
+  // 🎯 State management for content safety functionality
+  const [contentText, setContentText] = useState("");            // User content text
+  const [safetyReport, setSafetyReport] = useState("");          // Safety report from API
+  const [isAnalyzing, setIsAnalyzing] = useState(false);        // Analysis processing state
+  const [error, setError] = useState(null);                     // Error state for API calls
 
   /**
-   * Handle content input changes
-   * Updates the content state as user types
+   * Handle content text input changes
+   * Updates the content text state as user types
    * @param {Event} e - Change event from textarea
    */
-  const handleContentChange = (e) => {
-    // 🎨 DEBUG: Content updated - {e.target.value.length} characters
-    setContent(e.target.value);
+  const handleContentInputChange = (e) => {
+    // 🎨 DEBUG: Content text updated - {e.target.value.length} characters
+    setContentText(e.target.value);
+    // Clear previous errors when user starts typing
+    if (error) setError(null);
   };
 
   /**
-   * Validate content before processing
+   * Validate content input before processing
    * Ensures content is provided before analysis
    * @returns {boolean} - Validation result
    */
-  const validateContent = () => {
-    // 🎯 Check if content is empty or only whitespace
-    if (!content.trim()) {
-      setResult("⚠️ Please provide content for safety analysis.");
-      // 🎨 DEBUG: Content validation failed - no content provided
+  const validateContentInput = () => {
+    // 🎯 Check if content text is empty or only whitespace
+    if (!contentText.trim()) {
+      setError("⚠️ Please enter content to analyze for safety.");
+      // 🎨 DEBUG: Content input validation failed - no content provided
       return false;
     }
-    // 🎨 DEBUG: Content validation passed
+    // 🎨 DEBUG: Content input validation passed
     return true;
   };
 
   /**
-   * Handle form submission
-   * Processes content and sends to backend API for safety analysis
+   * Handle content safety analysis submission
+   * Processes content and sends to backend API for analysis
    * @param {Event} e - Form submit event
    */
-  const handleSubmit = async (e) => {
+  const handleContentAnalysis = async (e) => {
     // 🎯 Prevent default form submission behavior
     e.preventDefault();
     
-    // 📋 Validate content before processing
-    if (!validateContent()) {
+    // 📋 Validate content input before processing
+    if (!validateContentInput()) {
       return;
     }
     
-    // 🚀 Set loading state and clear previous results
-    setLoading(true);
-    setResult("");
-    // 🎨 DEBUG: Starting content safety analysis
+    // 🚀 Set analyzing state and clear previous reports and errors
+    setIsAnalyzing(true);
+    setSafetyReport(""); // Clear previous safety reports
+    setError(null); // Clear previous errors
+    // 🎨 DEBUG: Starting content analysis process
 
     try {
-      // 🌐 Send request to backend API for content safety check
-      const apiResponse = await postData("/api/content/check", { text: content });
-      // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
+      // 🌐 Send request to backend API for content analysis
+      const analysisResponse = await postData("/api/content/check", { text: contentText });
+      // 🎨 DEBUG: API response received - {analysisResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (apiResponse.error) {
-        setResult(`❌ API Error: ${apiResponse.error}`);
-        // 🎨 DEBUG: API returned error - {apiResponse.error}
+      if (analysisResponse.error) {
+        // Handle different types of errors
+        if (analysisResponse.networkError) {
+          setError(`❌ Network Error: ${analysisResponse.error}`);
+        } else if (analysisResponse.status === 503) {
+          setError(`❌ Service Unavailable: ${analysisResponse.error}`);
+        } else if (analysisResponse.status === 400) {
+          setError(`❌ Invalid Request: ${analysisResponse.error}`);
+        } else {
+          setError(`❌ ${analysisResponse.error}${analysisResponse.details ? ` - ${analysisResponse.details}` : ''}`);
+        }
+        // 🎨 DEBUG: API returned error - {analysisResponse.error}
       } else {
-        setResult(apiResponse.report || "No safety report generated.");
-        // 🎨 DEBUG: Safety analysis completed successfully
+        setSafetyReport(analysisResponse.report || "No safety report available.");
+        // 🎨 DEBUG: Content analysis completed successfully
       }
-    } catch (error) {
+    } catch (analysisError) {
       // 🚨 Handle network or processing errors
-      setResult(`❌ Network Error: ${error.message || "Connection failed"}`);
-      // 🎨 DEBUG: Network error occurred - {error.message}
+      setError(`❌ System Error: ${analysisError.message || "Content safety service unavailable"}`);
+      // 🎨 DEBUG: Analysis error occurred - {analysisError.message}
     } finally {
-      // 🎯 Always reset loading state
-      setLoading(false);
-      // 🎨 DEBUG: Content safety analysis completed
+      // 🎯 Always reset analyzing state
+      setIsAnalyzing(false);
+      // 🎨 DEBUG: Content analysis process completed
     }
   };
 
   /**
-   * Render result content based on state
+   * Render safety report content based on state
    * Handles loading, empty, and result states
-   * @returns {JSX.Element} - Result content to display
+   * @returns {JSX.Element} - Safety report content to display
    */
-  const renderResult = () => {
-    // 🔄 Show loading indicator during processing
-    if (loading) {
+  const renderSafetyReport = () => {
+    // 🔄 Show loading indicator during analysis
+    if (isAnalyzing) {
       return (
-        <div className="loading-indicator">
-          <span className="spinner"></span>
-          Checking content safety...
+        <div className="analysis-status">
+          <span className="analysis-spinner"></span>
+          🔍 Analyzing content safety...
         </div>
       );
     }
     
-    // 📋 Show results if available
-    if (result) {
-      return result;
+    // 🚨 Show error message if there's an error
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
-    // 🎯 Show placeholder when no results are available
-    return "Results will appear here...";
+    // 📋 Show safety report if available
+    if (safetyReport) {
+      return safetyReport;
+    }
+    
+    // 🎯 Show placeholder when no report is available
+    return "Content safety analysis and recommendations will appear here...";
   };
 
-  // 🎯 TODO: Add content categorization feature
-  // 🎯 TODO: Implement history tracking for analyzed content
-  // 🎯 TODO: Add export functionality for safety reports
+  /**
+   * Render error message with appropriate styling
+   * @returns {JSX.Element|null} - Error message element or null
+   */
+  const renderErrorMessage = () => {
+    if (!error) return null;
+    
+    return (
+      <div className="error-message-container">
+        <div className="error-message">{error}</div>
+        {error.includes("Network error") && (
+          <div className="error-suggestion">
+            💡 Tip: Check your internet connection and make sure the backend server is running.
+          </div>
+        )}
+        {error.includes("Service Unavailable") && (
+          <div className="error-suggestion">
+            💡 Tip: The service may be temporarily unavailable. Please try again in a few minutes.
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // 🎯 TODO: Add content history feature
+  // 🎯 TODO: Implement content category filtering
+  // 🎯 TODO: Add save functionality for important reports
 
   return (
-    <section className="section-container safety-section" aria-labelledby="safety-title">
-      {/* 🎯 SECTION HEADER WITH ICON */}
-      <h3 id="safety-title" className="section-heading">
-        <svg className="heading-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
+    <section className="section-container safety-analyzer-section">
+      {/* 🎯 SECTION HEADER WITH ICON AND EMOJI */}
+      <h3 className="section-header">
+        <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
           <rect width="38" height="38" rx="10" fill="currentColor" />
-          <polygon points="15,12 28,19 15,26" fill="white" />
+          <path d="M19 10L22 15L27 16L23 20L24 25L19 22L14 25L15 20L11 16L16 15L19 10Z" fill="white" />
         </svg>
-        Content Safety Analyzer
+        🔍 Content Safety Checker
       </h3>
-      
-      {/* 🎯 CONTENT INPUT FORM */}
-      <form onSubmit={handleSubmit} className="component-form">
+
+      {/* 🎯 CONTENT ANALYSIS FORM */}
+      <form onSubmit={handleContentAnalysis} className="content-analysis-form">
         {/* 📝 CONTENT TEXT AREA */}
         <textarea
           rows={6}
-          value={content}
-          onChange={handleContentChange}
-          placeholder="Enter your video script or content for safety evaluation..."
-          disabled={loading}
-          className="component-textarea"
-          aria-label="Content to check for safety"
+          value={contentText}
+          onChange={handleContentInputChange}
+          placeholder="Paste your YouTube content (video description, comments, etc.) to check for policy compliance and safety concerns..."
+          disabled={isAnalyzing}
+          className="content-input"
         />
         
-        {/* 🚀 SUBMIT BUTTON */}
+        {/* 🚀 ANALYSIS SUBMIT BUTTON */}
         <button 
           type="submit" 
-          className="submit-button primary" 
-          disabled={loading}
-          aria-label={loading ? "Analyzing content" : "Run safety check"}
+          className="analysis-button primary" 
+          disabled={isAnalyzing}
         >
-          {loading ? "Analyzing Content..." : "Run Safety Check"}
+          {isAnalyzing ? "🔍 Analyzing..." : "Check Content Safety"}
         </button>
       </form>
-      
-      {/* 📊 ANALYSIS RESULTS DISPLAY */}
-      <div className="result-container result-card" role="status" aria-live="polite">
-        {renderResult()}
+
+      {/* 📊 SAFETY REPORT DISPLAY */}
+      <div className="safety-report-container result-card">
+        {renderSafetyReport()}
+        {renderErrorMessage()}
       </div>
     </section>
   );

@@ -32,6 +32,7 @@ const LegalContractAnalyzer = () => {
   const [processing, setProcessing] = useState(false);           // Processing state indicator
   const [file, setFile] = useState(null);                       // Uploaded PDF file
   const [fileError, setFileError] = useState("");               // File validation errors
+  const [error, setError] = useState(null);                     // API error state
 
   /**
    * Handle contract text input changes
@@ -40,6 +41,8 @@ const LegalContractAnalyzer = () => {
   const handleTextChange = (e) => {
     // 🎨 DEBUG: Contract text updated - {e.target.value.length} characters
     setContractText(e.target.value);
+    // Clear previous errors when user starts typing
+    if (error) setError(null);
   };
 
   /**
@@ -64,6 +67,8 @@ const LegalContractAnalyzer = () => {
     // 🎯 Clear any previous errors and set file
     setFileError("");
     setFile(uploadedFile);
+    // Clear previous errors when user uploads a file
+    if (error) setError(null);
     // 🎨 DEBUG: Valid PDF file uploaded - {uploadedFile.name}
   };
 
@@ -75,7 +80,7 @@ const LegalContractAnalyzer = () => {
   const validateInput = () => {
     // 🎯 Check if both text and file are empty
     if (!contractText.trim() && !file) {
-      setAnalysis("⚠️ Please provide contract text or upload a PDF file.");
+      setError("⚠️ Please provide contract text or upload a PDF file.");
       // 🎨 DEBUG: Input validation failed - no content provided
       return false;
     }
@@ -95,9 +100,10 @@ const LegalContractAnalyzer = () => {
     // 📋 Validate input before processing
     if (!validateInput()) return;
 
-    // 🚀 Set processing state and clear previous analysis
+    // 🚀 Set processing state and clear previous analysis and errors
     setProcessing(true);
     setAnalysis("");
+    setError(null);
     // 🎨 DEBUG: Starting contract analysis process
 
     try {
@@ -117,7 +123,16 @@ const LegalContractAnalyzer = () => {
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setAnalysis(`❌ Analysis Error: ${apiResponse.error}`);
+        // Handle different types of errors
+        if (apiResponse.networkError) {
+          setError(`❌ Network Error: ${apiResponse.error}`);
+        } else if (apiResponse.status === 503) {
+          setError(`❌ Service Unavailable: ${apiResponse.error}`);
+        } else if (apiResponse.status === 400) {
+          setError(`❌ Invalid Request: ${apiResponse.error}`);
+        } else {
+          setError(`❌ ${apiResponse.error}${apiResponse.details ? ` - ${apiResponse.details}` : ''}`);
+        }
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setAnalysis(apiResponse.summary || "No analysis generated.");
@@ -125,7 +140,7 @@ const LegalContractAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setAnalysis(`❌ Processing Error: ${error.message || "Service unavailable"}`);
+      setError(`❌ Processing Error: ${error.message || "Service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {error.message}
     } finally {
       // 🎯 Always reset processing state
@@ -150,6 +165,11 @@ const LegalContractAnalyzer = () => {
       );
     }
     
+    // 🚨 Show error message if there's an error
+    if (error) {
+      return <div className="error-message">{error}</div>;
+    }
+    
     // 📋 Show analysis results if available
     if (analysis) {
       return analysis;
@@ -157,6 +177,30 @@ const LegalContractAnalyzer = () => {
     
     // 🎯 Show placeholder when no analysis is available
     return "Contract analysis results will be displayed here...";
+  };
+
+  /**
+   * Render error message with appropriate styling
+   * @returns {JSX.Element|null} - Error message element or null
+   */
+  const renderErrorMessage = () => {
+    if (!error) return null;
+    
+    return (
+      <div className="error-message-container">
+        <div className="error-message">{error}</div>
+        {error.includes("Network error") && (
+          <div className="error-suggestion">
+            💡 Tip: Check your internet connection and make sure the backend server is running.
+          </div>
+        )}
+        {error.includes("Service Unavailable") && (
+          <div className="error-suggestion">
+            💡 Tip: The service may be temporarily unavailable. Please try again in a few minutes.
+          </div>
+        )}
+      </div>
+    );
   };
 
   // 🎯 TODO: Add caching mechanism for repeated contract analyses
@@ -221,6 +265,7 @@ const LegalContractAnalyzer = () => {
       {/* 📊 ANALYSIS RESULTS DISPLAY */}
       <div className="result-container result-card" role="status" aria-live="polite">
         {renderAnalysis()}
+        {renderErrorMessage()}
       </div>
     </section>
   );

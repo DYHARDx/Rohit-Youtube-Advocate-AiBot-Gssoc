@@ -28,6 +28,7 @@ const YouTubePolicyAdvisor = () => {
   const [policyQuestion, setPolicyQuestion] = useState("");      // User policy question
   const [policyAnswer, setPolicyAnswer] = useState("");          // Policy answer from API
   const [isResearching, setIsResearching] = useState(false);     // Research processing state
+  const [error, setError] = useState(null);                     // Error state for API calls
 
   /**
    * Handle policy question input changes
@@ -37,6 +38,8 @@ const YouTubePolicyAdvisor = () => {
   const handlePolicyInputChange = (e) => {
     // 🎨 DEBUG: Policy question updated - {e.target.value.length} characters
     setPolicyQuestion(e.target.value);
+    // Clear previous errors when user starts typing
+    if (error) setError(null);
   };
 
   /**
@@ -47,7 +50,7 @@ const YouTubePolicyAdvisor = () => {
   const validatePolicyInput = () => {
     // 🎯 Check if policy question is empty or only whitespace
     if (!policyQuestion.trim()) {
-      setPolicyAnswer("⚠️ Please enter a question about YouTube policies.");
+      setError("⚠️ Please enter a question about YouTube policies.");
       // 🎨 DEBUG: Policy input validation failed - no question provided
       return false;
     }
@@ -69,9 +72,10 @@ const YouTubePolicyAdvisor = () => {
       return;
     }
     
-    // 🚀 Set researching state and clear previous answers
+    // 🚀 Set researching state and clear previous answers and errors
     setIsResearching(true);
     setPolicyAnswer(""); // Clear previous policy answers
+    setError(null); // Clear previous errors
     // 🎨 DEBUG: Starting policy research process
 
     try {
@@ -81,7 +85,16 @@ const YouTubePolicyAdvisor = () => {
 
       // 📋 Handle API response
       if (researchResponse.error) {
-        setPolicyAnswer(`❌ Research Error: ${researchResponse.error}`);
+        // Handle different types of errors
+        if (researchResponse.networkError) {
+          setError(`❌ Network Error: ${researchResponse.error}`);
+        } else if (researchResponse.status === 503) {
+          setError(`❌ Service Unavailable: ${researchResponse.error}`);
+        } else if (researchResponse.status === 400) {
+          setError(`❌ Invalid Request: ${researchResponse.error}`);
+        } else {
+          setError(`❌ ${researchResponse.error}${researchResponse.details ? ` - ${researchResponse.details}` : ''}`);
+        }
         // 🎨 DEBUG: API returned error - {researchResponse.error}
       } else {
         setPolicyAnswer(researchResponse.answer || "No policy information available.");
@@ -89,7 +102,7 @@ const YouTubePolicyAdvisor = () => {
       }
     } catch (researchError) {
       // 🚨 Handle network or processing errors
-      setPolicyAnswer(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
+      setError(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
       // 🎨 DEBUG: Research error occurred - {researchError.message}
     } finally {
       // 🎯 Always reset researching state
@@ -114,6 +127,11 @@ const YouTubePolicyAdvisor = () => {
       );
     }
     
+    // 🚨 Show error message if there's an error
+    if (error) {
+      return <div className="error-message">{error}</div>;
+    }
+    
     // 📋 Show policy answer if available
     if (policyAnswer) {
       return policyAnswer;
@@ -123,6 +141,30 @@ const YouTubePolicyAdvisor = () => {
     return "Policy insights and answers will appear here...";
   };
 
+  /**
+   * Render error message with appropriate styling
+   * @returns {JSX.Element|null} - Error message element or null
+   */
+  const renderErrorMessage = () => {
+    if (!error) return null;
+    
+    return (
+      <div className="error-message-container">
+        <div className="error-message">{error}</div>
+        {error.includes("Network error") && (
+          <div className="error-suggestion">
+            💡 Tip: Check your internet connection and make sure the backend server is running.
+          </div>
+        )}
+        {error.includes("Service Unavailable") && (
+          <div className="error-suggestion">
+            💡 Tip: The service may be temporarily unavailable. Please try again in a few minutes.
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // 🎯 TODO: Add policy question history feature
   // 🎯 TODO: Implement policy category filtering
   // 🎯 TODO: Add bookmark functionality for important answers
@@ -130,6 +172,7 @@ const YouTubePolicyAdvisor = () => {
   return (
     <section className="section-container policy-advisor-section">
       {/* 🎯 SECTION HEADER WITH ICON AND EMOJI */}
+
       <h3 className="section-header">
         <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
           <rect width="38" height="38" rx="10" fill="currentColor" />
@@ -139,6 +182,7 @@ const YouTubePolicyAdvisor = () => {
       </h3>
 
       {/* 🎯 POLICY RESEARCH FORM */}
+
       <form onSubmit={handlePolicyResearch} className="policy-research-form">
         {/* ❓ POLICY QUESTION TEXT AREA */}
         <textarea
@@ -163,6 +207,7 @@ const YouTubePolicyAdvisor = () => {
       {/* 📊 POLICY RESPONSE DISPLAY */}
       <div className="policy-response-container result-card">
         {renderPolicyResponse()}
+        {renderErrorMessage()}
       </div>
     </section>
   );

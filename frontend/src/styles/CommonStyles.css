@@ -34,7 +34,9 @@
 
 /* 🎯 STANDARDIZED TEXTAREA STYLING
  * ================================ */
-.section-container .component-textarea {
+.section-container .component-textarea,
+.policy-question-input,
+.content-input {
   width: 100%;
   padding: 1rem;
   border: 2px solid var(--input-border-color);
@@ -60,6 +62,8 @@
 /* 🎯 INPUT FOCUS STATES
  * ===================== */
 .section-container .component-textarea:focus,
+.policy-question-input:focus,
+.content-input:focus,
 .section-container .component-file-input:focus {
   outline: none;
   border-color: var(--primary-accent-hover);
@@ -67,7 +71,10 @@
 
 /* 🎯 SUBMIT BUTTON STYLING
  * ======================== */
-.section-container .submit-button {
+.section-container .submit-button,
+.research-button,
+.analysis-button,
+.generate-invoice-button {
   margin-top: 1rem;
   background-color: var(--primary-accent);
   color: var(--primary-text-on-accent);
@@ -79,34 +86,48 @@
   transition: background-color 0.3s ease;
 }
 
-.section-container .submit-button:hover {
+.section-container .submit-button:hover,
+.research-button:hover,
+.analysis-button:hover,
+.generate-invoice-button:hover {
   background-color: var(--primary-accent-hover);
 }
 
-.section-container .submit-button:disabled {
+.section-container .submit-button:disabled,
+.research-button:disabled,
+.analysis-button:disabled,
+.generate-invoice-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 /* 🎯 RESULT CARD STYLING
  * ====================== */
-.section-container .result-card {
+.section-container .result-card,
+.policy-response-container,
+.safety-report-container {
   margin-top: 1.5rem;
   padding: 1rem;
   background-color: var(--card-background);
   border-radius: 10px;
   font-size: 1rem;
+  min-height: 100px;
+  transition: all 0.3s ease;
 }
 
 /* 🎯 LOADING INDICATOR
  * ==================== */
-.loading-indicator {
+.loading-indicator,
+.analysis-status, 
+.research-status {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.spinner {
+.spinner,
+.analysis-spinner, 
+.research-spinner {
   width: 1rem;
   height: 1rem;
   border: 2px solid transparent;
@@ -136,7 +157,33 @@
   height: 1rem;
 }
 
-/* ========== EXTENDED FORM ELEMENTS ========== */
+/* 🎯 NEW ERROR MESSAGE STYLING
+ * =========================== */
+.error-message {
+  color: #e74c3c;
+  background-color: #fdf2f2;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.error-message-container {
+  margin: 10px 0;
+}
+
+.error-suggestion {
+  color: #7b8794;
+  background-color: #f8f9fa;
+  border: 1px solid #e1e5eb;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
 
 /* 🎯 INPUT FIELD STYLING
  * ====================== */
@@ -162,6 +209,8 @@
   font-size: 1rem;
 }
 
+/* ========== EXTENDED FORM ELEMENTS ========== */
+
 /* ========== RESPONSIVE DESIGN BREAKPOINTS ========== */
 
 /* 🎯 TABLET BREAKPOINT (1024px and below)
@@ -176,12 +225,17 @@
   }
 
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.95rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     font-size: 0.95rem;
     padding: 0.7rem 1.4rem;
   }
@@ -201,18 +255,25 @@
   }
 
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.9rem;
     padding: 0.9rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     width: 100%;
     font-size: 0.9rem;
   }
 
-  .result-card {
+  .result-card,
+  .policy-response-container,
+  .safety-report-container {
     font-size: 0.95rem;
   }
 }
@@ -229,13 +290,18 @@
   }
 
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.85rem;
     padding: 0.8rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     font-size: 0.85rem;
     padding: 0.6rem 1.2rem;
   }
