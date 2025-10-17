@@ -42,7 +42,6 @@
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
-
   transition: color 0.2s ease-in-out;
 }
 
