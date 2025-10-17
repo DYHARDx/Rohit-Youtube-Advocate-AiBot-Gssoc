@@ -56,17 +56,65 @@
   color: var(--accent-color);
 }
 
+.newsletter-section h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.newsletter-input {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--input-background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.subscribe-button {
+  padding: 0.75rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.subscribe-button:hover {
+  background-color: var(--accent-color-hover, #1d4ed8);
+}
+
+.subscription-success {
+  color: var(--success-color, #10b981);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
 .social-links {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.social-links a {
-  font-size: 1.5rem;
+.social-icon {
+  width: 24px;
+  height: 24px;
   transition: transform 0.3s ease;
 }
 
-.social-links a:hover {
+.social-links a:hover .social-icon {
   transform: scale(1.1);
 }
 
@@ -89,17 +137,31 @@
 .footer-links {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.footer-links a {
+.footer-links a,
+.back-to-top {
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.back-to-top:hover {
   color: var(--accent-color);
+}
+
+.back-to-top {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 /* Dark theme adjustments */
@@ -108,7 +170,9 @@
   --text-color: #ffffff;
   --text-secondary: #b0b0b0;
   --accent-color: #4a9eff;
+  --accent-color-hover: #3a8aef;
   --border-color: #333;
+  --input-background: #2a2a2a;
 }
 
 /* Light theme adjustments */
@@ -117,7 +181,9 @@
   --text-color: #333333;
   --text-secondary: #666666;
   --accent-color: #2563eb;
+  --accent-color-hover: #1d4ed8;
   --border-color: #e5e5e5;
+  --input-background: #f8f9fa;
 }
 
 /* Responsive design */
@@ -134,5 +200,25 @@
 
   .footer-links {
     justify-content: center;
+  }
+  
+  .newsletter-form {
+    align-items: center;
+  }
+  
+  .newsletter-input,
+  .subscribe-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .social-links {
+    justify-content: center;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
