@@ -6,7 +6,7 @@ const Footer = () => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <footer className={`footer ${theme}`}>
+    <footer className={`footer ${theme}`} role="contentinfo">
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-section">

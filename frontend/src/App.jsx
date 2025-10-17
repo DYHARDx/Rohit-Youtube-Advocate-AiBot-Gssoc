@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
 import LegalContractAnalyzer from "./components/ContractExplainer";
@@ -31,19 +31,103 @@ const App = () => {
 const AppContent = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
+  const skipLinkRef = useRef(null);
 
   // 🎯 MOBILE NAVIGATION HANDLERS
   // ==============================
   const toggleMenu = () => setMenuOpen((prev) => !prev);
+  
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuOpen && navRef.current && !navRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuOpen]);
+
+  // Handle keyboard navigation for mobile menu
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // ESC key to close menu
+      if (event.key === 'Escape' && menuOpen) {
+        setMenuOpen(false);
+        // Focus hamburger button after closing
+        const hamburgerButton = document.querySelector('.hamburger');
+        if (hamburgerButton) hamburgerButton.focus();
+      }
+      
+      // Tab key handling for focus trap
+      if (menuOpen && event.key === 'Tab') {
+        const focusableElements = navRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            event.preventDefault();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen]);
+
   // 🎨 DEBUG: Mobile menu state management initialized
   const handleNavLinkClick = () => {
     setMenuOpen(false);
   };
 
+  // Focus main content when skip link is clicked
+  const handleSkipLinkClick = (e) => {
+    e.preventDefault();
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.setAttribute('tabindex', '-1');
+      mainContent.focus();
+      mainContent.removeAttribute('tabindex');
+    }
+  };
+
   return (
     <div className="app-wrapper">
+      {/* ========== SKIP TO CONTENT LINK ========== */}
+      <a 
+        href="#main-content" 
+        className="skip-link"
+        onClick={handleSkipLinkClick}
+        ref={skipLinkRef}
+      >
+        Skip to main content
+      </a>
+
       {/* ========== NAVIGATION COMPONENT ========== */}
-      <nav className="navbar" role="navigation" aria-label="Main navigation">
+      <nav 
+        className="navbar" 
+        role="navigation" 
+        aria-label="Main navigation"
+        ref={navRef}
+      >
         {/* 🎯 BRAND LOGO */}
         <div className="logo">YouTube Advisor</div>
 
@@ -51,9 +135,10 @@ const AppContent = () => {
         <button 
           className="hamburger" 
           onClick={toggleMenu} 
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-controls="mobile-nav-menu"
           aria-expanded={menuOpen}
+          aria-haspopup="true"
         >
           {menuOpen ? '✖' : '☰'}
         </button>
@@ -83,7 +168,7 @@ const AppContent = () => {
           <li role="none">
             <button 
               className="theme-toggle-nav" 
-              onClick={toggleTheme} 
+              onClick={() => { toggleTheme(); setMenuOpen(false); }} 
               title="Toggle theme"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
@@ -94,7 +179,7 @@ const AppContent = () => {
       </nav>
 
       {/* ========== MAIN CONTENT AREA ========== */}
-      <main className="main-content" role="main">
+      <main id="main-content" className="main-content" role="main" tabIndex="-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/content-safety" element={<ContentSafetyAnalyzer />} />
