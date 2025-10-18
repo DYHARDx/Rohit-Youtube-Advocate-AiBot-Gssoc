@@ -26,6 +26,104 @@
   color: var(--primary-accent);
 }
 
+.section-container h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+  color: var(--accent-color);
+}
+
+.section-container h5 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.8rem;
+  color: var(--text-color);
+}
+
+/* 🎯 PARAGRAPH STYLING
+ * =================== */
+.section-container p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* 🎯 LIST STYLING
+ * ============== */
+.section-container ul, 
+.section-container ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.section-container li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.section-container ul li {
+  list-style-type: disc;
+}
+
+.section-container ol li {
+  list-style-type: decimal;
+}
+
+/* 🎯 LINK STYLING
+ * ============== */
+.section-container a {
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+
+.section-container a:hover {
+  text-decoration: underline;
+}
+
+/* 🎯 CODE BLOCK STYLING
+ * ==================== */
+.section-container code {
+  background-color: var(--card-background);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--primary-accent);
+}
+
+.section-container pre {
+  background-color: var(--card-background);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.section-container pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--text-color);
+}
+
+/* 🎯 TABLE STYLING
+ * =============== */
+.section-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.section-container th,
+.section-container td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+
+.section-container th {
+  background-color: var(--card-background);
+  font-weight: 600;
+}
+
 /* 🎯 FORM ELEMENTS
  * ================ */
 .section-container form {
@@ -175,6 +273,14 @@
     font-size: 2.2rem;
   }
 
+  .section-container h4 {
+    font-size: 1.6rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.2rem;
+  }
+
   .section-container .component-textarea,
   .section-container .component-file-input,
   .input-field {
@@ -198,6 +304,14 @@
     font-size: 2rem;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .section-container h4 {
+    font-size: 1.5rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.1rem;
   }
 
   .section-container .component-textarea,
@@ -226,6 +340,10 @@
 
   .section-container h3 {
     font-size: 1.75rem;
+  }
+
+  .section-container h4 {
+    font-size: 1.4rem;
   }
 
   .section-container .component-textarea,
