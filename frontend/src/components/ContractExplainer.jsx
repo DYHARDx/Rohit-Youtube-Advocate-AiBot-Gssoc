@@ -32,6 +32,7 @@ const LegalContractAnalyzer = () => {
   const [processing, setProcessing] = useState(false);           // Processing state indicator
   const [file, setFile] = useState(null);                       // Uploaded PDF file
   const [fileError, setFileError] = useState("");               // File validation errors
+  const [error, setError] = useState("");                       // General error messages
 
   /**
    * Handle contract text input changes
@@ -40,6 +41,9 @@ const LegalContractAnalyzer = () => {
   const handleTextChange = (e) => {
     // 🎨 DEBUG: Contract text updated - {e.target.value.length} characters
     setContractText(e.target.value);
+    // Clear errors when user starts typing
+    if (error) setError("");
+    if (fileError) setFileError("");
   };
 
   /**
@@ -63,6 +67,7 @@ const LegalContractAnalyzer = () => {
 
     // 🎯 Clear any previous errors and set file
     setFileError("");
+    setError("");
     setFile(uploadedFile);
     // 🎨 DEBUG: Valid PDF file uploaded - {uploadedFile.name}
   };
@@ -75,7 +80,7 @@ const LegalContractAnalyzer = () => {
   const validateInput = () => {
     // 🎯 Check if both text and file are empty
     if (!contractText.trim() && !file) {
-      setAnalysis("⚠️ Please provide contract text or upload a PDF file.");
+      setError("⚠️ Please provide contract text or upload a PDF file.");
       // 🎨 DEBUG: Input validation failed - no content provided
       return false;
     }
@@ -98,6 +103,7 @@ const LegalContractAnalyzer = () => {
     // 🚀 Set processing state and clear previous analysis
     setProcessing(true);
     setAnalysis("");
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting contract analysis process
 
     try {
@@ -112,12 +118,12 @@ const LegalContractAnalyzer = () => {
       }
 
       // 🌐 Send request to backend API for contract simplification
-      const apiResponse = await postData("/api/contract/simplify", payload);
+      const apiResponse = await postData("/api/contract/simplify", payload, 20000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setAnalysis(`❌ Analysis Error: ${apiResponse.error}`);
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setAnalysis(apiResponse.summary || "No analysis generated.");
@@ -125,7 +131,7 @@ const LegalContractAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setAnalysis(`❌ Processing Error: ${error.message || "Service unavailable"}`);
+      setError(`❌ Processing Error: ${error.message || "Service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {error.message}
     } finally {
       // 🎯 Always reset processing state
@@ -148,6 +154,11 @@ const LegalContractAnalyzer = () => {
           Analyzing legal contract terms...
         </div>
       );
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show analysis results if available

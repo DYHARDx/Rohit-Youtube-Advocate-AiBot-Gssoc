@@ -4,7 +4,12 @@ from vector_database import get_policy_response, simplify_contract, check_conten
 from flask_cors import CORS
 from weasyprint import HTML
 import io
+import logging
+import time
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # 🚀 Initialize Flask Application
 # ================================
@@ -17,6 +22,9 @@ app = Flask(
     static_folder="static",
     template_folder="templates"
 )
+
+# Enable CORS for all routes
+CORS(app)
 
 # 🎯 TODO: Add configuration management system
 # Future enhancement: Move to config.py for better organization
@@ -45,11 +53,16 @@ def simplify():
     
     Enhancement: Added input sanitization and detailed error handling
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("Contract simplification failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     text = data.get("text", "")
     
     # 🎯 Input validation to ensure contract text is provided
     if not text:
+
         # 🚨 Enhanced error logging for debugging purposes
         print("❌ Error: Contract simplification attempted without text input")
         return jsonify({"error": "Contract text is required"}), 400
@@ -74,11 +87,16 @@ def content_check():
     
     Improvement: Added enhanced validation and detailed logging
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("Content safety check failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     text = data.get("text", "")
     
     # 🎯 Validate that content text is provided for analysis
     if not text:
+
         # 🚨 Enhanced error reporting for debugging
         print("❌ Error: Content safety check attempted without text input")
         return jsonify({"error": "Content text is required for analysis"}), 400
@@ -93,6 +111,7 @@ def content_check():
     return jsonify({"report": report})
 
 
+
 @app.route("/api/invoice/generate", methods=["POST"])
 def invoice():
     """
@@ -102,7 +121,11 @@ def invoice():
     
     Enhancement: Added comprehensive parameter validation and error details
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("Invoice generation failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     try:
         # 📊 Extract and validate invoice parameters
         brand = data["brand"]
@@ -116,6 +139,7 @@ def invoice():
         print(f"🧾 Invoice generation initiated for brand: {brand}")
     except (KeyError, ValueError) as e:
         # 🚨 Enhanced error reporting for invalid input parameters
+
         print(f"❌ Error in invoice generation: {str(e)}")
         return jsonify({"error": "Invalid input parameters", "details": str(e)}), 400
 
@@ -128,6 +152,7 @@ def invoice():
 
 
 
+
 @app.route("/api/invoice/download", methods=["POST"])
 def download_invoice_pdf():
     """
@@ -137,11 +162,16 @@ def download_invoice_pdf():
     
     Improvement: Added input validation and enhanced error handling
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("PDF generation failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     invoice_text = data.get("invoice_text", "")
     
     # 🎯 Validate that invoice text is provided for PDF generation
     if not invoice_text:
+
         # 🚨 Enhanced error logging for debugging
         print("❌ Error: PDF generation attempted without invoice text")
         return jsonify({"error": "No invoice text provided"}), 400
@@ -160,6 +190,7 @@ def download_invoice_pdf():
     )
 
 
+
 @app.route("/api/youtube/policy", methods=["POST"])
 def youtube_policy():
     """
@@ -169,12 +200,16 @@ def youtube_policy():
     
     Enhancement: Added input validation and processing confirmation
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("Policy query failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     question = data.get("question", "")
     
     # 🎯 Validate that policy question is provided
     if not question:
-        # 🚨 Enhanced error logging for debugging
+
         print("❌ Error: YouTube policy query attempted without question")
         return jsonify({"error": "Policy question is required"}), 400
     
@@ -190,6 +225,7 @@ def youtube_policy():
     return jsonify({"answer": answer})
 
 
+
 @app.route("/api/ama/ask", methods=["POST"])
 def ama():
     """
@@ -199,11 +235,16 @@ def ama():
     
     Improvement: Added enhanced logging and input validation
     """
+    start_time = time.time()
     data = request.json
+    if data is None:
+        logger.warning("AMA query failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
     question = data.get("question", "")
     
     # 🎯 Validate that question is provided for AMA session
     if not question:
+
         # 🚨 Enhanced error logging for debugging
         print("❌ Error: AMA query attempted without question")
         return jsonify({"error": "Question is required for AMA"}), 400
@@ -216,6 +257,7 @@ def ama():
     # 🎨 DEBUG: AMA response generated successfully
     print("✅ AMA query processed successfully")
     return jsonify({"answer": answer})
+
 
 
 
@@ -235,7 +277,7 @@ def health_check():
         "status": "healthy",
         "service": "Flask API Server",
         "version": "1.0.0",
-        "timestamp": "2024-01-01T00:00:00Z"  # 🎯 TODO: Add dynamic timestamp
+        "timestamp": time.time()
     })
 
 
@@ -277,10 +319,10 @@ def not_found(error):
         JSON response with error details and 404 status code
     """
     # 🎨 DEBUG: 404 error occurred - endpoint not found
+
     print("🚨 404 Error: Endpoint not found")
+
     return jsonify({"error": "Endpoint not found", "code": 404}), 404
-
-
 
 
 @app.errorhandler(500)
@@ -295,7 +337,9 @@ def internal_error(error):
     # 🎯 TODO: Add error logging and monitoring integration
     # Enhancement: Integrate with Sentry or similar error tracking service
     # 🎨 DEBUG: 500 internal server error occurred
+
     print("🚨 500 Error: Internal server error occurred")
+n
     return jsonify({"error": "Internal server error", "code": 500}), 500
 
 
@@ -332,7 +376,7 @@ if __name__ == "__main__":
     print("📡 Server running on http://localhost:5000")
     print("🔧 Debug mode: ENABLED")
     
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 # 🎯 Future enhancement placeholder
 # TODO: Add application factory pattern for better testing
