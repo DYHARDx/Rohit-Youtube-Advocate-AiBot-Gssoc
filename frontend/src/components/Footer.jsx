@@ -19,7 +19,7 @@ const Footer = () => {
               <li><a href="https://www.youtube.com/yt/about/policies/" target="_blank" rel="noopener noreferrer">YouTube Policies</a></li>
               <li><a href="https://creatoracademy.youtube.com/" target="_blank" rel="noopener noreferrer">Creator Academy</a></li>
               <li><a href="https://github.com/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-              <li><a href="/contact">Contact</a></li>
+              <li><a href="mailto:contact@youtube-advisor.com" aria-label="Send email to contact">Contact</a></li>
             </ul>
           </div>
           <div className="footer-section">
@@ -32,11 +32,21 @@ const Footer = () => {
             </ul>
           </div>
           <div className="footer-section">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="/code-of-conduct">Code of Conduct</a></li>
+              <li><a href="/security">Security Policy</a></li>
+              <li><a href="/contributing">Contributing</a></li>
+              <li><a href="/learn">Learn</a></li>
+            </ul>
+          </div>
+          <div className="footer-section">
             <h4>Follow Us</h4>
             <div className="social-links">
               <a href="https://twitter.com/rohit_youtube" target="_blank" rel="noopener noreferrer" aria-label="Twitter">🐦</a>
               <a href="https://linkedin.com/in/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">💼</a>
               <a href="https://youtube.com/@rohit-advocate" target="_blank" rel="noopener noreferrer" aria-label="YouTube">📺</a>
+              <a href="https://github.com/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer" aria-label="GitHub">💻</a>
             </div>
           </div>
         </div>

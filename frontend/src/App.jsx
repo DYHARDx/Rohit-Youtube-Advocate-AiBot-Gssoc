@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
+import { ErrorProvider } from './context/ErrorContext';
 import LegalContractAnalyzer from "./components/ContractExplainer";
 import ContentSafetyAnalyzer from "./components/ContentSafetyChecker";
 import InvoiceGenerator from "./components/InvoiceGenerator";
@@ -8,6 +9,10 @@ import YouTubeAdvisorAMA from "./components/AMA";
 import YouTubePolicyQA from "./components/YouTubePolicyQA";
 import LandingPage from "./components/LandingPage";
 import Footer from "./components/Footer";
+import CodeOfConduct from "./pages/CodeOfConduct";
+import SecurityPolicy from "./pages/SecurityPolicy";
+import Contributing from "./pages/Contributing";
+import Learn from "./pages/Learn";
 import "./styles/Navbar.css";
 import "./styles/LandingPage.css";
 import "./styles/Footer.css";
@@ -18,9 +23,11 @@ import './styles/theme.css';
 const App = () => {
   return (
     <ThemeProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ErrorProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ErrorProvider>
     </ThemeProvider>
   );
 };
@@ -187,6 +194,10 @@ const AppContent = () => {
           <Route path="/invoice-generator" element={<InvoiceGenerator />} />
           <Route path="/ama" element={<YouTubeAdvisorAMA />} />
           <Route path="/policy-qa" element={<YouTubePolicyQA />} />
+          <Route path="/code-of-conduct" element={<CodeOfConduct />} />
+          <Route path="/security" element={<SecurityPolicy />} />
+          <Route path="/contributing" element={<Contributing />} />
+          <Route path="/learn" element={<Learn />} />
         </Routes>
       </main>
 
