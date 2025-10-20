@@ -74,6 +74,9 @@
   padding: 0.25rem 0;
 
   display: inline-block;
+  border-radius: 4px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .footer-section ul a:hover {
@@ -119,6 +122,11 @@
   border-color: var(--primary-accent);
   box-shadow: 0 4px 8px var(--image-shadow);
 
+}
+
+.social-links a:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .social-links a:focus {

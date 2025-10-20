@@ -103,6 +103,11 @@ const AppContent = () => {
   // 🎨 DEBUG: Mobile menu state management initialized
   const handleNavLinkClick = () => {
     setMenuOpen(false);
+    // Return focus to main content after navigation
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.focus();
+    }
   };
 
   // Focus main content when skip link is clicked
@@ -147,28 +152,75 @@ const AppContent = () => {
           aria-expanded={menuOpen}
           aria-haspopup="true"
         >
-          {menuOpen ? '✖' : '☰'}
+          <span aria-hidden="true">{menuOpen ? '✖' : '☰'}</span>
         </button>
 
         {/* 🎯 NAVIGATION LINKS */}
-        <ul id="mobile-nav-menu" className={`nav-links ${menuOpen ? 'active' : ''}`} role="menubar">
+        <ul 
+          id="mobile-nav-menu" 
+          className={`nav-links ${menuOpen ? 'active' : ''}`} 
+          role="menubar"
+          ref={menuRef}
+        >
           <li role="none">
-            <NavLink to="/" onClick={handleNavLinkClick} role="menuitem">Home</NavLink>
+            <NavLink 
+              to="/" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/' ? 'page' : undefined}
+            >
+              Home
+            </NavLink>
           </li>
           <li role="none">
-            <NavLink to="/content-safety" onClick={handleNavLinkClick} role="menuitem">Content Safety</NavLink>
+            <NavLink 
+              to="/content-safety" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/content-safety' ? 'page' : undefined}
+            >
+              Content Safety
+            </NavLink>
           </li>
           <li role="none">
-            <NavLink to="/contract-explainer" onClick={handleNavLinkClick} role="menuitem">Contract Explainer</NavLink>
+            <NavLink 
+              to="/contract-explainer" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/contract-explainer' ? 'page' : undefined}
+            >
+              Contract Explainer
+            </NavLink>
           </li>
           <li role="none">
-            <NavLink to="/invoice-generator" onClick={handleNavLinkClick} role="menuitem">Invoice Generator</NavLink>
+            <NavLink 
+              to="/invoice-generator" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/invoice-generator' ? 'page' : undefined}
+            >
+              Invoice Generator
+            </NavLink>
           </li>
           <li role="none">
-            <NavLink to="/ama" onClick={handleNavLinkClick} role="menuitem">Ask Me Anything</NavLink>
+            <NavLink 
+              to="/ama" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/ama' ? 'page' : undefined}
+            >
+              Ask Me Anything
+            </NavLink>
           </li>
           <li role="none">
-            <NavLink to="/policy-qa" onClick={handleNavLinkClick} role="menuitem">Policy Q&A</NavLink>
+            <NavLink 
+              to="/policy-qa" 
+              onClick={handleNavLinkClick} 
+              role="menuitem"
+              aria-current={window.location.pathname === '/policy-qa' ? 'page' : undefined}
+            >
+              Policy Q&A
+            </NavLink>
           </li>
           
           {/* 🎯 THEME TOGGLE BUTTON */}
@@ -179,7 +231,7 @@ const AppContent = () => {
               title="Toggle theme"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              <span aria-hidden="true">{theme === 'light' ? '🌙' : '☀️'}</span>
             </button>
           </li>
         </ul>
