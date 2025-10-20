@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import { ThemeProvider, ThemeContext } from './context/ThemeContext';
+import { ErrorProvider } from './context/ErrorContext';
 import LegalContractAnalyzer from "./components/ContractExplainer";
 import ContentSafetyAnalyzer from "./components/ContentSafetyChecker";
 import InvoiceGenerator from "./components/InvoiceGenerator";
@@ -22,9 +23,11 @@ import './styles/theme.css';
 const App = () => {
   return (
     <ThemeProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ErrorProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ErrorProvider>
     </ThemeProvider>
   );
 };

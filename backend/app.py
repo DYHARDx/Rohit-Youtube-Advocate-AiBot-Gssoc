@@ -2,7 +2,6 @@
 from flask import Flask, request, jsonify, render_template, send_file
 from vector_database import handle_policy_query, simplify_contract_text, analyze_content_safety, create_professional_invoice, process_legal_assistant_query
 from flask_cors import CORS
-from weasyprint import HTML
 import io
 import logging
 import traceback
@@ -33,6 +32,61 @@ n
 # Future enhancement: Move to config.py for better organization
 # Suggestion: Consider using environment-specific configuration files
 
+# ==================== ERROR HANDLING ====================
+
+@app.errorhandler(400)
+def bad_request(error):
+    """
+    🚨 Handle 400 errors with consistent JSON response
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 400 status code
+    """
+    logger.error(f"400 Bad Request: {error}")
+    return jsonify({"error": "Bad Request", "message": str(error), "code": 400}), 400
+
+@app.errorhandler(404)
+def not_found(error):
+    """
+    🚨 Handle 404 errors with consistent JSON response
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 404 status code
+    """
+    logger.error(f"404 Not Found: {error}")
+    return jsonify({"error": "Endpoint not found", "message": "The requested endpoint does not exist", "code": 404}), 404
+
+@app.errorhandler(422)
+def unprocessable_entity(error):
+    """
+    🚨 Handle 422 errors with consistent JSON response
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 422 status code
+    """
+    logger.error(f"422 Unprocessable Entity: {error}")
+    return jsonify({"error": "Unprocessable Entity", "message": str(error), "code": 422}), 422
+
+@app.errorhandler(500)
+def internal_error(error):
+    """
+    🚨 Handle 500 errors with user-friendly message
+    Args:
+        error: The error object from Flask
+    Returns:
+        JSON response with error details and 500 status code
+    """
+    logger.error(f"500 Internal Server Error: {error}")
+    logger.error(traceback.format_exc())
+    return jsonify({
+        "error": "Internal server error", 
+        "message": "An unexpected error occurred. Please try again later.",
+        "code": 500
+    }), 500
+
 # ==================== ROUTE DEFINITIONS ====================
 
 @app.route("/")
@@ -45,7 +99,6 @@ def index():
     # 📊 Monitoring: Page view counter could be implemented here
     print("🎨 Debug: Main advisor interface accessed")
     return render_template("advisor.html")
-
 
 @app.route("/api/contract/simplify", methods=["POST"])
 def simplify():
@@ -145,9 +198,9 @@ def invoice():
             return jsonify({"error": "Invalid JSON data"}), 400
 
         # 📊 Extract and validate invoice parameters
-        brand = data["brand"]
-        service = data["service"]
-        amount = float(data["amount"])
+        brand = data.get("brand")
+        service = data.get("service")
+        amount = data.get("amount")
         include_gst = data.get("include_gst", False)
         
 
@@ -305,7 +358,6 @@ def health_check():
         logger.error(f"Health check failed: {str(e)}")
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
 
-
 @app.route("/api/debug/info", methods=["GET"])
 def debug_info():
     """
@@ -328,7 +380,8 @@ def debug_info():
             "/api/youtube/policy",
             "/api/ama/ask"
         ],
-        "note": "Development debug endpoint"
+        "note": "Development debug endpoint",
+        "pdf_support": WEASYPRINT_AVAILABLE
     })
 
 
@@ -402,6 +455,8 @@ if __name__ == "__main__":
     print("🎯 Starting Flask API Server...")
     print("📡 Server running on http://localhost:5000")
     print("🔧 Debug mode: ENABLED")
+    if not WEASYPRINT_AVAILABLE:
+        print("⚠️  Warning: WeasyPrint not available - PDF generation will be disabled")
     
     app.run(debug=True, host='0.0.0.0', port=5000)
 

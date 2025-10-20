@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
 import { jsPDF } from "jspdf";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -69,7 +72,9 @@ const ProfessionalInvoiceCreator = () => {
       // 🎨 DEBUG: Form validation failed - missing required fields
       return false;
     }
+    
     // 🎨 DEBUG: Form validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -88,7 +93,7 @@ const ProfessionalInvoiceCreator = () => {
     }
     
     // 🚀 Set generation state and clear previous results
-    setIsGenerating(true);
+    setLoading(componentId, true);
     setInvoiceOutput(""); // Clear previous invoice results
     setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting invoice generation process
@@ -103,7 +108,7 @@ const ProfessionalInvoiceCreator = () => {
         setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setInvoiceOutput(apiResponse.invoice_text || "No invoice content generated.");
+        setInvoiceOutput(apiResponse.data.invoice_text || "No invoice content generated.");
         // 🎨 DEBUG: Invoice generated successfully
       }
     } catch (processingError) {
@@ -112,7 +117,7 @@ const ProfessionalInvoiceCreator = () => {
       // 🎨 DEBUG: Processing error occurred - {processingError.message}
     } finally {
       // 🎯 Always reset generation state
-      setIsGenerating(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Invoice generation process completed
     }
   };
@@ -143,13 +148,8 @@ const ProfessionalInvoiceCreator = () => {
    */
   const renderInvoiceContent = () => {
     // 🔄 Show loading indicator during generation
-    if (isGenerating) {
-      return (
-        <div className="generation-status">
-          <span className="generation-spinner"></span>
-          Creating professional invoice...
-        </div>
-      );
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Creating professional invoice..." />;
     }
     
     // ❌ Show error message if present
@@ -167,9 +167,9 @@ const ProfessionalInvoiceCreator = () => {
             <button
               onClick={downloadInvoicePDF}
               className="download-button primary"
-              disabled={isGenerating}
+              disabled={isLoading(componentId)}
             >
-              {isGenerating ? "Processing Download..." : "Export as PDF"}
+              {isLoading(componentId) ? "Processing Download..." : "Export as PDF"}
             </button>
           )}
         </>
@@ -194,7 +194,7 @@ const ProfessionalInvoiceCreator = () => {
         onChange={handleFormInputChange}
         placeholder="Enter brand or sponsor name"
         className="form-input-field"
-        disabled={isGenerating}
+        disabled={isLoading(componentId)}
       />
       
       {/* 🛠️ SERVICE DESCRIPTION INPUT */}
@@ -205,7 +205,7 @@ const ProfessionalInvoiceCreator = () => {
         onChange={handleFormInputChange}
         placeholder="Describe service provided"
         className="form-input-field"
-        disabled={isGenerating}
+        disabled={isLoading(componentId)}
       />
       
       {/* 💰 AMOUNT INPUT */}
@@ -216,7 +216,7 @@ const ProfessionalInvoiceCreator = () => {
         onChange={handleFormInputChange}
         placeholder="Enter amount in INR"
         className="form-input-field"
-        disabled={isGenerating}
+        disabled={isLoading(componentId)}
       />
 
       {/* 🧾 GST SELECTION CHECKBOX */}
@@ -226,7 +226,7 @@ const ProfessionalInvoiceCreator = () => {
           type="checkbox"
           checked={formData.include_gst}
           onChange={handleFormInputChange}
-          disabled={isGenerating}
+          disabled={isLoading(componentId)}
           className="gst-selection-checkbox"
         />
         <span className="gst-option-text">Include GST taxation (18%)</span>
@@ -255,14 +255,15 @@ const ProfessionalInvoiceCreator = () => {
         <button 
           type="submit" 
           className="generate-invoice-button primary" 
-          disabled={isGenerating}
+          disabled={isLoading(componentId)}
         >
-          {isGenerating ? "Creating Invoice..." : "Generate Professional Invoice"}
+          {isLoading(componentId) ? "Creating Invoice..." : "Generate Professional Invoice"}
         </button>
       </form>
 
       {/* 📊 INVOICE RESULTS DISPLAY */}
       <div className="invoice-result-container result-card">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderInvoiceContent()}
       </div>
     </section>

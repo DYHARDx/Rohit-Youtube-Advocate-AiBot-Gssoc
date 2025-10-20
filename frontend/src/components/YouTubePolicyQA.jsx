@@ -56,7 +56,15 @@ const YouTubePolicyAdvisor = () => {
       // 🎨 DEBUG: Policy input validation failed - no question provided
       return false;
     }
+    
+    // Check minimum length
+    if (policyQuestion.trim().length < 5) {
+      setError(componentId, "Please enter a more detailed question (at least 5 characters).");
+      return false;
+    }
+    
     // 🎨 DEBUG: Policy input validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -75,7 +83,7 @@ const YouTubePolicyAdvisor = () => {
     }
     
     // 🚀 Set researching state and clear previous answers
-    setIsResearching(true);
+    setLoading(componentId, true);
     setPolicyAnswer(""); // Clear previous policy answers
     setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting policy research process
@@ -90,7 +98,7 @@ const YouTubePolicyAdvisor = () => {
         setError(`❌ ${researchResponse.error}`);
         // 🎨 DEBUG: API returned error - {researchResponse.error}
       } else {
-        setPolicyAnswer(researchResponse.answer || "No policy information available.");
+        setPolicyAnswer(researchResponse.data.answer || "No policy information available.");
         // 🎨 DEBUG: Policy research completed successfully
       }
     } catch (researchError) {
@@ -99,7 +107,7 @@ const YouTubePolicyAdvisor = () => {
       // 🎨 DEBUG: Research error occurred - {researchError.message}
     } finally {
       // 🎯 Always reset researching state
-      setIsResearching(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Policy research process completed
     }
   };
@@ -170,7 +178,7 @@ const YouTubePolicyAdvisor = () => {
           value={policyQuestion}
           onChange={handlePolicyInputChange}
           placeholder="Ask about YouTube community guidelines, monetization, or content policies..."
-          disabled={isResearching}
+          disabled={isLoading(componentId)}
           className="policy-question-input"
         />
         
@@ -178,14 +186,15 @@ const YouTubePolicyAdvisor = () => {
         <button 
           type="submit" 
           className="research-button primary" 
-          disabled={isResearching}
+          disabled={isLoading(componentId)}
         >
-          {isResearching ? "🔍 Researching..." : "Get Policy Insights"}
+          {isLoading(componentId) ? "🔍 Researching..." : "Get Policy Insights"}
         </button>
       </form>
 
       {/* 📊 POLICY RESPONSE DISPLAY */}
       <div className="policy-response-container result-card">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderPolicyResponse()}
       </div>
     </section>

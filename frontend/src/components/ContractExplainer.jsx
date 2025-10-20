@@ -31,7 +31,6 @@ const LegalContractAnalyzer = () => {
   // 🎯 State management for contract analysis functionality
   const [contractText, setContractText] = useState("");           // User input contract text
   const [analysis, setAnalysis] = useState("");                  // Analysis results from API
-  const [processing, setProcessing] = useState(false);           // Processing state indicator
   const [file, setFile] = useState(null);                       // Uploaded PDF file
   const [fileError, setFileError] = useState("");               // File validation errors
   const [error, setError] = useState(null);                     // API error state
@@ -61,7 +60,7 @@ const LegalContractAnalyzer = () => {
 
     // 📋 Validate file type is PDF
     if (uploadedFile.type !== "application/pdf") {
-      setFileError("Please upload a valid PDF file.");
+      setError(componentId, "Please upload a valid PDF file.");
       setFile(null);
       // 🎨 DEBUG: Invalid file type uploaded - {uploadedFile.type}
       return;
@@ -86,7 +85,15 @@ const LegalContractAnalyzer = () => {
       // 🎨 DEBUG: Input validation failed - no content provided
       return false;
     }
+    
+    // Check minimum length if only text is provided
+    if (contractText.trim() && contractText.trim().length < 20 && !file) {
+      setError(componentId, "Please provide a more detailed contract (at least 20 characters) or upload a PDF file.");
+      return false;
+    }
+    
     // 🎨 DEBUG: Input validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -103,7 +110,7 @@ const LegalContractAnalyzer = () => {
     if (!validateInput()) return;
 
     // 🚀 Set processing state and clear previous analysis
-    setProcessing(true);
+    setLoading(componentId, true);
     setAnalysis("");
     setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting contract analysis process
@@ -128,7 +135,7 @@ const LegalContractAnalyzer = () => {
         setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setAnalysis(apiResponse.summary || "No analysis generated.");
+        setAnalysis(apiResponse.data.summary || "No analysis generated.");
         // 🎨 DEBUG: Analysis completed successfully
       }
     } catch (error) {
@@ -137,7 +144,7 @@ const LegalContractAnalyzer = () => {
       // 🎨 DEBUG: Processing error occurred - {error.message}
     } finally {
       // 🎯 Always reset processing state
-      setProcessing(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Contract analysis process completed
     }
   };
@@ -208,7 +215,7 @@ const LegalContractAnalyzer = () => {
           value={contractText}
           onChange={handleTextChange}
           placeholder="Insert your legal contract text for simplification..."
-          disabled={processing}
+          disabled={isLoading(componentId)}
           className="component-textarea"
           aria-label="Legal contract text"
         />
@@ -218,34 +225,27 @@ const LegalContractAnalyzer = () => {
           type="file"
           accept=".pdf"
           onChange={handleFileUpload}
-          disabled={processing}
+          disabled={isLoading(componentId)}
           className="component-file-input"
           aria-label="Upload PDF contract"
           style={{ marginTop: "10px" }}
         />
 
-        {/* ⚠️ FILE ERROR MESSAGE */}
-        {fileError && (
-          <div className="file-error-message" role="alert">
-            <AlertCircle className="error-icon" />
-            {fileError}
-          </div>
-        )}
-
         {/* 🚀 SUBMIT BUTTON */}
         <button 
           type="submit" 
           className="submit-button primary" 
-          disabled={processing}
-          aria-label={processing ? "Analyzing contract" : "Analyze legal terms"}
+          disabled={isLoading(componentId)}
+          aria-label={isLoading(componentId) ? "Analyzing contract" : "Analyze legal terms"}
           style={{ marginTop: "10px" }}
         >
-          {processing ? "Analyzing Contract..." : "Analyze Legal Terms"}
+          {isLoading(componentId) ? "Analyzing Contract..." : "Analyze Legal Terms"}
         </button>
       </form>
       
       {/* 📊 ANALYSIS RESULTS DISPLAY */}
       <div className="result-container result-card" role="status" aria-live="polite">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderAnalysis()}
       </div>
     </section>

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -54,7 +57,15 @@ const ContentSafetyAnalyzer = () => {
       // 🎨 DEBUG: Content validation failed - no content provided
       return false;
     }
+    
+    // Check minimum length
+    if (content.trim().length < 10) {
+      setError(componentId, "Please provide more detailed content for analysis (at least 10 characters).");
+      return false;
+    }
+    
     // 🎨 DEBUG: Content validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -73,7 +84,7 @@ const ContentSafetyAnalyzer = () => {
     }
     
     // 🚀 Set loading state and clear previous results
-    setLoading(true);
+    setLoading(componentId, true);
     setResult("");
     setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting content safety analysis
@@ -88,7 +99,7 @@ const ContentSafetyAnalyzer = () => {
         setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setResult(apiResponse.report || "No safety report generated.");
+        setResult(apiResponse.data.report || "No safety report generated.");
         // 🎨 DEBUG: Safety analysis completed successfully
       }
     } catch (error) {
@@ -97,7 +108,7 @@ const ContentSafetyAnalyzer = () => {
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
-      setLoading(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Content safety analysis completed
     }
   };
@@ -109,13 +120,8 @@ const ContentSafetyAnalyzer = () => {
    */
   const renderResult = () => {
     // 🔄 Show loading indicator during processing
-    if (loading) {
-      return (
-        <div className="loading-indicator">
-          <span className="spinner"></span>
-          Checking content safety...
-        </div>
-      );
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Checking content safety..." />;
     }
     
     // ❌ Show error message if present
@@ -155,7 +161,7 @@ const ContentSafetyAnalyzer = () => {
           value={content}
           onChange={handleContentChange}
           placeholder="Enter your video script or content for safety evaluation..."
-          disabled={loading}
+          disabled={isLoading(componentId)}
           className="component-textarea"
           aria-label="Content to check for safety"
         />
@@ -164,15 +170,16 @@ const ContentSafetyAnalyzer = () => {
         <button 
           type="submit" 
           className="submit-button primary" 
-          disabled={loading}
-          aria-label={loading ? "Analyzing content" : "Run safety check"}
+          disabled={isLoading(componentId)}
+          aria-label={isLoading(componentId) ? "Analyzing content" : "Run safety check"}
         >
-          {loading ? "Analyzing Content..." : "Run Safety Check"}
+          {isLoading(componentId) ? "Analyzing Content..." : "Run Safety Check"}
         </button>
       </form>
       
       {/* 📊 ANALYSIS RESULTS DISPLAY */}
       <div className="result-container result-card" role="status" aria-live="polite">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderResult()}
       </div>
     </section>

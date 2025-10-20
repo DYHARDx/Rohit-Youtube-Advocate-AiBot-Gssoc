@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -54,7 +57,15 @@ const YouTubeAdvisorAMA = () => {
       // 🎨 DEBUG: Input validation failed - no question provided
       return false;
     }
+    
+    // Check minimum length
+    if (question.trim().length < 5) {
+      setError(componentId, "Please enter a more detailed question (at least 5 characters).");
+      return false;
+    }
+    
     // 🎨 DEBUG: Input validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -73,7 +84,7 @@ const YouTubeAdvisorAMA = () => {
     }
     
     // 🚀 Set loading state and clear previous response
-    setIsLoading(true);
+    setLoading(componentId, true);
     setResponse("");
     setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting advisor consultation process
@@ -88,7 +99,7 @@ const YouTubeAdvisorAMA = () => {
         setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setResponse(apiResponse.answer || "No response received from advisor.");
+        setResponse(apiResponse.data.answer || "No response received from advisor.");
         // 🎨 DEBUG: Advisor response received successfully
       }
     } catch (error) {
@@ -97,7 +108,7 @@ const YouTubeAdvisorAMA = () => {
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
-      setIsLoading(false);
+      setLoading(componentId, false);
       // 🎨 DEBUG: Advisor consultation process completed
     }
   };
@@ -109,13 +120,8 @@ const YouTubeAdvisorAMA = () => {
    */
   const renderResponse = () => {
     // 🔄 Show loading indicator during processing
-    if (isLoading) {
-      return (
-        <div className="loading-indicator">
-          <span className="spinner"></span>
-          Consulting YouTube Policy Advisor...
-        </div>
-      );
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Consulting YouTube Policy Advisor..." />;
     }
     
     // ❌ Show error message if present
@@ -155,7 +161,7 @@ const YouTubeAdvisorAMA = () => {
           value={question}
           onChange={handleQuestionChange}
           placeholder="Enter your YouTube policy question here..."
-          disabled={isLoading}
+          disabled={isLoading(componentId)}
           className="component-textarea"
           aria-label="Enter your YouTube policy question"
         />
@@ -164,15 +170,16 @@ const YouTubeAdvisorAMA = () => {
         <button 
           type="submit" 
           className="submit-button primary" 
-          disabled={isLoading}
-          aria-label={isLoading ? "Processing request" : "Consult advisor"}
+          disabled={isLoading(componentId)}
+          aria-label={isLoading(componentId) ? "Processing request" : "Consult advisor"}
         >
-          {isLoading ? "Processing Request..." : "Consult Advisor"}
+          {isLoading(componentId) ? "Processing Request..." : "Consult Advisor"}
         </button>
       </form>
       
       {/* 📊 ADVISOR RESPONSE DISPLAY */}
       <div className="response-container result-card" role="status" aria-live="polite">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderResponse()}
       </div>
     </section>
