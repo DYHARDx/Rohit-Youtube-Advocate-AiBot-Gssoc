@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import LoadingState from "./LoadingState";
+import ErrorDisplay from "./ErrorDisplay";
 import "../styles/CommonStyles.css";
 import { AlertCircle } from "lucide-react";
 
@@ -32,7 +34,7 @@ const LegalContractAnalyzer = () => {
   const [processing, setProcessing] = useState(false);           // Processing state indicator
   const [file, setFile] = useState(null);                       // Uploaded PDF file
   const [fileError, setFileError] = useState("");               // File validation errors
-  const [error, setError] = useState("");                       // General error messages
+  const [error, setError] = useState(null);                     // API error state
 
   /**
    * Handle contract text input changes
@@ -42,8 +44,8 @@ const LegalContractAnalyzer = () => {
     // 🎨 DEBUG: Contract text updated - {e.target.value.length} characters
     setContractText(e.target.value);
     // Clear errors when user starts typing
-    if (error) setError("");
     if (fileError) setFileError("");
+    if (error) setError(null);
   };
 
   /**
@@ -141,6 +143,15 @@ const LegalContractAnalyzer = () => {
   };
 
   /**
+   * Handle retry action
+   */
+  const handleRetry = () => {
+    if (contractText.trim() || file) {
+      handleSubmit({ preventDefault: () => {} });
+    }
+  };
+
+  /**
    * Render analysis content based on state
    * Handles loading, empty, and result states
    * @returns {JSX.Element} - Analysis content to display
@@ -148,12 +159,12 @@ const LegalContractAnalyzer = () => {
   const renderAnalysis = () => {
     // 🔄 Show loading indicator during processing
     if (processing) {
-      return (
-        <div className="loading-indicator">
-          <span className="spinner"></span>
-          Analyzing legal contract terms...
-        </div>
-      );
+      return <LoadingState message="Analyzing legal contract terms..." />;
+    }
+    
+    // 🚨 Show error if present
+    if (error) {
+      return <ErrorDisplay message={error} onRetry={handleRetry} />;
     }
     
     // ❌ Show error message if present
@@ -163,11 +174,15 @@ const LegalContractAnalyzer = () => {
     
     // 📋 Show analysis results if available
     if (analysis) {
-      return analysis;
+      return <div className="analysis-content">{analysis}</div>;
     }
     
     // 🎯 Show placeholder when no analysis is available
-    return "Contract analysis results will be displayed here...";
+    return (
+      <div className="analysis-placeholder">
+        Contract analysis results will be displayed here...
+      </div>
+    );
   };
 
   // 🎯 TODO: Add caching mechanism for repeated contract analyses

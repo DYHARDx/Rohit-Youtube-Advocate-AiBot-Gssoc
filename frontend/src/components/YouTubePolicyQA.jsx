@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import LoadingState from "./LoadingState";
+import ErrorDisplay from "./ErrorDisplay";
 import "../styles/CommonStyles.css";
 
 /**
@@ -103,6 +105,15 @@ const YouTubePolicyAdvisor = () => {
   };
 
   /**
+   * Handle retry action
+   */
+  const handleRetry = () => {
+    if (policyQuestion.trim()) {
+      handlePolicyResearch({ preventDefault: () => {} });
+    }
+  };
+
+  /**
    * Render policy response content based on state
    * Handles loading, empty, and result states
    * @returns {JSX.Element} - Policy response content to display
@@ -110,12 +121,12 @@ const YouTubePolicyAdvisor = () => {
   const renderPolicyResponse = () => {
     // 🔄 Show loading indicator during research
     if (isResearching) {
-      return (
-        <div className="research-status">
-          <span className="research-spinner"></span>
-          🔍 Researching YouTube policies...
-        </div>
-      );
+      return <LoadingState message="Researching YouTube policies..." />;
+    }
+    
+    // 🚨 Show error if present
+    if (error) {
+      return <ErrorDisplay message={error} onRetry={handleRetry} />;
     }
     
     // ❌ Show error message if present
@@ -125,11 +136,15 @@ const YouTubePolicyAdvisor = () => {
     
     // 📋 Show policy answer if available
     if (policyAnswer) {
-      return policyAnswer;
+      return <div className="policy-answer-content">{policyAnswer}</div>;
     }
     
     // 🎯 Show placeholder when no answer is available
-    return "Policy insights and answers will appear here...";
+    return (
+      <div className="policy-placeholder">
+        Policy insights and answers will appear here...
+      </div>
+    );
   };
 
   // 🎯 TODO: Add policy question history feature
