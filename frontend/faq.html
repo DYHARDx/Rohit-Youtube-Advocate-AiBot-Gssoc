@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ - YouTube Advisor</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {font-family: system-ui, sans-serif; background:#fff; color:#111; margin:0;}
+    header, footer {background:#ff0000; color:#fff; padding:1rem; text-align:center;}
+    main {max-width:800px; margin:2rem auto; padding:0 1rem;}
+    h1 {text-align:center; margin-bottom:1.5rem;}
+    .faq-item {border-bottom:1px solid #ddd; padding:1rem 0;}
+    .faq-question {font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center;}
+    .faq-answer {display:none; margin-top:0.5rem; color:#333;}
+    .faq-item.active .faq-answer {display:block;}
+    .faq-item.active .faq-question span {transform:rotate(180deg);}
+    .faq-question span {transition:transform 0.3s;}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>YouTube Advisor</h2>
+    <nav>
+      <a href="index.html" style="color:white;margin-right:10px;">Home</a>
+      <a href="about.html" style="color:white;margin-right:10px;">About</a>
+      <a href="contact.html" style="color:white;margin-right:10px;">Contact</a>
+      <a href="faq.html" style="color:white;">FAQ</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Frequently Asked Questions</h1>
+
+    <div class="faq-item">
+      <div class="faq-question">What is YouTube Advisor? <span>▼</span></div>
+      <div class="faq-answer">YouTube Advisor is an AI-based tool that helps creators handle legal documents, check content safety, and manage invoices.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Is it free to use? <span>▼</span></div>
+      <div class="faq-answer">Basic features are free. Premium tools like detailed contract analysis or automated invoicing may require a subscription.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Does it store my data? <span>▼</span></div>
+      <div class="faq-answer">Your uploaded files are processed securely and not stored permanently. Data privacy is a core principle.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Can it review YouTube policy changes? <span>▼</span></div>
+      <div class="faq-answer">Yes. The system checks and updates YouTube’s policy summaries regularly to keep creators compliant.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">How can I contact support? <span>▼</span></div>
+      <div class="faq-answer">Use the contact form on the Contact page or email support@youtubeadvisor.ai.</div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 YouTube Advisor | All Rights Reserved</p>
+  </footer>
+
+  <script>
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item=>{
+      item.querySelector('.faq-question').addEventListener('click',()=>{
+        item.classList.toggle('active');
+      });
+    });
+  </script>
+</body>
+</html>
