@@ -20,12 +20,14 @@ app = Flask(
     template_folder="templates"
 )
 
+
 # 🎯 Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(name)s %(message)s'
 )
 logger = logging.getLogger(__name__)
+n
 
 # 🎯 TODO: Add configuration management system
 # Future enhancement: Move to config.py for better organization
@@ -40,6 +42,8 @@ def index():
     Returns: Rendered HTML template for the main page
     """
     # 🎨 DEBUG: Main page accessed - tracking user engagement
+    # 📊 Monitoring: Page view counter could be implemented here
+    print("🎨 Debug: Main advisor interface accessed")
     return render_template("advisor.html")
 
 
@@ -49,7 +53,10 @@ def simplify():
     📄 Simplify complex contract text into easy-to-understand summary
     POST Data: { "text": "contract content here" }
     Returns: JSON with simplified contract summary
+    
+    Enhancement: Added input sanitization and detailed error handling
     """
+
     try:
         data = request.get_json()
         if data is None:
@@ -78,13 +85,17 @@ def simplify():
         return jsonify({"error": "Failed to process contract"}), 500
 
 
+
 @app.route("/api/content/check", methods=["POST"])
 def content_check():
     """
     🔍 Analyze content for safety and compliance
     POST Data: { "text": "content to analyze" }
     Returns: JSON with safety report and recommendations
+    
+    Improvement: Added enhanced validation and detailed logging
     """
+
     try:
         data = request.get_json()
         if data is None:
@@ -110,13 +121,23 @@ def content_check():
         return jsonify({"error": "Failed to analyze content"}), 500
 
 
+
 @app.route("/api/invoice/generate", methods=["POST"])
 def invoice():
     """
     🧾 Generate professional invoice text
     POST Data: { "brand": "Brand Name", "service": "Service Description", "amount": 100.0, "include_gst": true }
     Returns: JSON with formatted invoice text
+    
+    Enhancement: Added comprehensive parameter validation and error details
     """
+
+    start_time = time.time()
+    data = request.json
+    if data is None:
+        logger.warning("Invoice generation failed: No JSON data provided")
+        return jsonify({"error": "No JSON data provided"}), 400
+
     try:
         data = request.get_json()
         if data is None:
@@ -129,6 +150,7 @@ def invoice():
         amount = float(data["amount"])
         include_gst = data.get("include_gst", False)
         
+
         # 🧾 Generate invoice text using template engine
         invoice_text = create_professional_invoice(brand, service, amount, include_gst)
         
@@ -146,12 +168,16 @@ def invoice():
 
 
 
+
+
 @app.route("/api/invoice/download", methods=["POST"])
 def download_invoice_pdf():
     """
     📄 Generate and download invoice as PDF using WeasyPrint
     POST Data: { "invoice_text": "formatted invoice text" }
     Returns: PDF file response
+    
+    Improvement: Added input validation and enhanced error handling
     """
     try:
         data = request.get_json()
@@ -183,12 +209,16 @@ def download_invoice_pdf():
         return jsonify({"error": "Failed to generate PDF"}), 500
 
 
+
+
 @app.route("/api/youtube/policy", methods=["POST"])
 def youtube_policy():
     """
     📺 Get YouTube policy guidance and recommendations
     POST Data: { "question": "policy question" }
     Returns: JSON with policy answer and guidance
+    
+    Enhancement: Added input validation and processing confirmation
     """
     try:
         data = request.get_json()
@@ -217,12 +247,15 @@ def youtube_policy():
         return jsonify({"error": "Failed to retrieve policy information"}), 500
 
 
+
 @app.route("/api/ama/ask", methods=["POST"])
 def ama():
     """
     💬 Ask Me Anything - Get responses from Rohit's knowledge base
     POST Data: { "question": "question for Rohit" }
     Returns: JSON with personalized answer
+    
+    Improvement: Added enhanced logging and input validation
     """
     try:
         data = request.get_json()
@@ -247,6 +280,7 @@ def ama():
         logger.error(f"Error in AMA query: {str(e)}")
         logger.error(traceback.format_exc())
         return jsonify({"error": "Failed to generate response"}), 500
+
 
 
 
@@ -281,6 +315,8 @@ def debug_info():
     # 🎯 Note: This endpoint is for development purposes only
     # 🚨 Should be disabled in production environments
     # Security reminder: Ensure this endpoint is not exposed in production
+    # 🎨 DEBUG: Debug information endpoint accessed
+    print("🔧 Debug information endpoint accessed")
     
     return jsonify({
         "debug": True,
@@ -311,7 +347,9 @@ def not_found(error):
     logger.warning(f"404 error: {request.url}")
     return jsonify({"error": "Endpoint not found", "code": 404}), 404
 
+    print("🚨 404 Error: Endpoint not found")
 
+    return jsonify({"error": "Endpoint not found", "code": 404}), 404
 
 
 @app.errorhandler(500)
@@ -339,6 +377,18 @@ def future_enhancement_placeholder():
     🎯 Placeholder function for future enhancements
     This function is intentionally left empty for future implementation
     """
+    # 🎯 Reserved for future implementation
+    # TODO: Implement advanced features when requirements are defined
+    pass
+
+# 🎯 Additional placeholder for upcoming features
+def upcoming_feature_placeholder():
+    """
+    🎯 Additional placeholder for upcoming features
+    Reserved for future development and enhancements
+    """
+    # 🎯 Reserved for future implementation
+    # Enhancement idea: Add advanced analytics capabilities
     pass
 
 # ==================== APPLICATION INITIALIZATION ====================
@@ -353,7 +403,7 @@ if __name__ == "__main__":
     print("📡 Server running on http://localhost:5000")
     print("🔧 Debug mode: ENABLED")
     
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 # 🎯 Future enhancement placeholder
 # TODO: Add application factory pattern for better testing

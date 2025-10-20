@@ -69,6 +69,7 @@ const LegalContractAnalyzer = () => {
 
     // 🎯 Clear any previous errors and set file
     setFileError("");
+    setError("");
     setFile(uploadedFile);
     // 🎨 DEBUG: Valid PDF file uploaded - {uploadedFile.name}
   };
@@ -81,7 +82,7 @@ const LegalContractAnalyzer = () => {
   const validateInput = () => {
     // 🎯 Check if both text and file are empty
     if (!contractText.trim() && !file) {
-      setError("Please provide contract text or upload a PDF file.");
+      setError("⚠️ Please provide contract text or upload a PDF file.");
       // 🎨 DEBUG: Input validation failed - no content provided
       return false;
     }
@@ -104,7 +105,7 @@ const LegalContractAnalyzer = () => {
     // 🚀 Set processing state and clear previous analysis
     setProcessing(true);
     setAnalysis("");
-    setError(null);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting contract analysis process
 
     try {
@@ -119,12 +120,12 @@ const LegalContractAnalyzer = () => {
       }
 
       // 🌐 Send request to backend API for contract simplification
-      const apiResponse = await postData("/api/contract/simplify", payload);
+      const apiResponse = await postData("/api/contract/simplify", payload, 20000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setError(apiResponse.error);
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setAnalysis(apiResponse.summary || "No analysis generated.");
@@ -132,7 +133,7 @@ const LegalContractAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setError(error.message || "Service unavailable");
+      setError(`❌ Processing Error: ${error.message || "Service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {error.message}
     } finally {
       // 🎯 Always reset processing state
@@ -164,6 +165,11 @@ const LegalContractAnalyzer = () => {
     // 🚨 Show error if present
     if (error) {
       return <ErrorDisplay message={error} onRetry={handleRetry} />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show analysis results if available

@@ -37,6 +37,7 @@ const ProfessionalInvoiceCreator = () => {
   
   const [invoiceOutput, setInvoiceOutput] = useState("");     // Generated invoice text
   const [isGenerating, setIsGenerating] = useState(false);    // Invoice generation state
+  const [error, setError] = useState("");                    // Error message state
 
   /**
    * Handle form input changes
@@ -51,6 +52,9 @@ const ProfessionalInvoiceCreator = () => {
       ...previousState,
       [id]: type === "checkbox" ? checked : value,
     }));
+    
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -61,7 +65,7 @@ const ProfessionalInvoiceCreator = () => {
   const validateFormData = () => {
     // 🎯 Check if required fields are filled
     if (!formData.brand.trim() || !formData.service.trim() || !formData.amount) {
-      setInvoiceOutput("⚠️ Please complete all required form fields.");
+      setError("⚠️ Please complete all required form fields.");
       // 🎨 DEBUG: Form validation failed - missing required fields
       return false;
     }
@@ -86,16 +90,17 @@ const ProfessionalInvoiceCreator = () => {
     // 🚀 Set generation state and clear previous results
     setIsGenerating(true);
     setInvoiceOutput(""); // Clear previous invoice results
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting invoice generation process
 
     try {
       // 🌐 Send request to backend API for invoice generation
-      const apiResponse = await postData("/api/invoice/generate", formData);
+      const apiResponse = await postData("/api/invoice/generate", formData, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setInvoiceOutput(`❌ Generation Error: ${apiResponse.error}`);
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setInvoiceOutput(apiResponse.invoice_text || "No invoice content generated.");
@@ -103,7 +108,7 @@ const ProfessionalInvoiceCreator = () => {
       }
     } catch (processingError) {
       // 🚨 Handle network or processing errors
-      setInvoiceOutput(`❌ System Error: ${processingError.message || "Invoice service unavailable"}`);
+      setError(`❌ System Error: ${processingError.message || "Invoice service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {processingError.message}
     } finally {
       // 🎯 Always reset generation state
@@ -145,6 +150,11 @@ const ProfessionalInvoiceCreator = () => {
           Creating professional invoice...
         </div>
       );
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show invoice output if available

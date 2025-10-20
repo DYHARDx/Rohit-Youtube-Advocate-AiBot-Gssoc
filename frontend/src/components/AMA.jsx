@@ -28,6 +28,7 @@ const YouTubeAdvisorAMA = () => {
   const [question, setQuestion] = useState("");          // User question input
   const [response, setResponse] = useState("");          // Advisor response from API
   const [isLoading, setIsLoading] = useState(false);     // Loading state indicator
+  const [error, setError] = useState("");               // Error message state
 
   /**
    * Handle question input changes
@@ -37,6 +38,8 @@ const YouTubeAdvisorAMA = () => {
   const handleQuestionChange = (e) => {
     // 🎨 DEBUG: Question updated - {e.target.value.length} characters
     setQuestion(e.target.value);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -47,7 +50,7 @@ const YouTubeAdvisorAMA = () => {
   const validateInput = () => {
     // 🎯 Check if question is empty or only whitespace
     if (!question.trim()) {
-      setResponse("⚠️ Please enter a valid question before submitting.");
+      setError("⚠️ Please enter a valid question before submitting.");
       // 🎨 DEBUG: Input validation failed - no question provided
       return false;
     }
@@ -72,16 +75,17 @@ const YouTubeAdvisorAMA = () => {
     // 🚀 Set loading state and clear previous response
     setIsLoading(true);
     setResponse("");
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting advisor consultation process
 
     try {
       // 🌐 Send request to backend API for advisor response
-      const apiResponse = await postData("/api/ama/ask", { question });
+      const apiResponse = await postData("/api/ama/ask", { question }, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
       if (apiResponse.error) {
-        setResponse(`❌ API Error: ${apiResponse.error}`);
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setResponse(apiResponse.answer || "No response received from advisor.");
@@ -89,7 +93,7 @@ const YouTubeAdvisorAMA = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setResponse(`❌ Network Error: ${error.message || "Connection failed"}`);
+      setError(`❌ Network Error: ${error.message || "Connection failed"}`);
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
@@ -112,6 +116,11 @@ const YouTubeAdvisorAMA = () => {
           Consulting YouTube Policy Advisor...
         </div>
       );
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show response if available

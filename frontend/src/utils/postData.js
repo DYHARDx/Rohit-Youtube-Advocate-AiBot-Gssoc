@@ -1,41 +1,28 @@
 // src/utils/postData.js
-import { handleApiError } from './errorHandler';
+export async function postData(url = "", data = {}, timeout = 10000) {
+  try {
+    // Create AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-/**
- * Enhanced POST data utility with retry functionality
- * @param {string} url - API endpoint URL
- * @param {Object} data - Data to send in request body
- * @param {number} retries - Number of retry attempts
- * @returns {Promise<Object>} - API response or error object
- */
-export async function postData(url = "", data = {}, retries = 3) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) {
-        // For 5xx errors, we might want to retry
-        if (response.status >= 500 && attempt < retries) {
-          // Wait before retrying with exponential backoff
-          await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          continue;
-        }
-        throw new Error(`Server error: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      // If this is the last attempt, return the error
-      if (attempt === retries) {
-        return { error: error.message || "Unknown error" };
-      }
-      
-      // Wait before retrying with exponential backoff
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status} - ${response.statusText}`);
     }
+    
+    return await response.json();
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      return { error: "Request timeout - please try again" };
+    }
+    return { error: error.message || "Network error - please check your connection" };
   }
 }
