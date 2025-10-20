@@ -26,6 +26,104 @@
   color: var(--primary-accent);
 }
 
+.section-container h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+  color: var(--accent-color);
+}
+
+.section-container h5 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.8rem;
+  color: var(--text-color);
+}
+
+/* 🎯 PARAGRAPH STYLING
+ * =================== */
+.section-container p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* 🎯 LIST STYLING
+ * ============== */
+.section-container ul, 
+.section-container ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.section-container li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.section-container ul li {
+  list-style-type: disc;
+}
+
+.section-container ol li {
+  list-style-type: decimal;
+}
+
+/* 🎯 LINK STYLING
+ * ============== */
+.section-container a {
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+
+.section-container a:hover {
+  text-decoration: underline;
+}
+
+/* 🎯 CODE BLOCK STYLING
+ * ==================== */
+.section-container code {
+  background-color: var(--card-background);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--primary-accent);
+}
+
+.section-container pre {
+  background-color: var(--card-background);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.section-container pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--text-color);
+}
+
+/* 🎯 TABLE STYLING
+ * =============== */
+.section-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.section-container th,
+.section-container td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+
+.section-container th {
+  background-color: var(--card-background);
+  font-weight: 600;
+}
+
 /* 🎯 FORM ELEMENTS
  * ================ */
 .section-container form {
@@ -34,7 +132,9 @@
 
 /* 🎯 STANDARDIZED TEXTAREA STYLING
  * ================================ */
-.section-container .component-textarea {
+.section-container .component-textarea,
+.policy-question-input,
+.content-input {
   width: 100%;
   padding: 1rem;
   border: 2px solid var(--input-border-color);
@@ -60,6 +160,8 @@
 /* 🎯 INPUT FOCUS STATES
  * ===================== */
 .section-container .component-textarea:focus,
+.policy-question-input:focus,
+.content-input:focus,
 .section-container .component-file-input:focus {
   outline: none;
   border-color: var(--primary-accent-hover);
@@ -67,7 +169,10 @@
 
 /* 🎯 SUBMIT BUTTON STYLING
  * ======================== */
-.section-container .submit-button {
+.section-container .submit-button,
+.research-button,
+.analysis-button,
+.generate-invoice-button {
   margin-top: 1rem;
   background-color: var(--primary-accent);
   color: var(--primary-text-on-accent);
@@ -79,34 +184,48 @@
   transition: background-color 0.3s ease;
 }
 
-.section-container .submit-button:hover {
+.section-container .submit-button:hover,
+.research-button:hover,
+.analysis-button:hover,
+.generate-invoice-button:hover {
   background-color: var(--primary-accent-hover);
 }
 
-.section-container .submit-button:disabled {
+.section-container .submit-button:disabled,
+.research-button:disabled,
+.analysis-button:disabled,
+.generate-invoice-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 /* 🎯 RESULT CARD STYLING
  * ====================== */
-.section-container .result-card {
+.section-container .result-card,
+.policy-response-container,
+.safety-report-container {
   margin-top: 1.5rem;
   padding: 1rem;
   background-color: var(--card-background);
   border-radius: 10px;
   font-size: 1rem;
+  min-height: 100px;
+  transition: all 0.3s ease;
 }
 
 /* 🎯 LOADING INDICATOR
  * ==================== */
-.loading-indicator {
+.loading-indicator,
+.analysis-status, 
+.research-status {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.spinner {
+.spinner,
+.analysis-spinner, 
+.research-spinner {
   width: 1rem;
   height: 1rem;
   border: 2px solid transparent;
@@ -136,6 +255,100 @@
   height: 1rem;
 }
 
+/* ========== NEW ERROR DISPLAY COMPONENT ========== */
+
+/* 🎯 ERROR DISPLAY STYLING
+ * ======================== */
+.error-display {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-display.error {
+  background-color: var(--error-background);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.error-display.success {
+  background-color: var(--success-background);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+}
+
+.error-display.warning {
+  background-color: var(--warning-background);
+  border: 1px solid var(--warning-color);
+  color: var(--warning-color);
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.error-message {
+  flex: 1;
+}
+
+.retry-button {
+  background-color: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.retry-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== NEW LOADING SPINNER COMPONENT ========== */
+
+/* 🎯 LOADING SPINNER STYLING
+ * ========================== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.loading-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner.spinner-small {
+  width: 1rem;
+  height: 1rem;
+}
+
+.loading-spinner.spinner-medium {
+  width: 2rem;
+  height: 2rem;
+}
+
+.loading-spinner.spinner-large {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-message {
+  font-size: 0.875rem;
+  color: var(--secondary-text-color);
+}
+
 /* ========== EXTENDED FORM ELEMENTS ========== */
 
 /* 🎯 INPUT FIELD STYLING
@@ -162,6 +375,8 @@
   font-size: 1rem;
 }
 
+/* ========== EXTENDED FORM ELEMENTS ========== */
+
 /* ========== RESPONSIVE DESIGN BREAKPOINTS ========== */
 
 /* 🎯 TABLET BREAKPOINT (1024px and below)
@@ -175,13 +390,26 @@
     font-size: 2.2rem;
   }
 
+  .section-container h4 {
+    font-size: 1.6rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.2rem;
+  }
+
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.95rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     font-size: 0.95rem;
     padding: 0.7rem 1.4rem;
   }
@@ -200,20 +428,43 @@
     align-items: flex-start;
   }
 
+  .section-container h4 {
+    font-size: 1.5rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.1rem;
+  }
+
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.9rem;
     padding: 0.9rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     width: 100%;
     font-size: 0.9rem;
   }
 
-  .result-card {
+  .result-card,
+  .policy-response-container,
+  .safety-report-container {
     font-size: 0.95rem;
+  }
+  
+  .error-display {
+    font-size: 0.9rem;
+  }
+  
+  .loading-message {
+    font-size: 0.8rem;
   }
 }
 
@@ -228,14 +479,23 @@
     font-size: 1.75rem;
   }
 
+  .section-container h4 {
+    font-size: 1.4rem;
+  }
+
   .section-container .component-textarea,
+  .policy-question-input,
+  .content-input,
   .section-container .component-file-input,
   .input-field {
     font-size: 0.85rem;
     padding: 0.8rem;
   }
 
-  .submit-button {
+  .submit-button,
+  .research-button,
+  .analysis-button,
+  .generate-invoice-button {
     font-size: 0.85rem;
     padding: 0.6rem 1.2rem;
   }
@@ -244,6 +504,16 @@
     font-size: 0.9rem;
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .error-display {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+  
+  .loading-spinner.spinner-medium {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
