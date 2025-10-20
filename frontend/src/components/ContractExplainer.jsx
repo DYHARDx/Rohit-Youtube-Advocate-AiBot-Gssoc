@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
-import { useError } from "../context/ErrorContext";
+import LoadingState from "./LoadingState";
 import ErrorDisplay from "./ErrorDisplay";
-import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 import { AlertCircle } from "lucide-react";
 
@@ -33,8 +32,8 @@ const LegalContractAnalyzer = () => {
   const [contractText, setContractText] = useState("");           // User input contract text
   const [analysis, setAnalysis] = useState("");                  // Analysis results from API
   const [file, setFile] = useState(null);                       // Uploaded PDF file
-  const { setError, clearError, setLoading, isLoading } = useError();
-  const componentId = "contract-analyzer";
+  const [fileError, setFileError] = useState("");               // File validation errors
+  const [error, setError] = useState(null);                     // API error state
 
   /**
    * Handle contract text input changes
@@ -43,7 +42,9 @@ const LegalContractAnalyzer = () => {
   const handleTextChange = (e) => {
     // 🎨 DEBUG: Contract text updated - {e.target.value.length} characters
     setContractText(e.target.value);
-    clearError(componentId);
+    // Clear errors when user starts typing
+    if (fileError) setFileError("");
+    if (error) setError(null);
   };
 
   /**
@@ -66,7 +67,8 @@ const LegalContractAnalyzer = () => {
     }
 
     // 🎯 Clear any previous errors and set file
-    clearError(componentId);
+    setFileError("");
+    setError("");
     setFile(uploadedFile);
     // 🎨 DEBUG: Valid PDF file uploaded - {uploadedFile.name}
   };
@@ -79,7 +81,7 @@ const LegalContractAnalyzer = () => {
   const validateInput = () => {
     // 🎯 Check if both text and file are empty
     if (!contractText.trim() && !file) {
-      setError(componentId, "Please provide contract text or upload a PDF file.");
+      setError("⚠️ Please provide contract text or upload a PDF file.");
       // 🎨 DEBUG: Input validation failed - no content provided
       return false;
     }
@@ -110,7 +112,7 @@ const LegalContractAnalyzer = () => {
     // 🚀 Set processing state and clear previous analysis
     setLoading(componentId, true);
     setAnalysis("");
-    clearError(componentId);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting contract analysis process
 
     try {
@@ -125,12 +127,12 @@ const LegalContractAnalyzer = () => {
       }
 
       // 🌐 Send request to backend API for contract simplification
-      const apiResponse = await postData("/api/contract/simplify", payload);
+      const apiResponse = await postData("/api/contract/simplify", payload, 20000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (!apiResponse.success) {
-        setError(componentId, apiResponse.error || "Failed to analyze contract. Please try again.");
+      if (apiResponse.error) {
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setAnalysis(apiResponse.data.summary || "No analysis generated.");
@@ -138,12 +140,21 @@ const LegalContractAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setError(componentId, `Processing Error: ${error.message || "Service unavailable"}`);
+      setError(`❌ Processing Error: ${error.message || "Service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {error.message}
     } finally {
       // 🎯 Always reset processing state
       setLoading(componentId, false);
       // 🎨 DEBUG: Contract analysis process completed
+    }
+  };
+
+  /**
+   * Handle retry action
+   */
+  const handleRetry = () => {
+    if (contractText.trim() || file) {
+      handleSubmit({ preventDefault: () => {} });
     }
   };
 
@@ -154,17 +165,31 @@ const LegalContractAnalyzer = () => {
    */
   const renderAnalysis = () => {
     // 🔄 Show loading indicator during processing
-    if (isLoading(componentId)) {
-      return <LoadingSpinner message="Analyzing legal contract terms..." />;
+    if (processing) {
+      return <LoadingState message="Analyzing legal contract terms..." />;
+    }
+    
+    // 🚨 Show error if present
+    if (error) {
+      return <ErrorDisplay message={error} onRetry={handleRetry} />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show analysis results if available
     if (analysis) {
-      return analysis;
+      return <div className="analysis-content">{analysis}</div>;
     }
     
     // 🎯 Show placeholder when no analysis is available
-    return "Contract analysis results will be displayed here...";
+    return (
+      <div className="analysis-placeholder">
+        Contract analysis results will be displayed here...
+      </div>
+    );
   };
 
   // 🎯 TODO: Add caching mechanism for repeated contract analyses

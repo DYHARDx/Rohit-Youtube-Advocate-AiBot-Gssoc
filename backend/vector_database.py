@@ -20,6 +20,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
+from pydantic import SecretStr
 import os
 
 # ==================== ENVIRONMENT SETUP ====================
@@ -34,8 +35,9 @@ GROQ_LLM_MODEL_NAME = "deepseek-r1-distill-llama-70b"      # LLM model for proce
 
 # ==================== LLM INITIALIZATION ====================
 # 🚀 Initialize LLM with enhanced configuration for optimal performance
+api_key = os.getenv("GROQ_API_KEY")
 llm_model = ChatGroq(
-    api_key=os.getenv("GROQ_API_KEY"),         # 🔐 API key from environment variables
+    api_key=SecretStr(api_key) if api_key else None,         # 🔐 API key from environment variables
     model=GROQ_LLM_MODEL_NAME,                 # 🧠 Model selection for processing
     temperature=0.2                            # 🎯 Low temperature for consistent outputs
 )
@@ -309,3 +311,10 @@ def future_enhancement_placeholder():
 # ==================== MODULE INITIALIZATION ====================
 # 🚀 Module initialization complete with vector database loaded
 # 🎯 Ready to process legal queries for YouTube content creators
+
+# Create aliases for backward compatibility with app.py
+get_policy_response = handle_policy_query
+simplify_contract = simplify_contract_text
+check_content_safety = analyze_content_safety
+generate_invoice = create_professional_invoice
+ask_rohit = process_legal_assistant_query

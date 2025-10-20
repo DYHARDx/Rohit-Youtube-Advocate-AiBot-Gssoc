@@ -30,8 +30,8 @@ const ContentSafetyAnalyzer = () => {
   // 🎯 State management for content safety analysis functionality
   const [content, setContent] = useState("");              // User input content for analysis
   const [result, setResult] = useState("");               // Analysis results from API
-  const { setError, clearError, setLoading, isLoading } = useError();
-  const componentId = "content-safety";
+  const [loading, setLoading] = useState(false);           // Loading state indicator
+  const [error, setError] = useState("");                 // Error message state
 
   /**
    * Handle content input changes
@@ -41,7 +41,8 @@ const ContentSafetyAnalyzer = () => {
   const handleContentChange = (e) => {
     // 🎨 DEBUG: Content updated - {e.target.value.length} characters
     setContent(e.target.value);
-    clearError(componentId);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -52,7 +53,7 @@ const ContentSafetyAnalyzer = () => {
   const validateContent = () => {
     // 🎯 Check if content is empty or only whitespace
     if (!content.trim()) {
-      setError(componentId, "Please provide content for safety analysis.");
+      setError("⚠️ Please provide content for safety analysis.");
       // 🎨 DEBUG: Content validation failed - no content provided
       return false;
     }
@@ -85,17 +86,17 @@ const ContentSafetyAnalyzer = () => {
     // 🚀 Set loading state and clear previous results
     setLoading(componentId, true);
     setResult("");
-    clearError(componentId);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting content safety analysis
 
     try {
       // 🌐 Send request to backend API for content safety check
-      const apiResponse = await postData("/api/content/check", { text: content });
+      const apiResponse = await postData("/api/content/check", { text: content }, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (!apiResponse.success) {
-        setError(componentId, apiResponse.error || "Failed to analyze content. Please try again.");
+      if (apiResponse.error) {
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setResult(apiResponse.data.report || "No safety report generated.");
@@ -103,7 +104,7 @@ const ContentSafetyAnalyzer = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setError(componentId, `Network Error: ${error.message || "Connection failed"}`);
+      setError(`❌ Network Error: ${error.message || "Connection failed"}`);
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
@@ -121,6 +122,11 @@ const ContentSafetyAnalyzer = () => {
     // 🔄 Show loading indicator during processing
     if (isLoading(componentId)) {
       return <LoadingSpinner message="Checking content safety..." />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show results if available

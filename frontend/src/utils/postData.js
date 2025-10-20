@@ -1,27 +1,28 @@
 // src/utils/postData.js
-export async function postData(url = "", data = {}) {
+export async function postData(url = "", data = {}, timeout = 10000) {
   try {
+    // Create AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+      signal: controller.signal
     });
-    
-    // Check if response is OK
+
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Server error: ${response.status} ${response.statusText}`);
+      throw new Error(`Server error: ${response.status} - ${response.statusText}`);
     }
     
-    // Parse JSON response
-    const result = await response.json();
-    return { success: true, data: result };
+    return await response.json();
   } catch (error) {
-    // Handle network errors and other exceptions
-    return { 
-      success: false, 
-      error: error.message || "Unknown error occurred",
-      networkError: error instanceof TypeError
-    };
+    if (error.name === 'AbortError') {
+      return { error: "Request timeout - please try again" };
+    }
+    return { error: error.message || "Network error - please check your connection" };
   }
 }

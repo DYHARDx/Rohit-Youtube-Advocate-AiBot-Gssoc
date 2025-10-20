@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
-import { useError } from "../context/ErrorContext";
+import LoadingState from "./LoadingState";
 import ErrorDisplay from "./ErrorDisplay";
-import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -30,8 +29,8 @@ const YouTubePolicyAdvisor = () => {
   // 🎯 State management for policy question and answer functionality
   const [policyQuestion, setPolicyQuestion] = useState("");      // User policy question
   const [policyAnswer, setPolicyAnswer] = useState("");          // Policy answer from API
-  const { setError, clearError, setLoading, isLoading } = useError();
-  const componentId = "policy-advisor";
+  const [isResearching, setIsResearching] = useState(false);     // Research processing state
+  const [error, setError] = useState("");                       // Error message state
 
   /**
    * Handle policy question input changes
@@ -41,7 +40,8 @@ const YouTubePolicyAdvisor = () => {
   const handlePolicyInputChange = (e) => {
     // 🎨 DEBUG: Policy question updated - {e.target.value.length} characters
     setPolicyQuestion(e.target.value);
-    clearError(componentId);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -52,7 +52,7 @@ const YouTubePolicyAdvisor = () => {
   const validatePolicyInput = () => {
     // 🎯 Check if policy question is empty or only whitespace
     if (!policyQuestion.trim()) {
-      setError(componentId, "Please enter a question about YouTube policies.");
+      setError("⚠️ Please enter a question about YouTube policies.");
       // 🎨 DEBUG: Policy input validation failed - no question provided
       return false;
     }
@@ -85,17 +85,17 @@ const YouTubePolicyAdvisor = () => {
     // 🚀 Set researching state and clear previous answers
     setLoading(componentId, true);
     setPolicyAnswer(""); // Clear previous policy answers
-    clearError(componentId);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting policy research process
 
     try {
       // 🌐 Send request to backend API for policy research
-      const researchResponse = await postData("/api/youtube/policy", { question: policyQuestion });
+      const researchResponse = await postData("/api/youtube/policy", { question: policyQuestion }, 15000);
       // 🎨 DEBUG: API response received - {researchResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (!researchResponse.success) {
-        setError(componentId, researchResponse.error || "Failed to get policy information. Please try again.");
+      if (researchResponse.error) {
+        setError(`❌ ${researchResponse.error}`);
         // 🎨 DEBUG: API returned error - {researchResponse.error}
       } else {
         setPolicyAnswer(researchResponse.data.answer || "No policy information available.");
@@ -103,12 +103,21 @@ const YouTubePolicyAdvisor = () => {
       }
     } catch (researchError) {
       // 🚨 Handle network or processing errors
-      setError(componentId, `System Error: ${researchError.message || "Policy service unavailable"}`);
+      setError(`❌ System Error: ${researchError.message || "Policy service unavailable"}`);
       // 🎨 DEBUG: Research error occurred - {researchError.message}
     } finally {
       // 🎯 Always reset researching state
       setLoading(componentId, false);
       // 🎨 DEBUG: Policy research process completed
+    }
+  };
+
+  /**
+   * Handle retry action
+   */
+  const handleRetry = () => {
+    if (policyQuestion.trim()) {
+      handlePolicyResearch({ preventDefault: () => {} });
     }
   };
 
@@ -119,17 +128,31 @@ const YouTubePolicyAdvisor = () => {
    */
   const renderPolicyResponse = () => {
     // 🔄 Show loading indicator during research
-    if (isLoading(componentId)) {
-      return <LoadingSpinner message="Researching YouTube policies..." />;
+    if (isResearching) {
+      return <LoadingState message="Researching YouTube policies..." />;
+    }
+    
+    // 🚨 Show error if present
+    if (error) {
+      return <ErrorDisplay message={error} onRetry={handleRetry} />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show policy answer if available
     if (policyAnswer) {
-      return policyAnswer;
+      return <div className="policy-answer-content">{policyAnswer}</div>;
     }
     
     // 🎯 Show placeholder when no answer is available
-    return "Policy insights and answers will appear here...";
+    return (
+      <div className="policy-placeholder">
+        Policy insights and answers will appear here...
+      </div>
+    );
   };
 
   // 🎯 TODO: Add policy question history feature

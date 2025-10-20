@@ -39,8 +39,8 @@ const ProfessionalInvoiceCreator = () => {
   });
   
   const [invoiceOutput, setInvoiceOutput] = useState("");     // Generated invoice text
-  const { setError, clearError, setLoading, isLoading } = useError();
-  const componentId = "invoice-generator";
+  const [isGenerating, setIsGenerating] = useState(false);    // Invoice generation state
+  const [error, setError] = useState("");                    // Error message state
 
   /**
    * Handle form input changes
@@ -56,7 +56,8 @@ const ProfessionalInvoiceCreator = () => {
       [id]: type === "checkbox" ? checked : value,
     }));
     
-    clearError(componentId);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -66,21 +67,9 @@ const ProfessionalInvoiceCreator = () => {
    */
   const validateFormData = () => {
     // 🎯 Check if required fields are filled
-    if (!formData.brand.trim()) {
-      setError(componentId, "Please enter the brand or client name.");
-      // 🎨 DEBUG: Form validation failed - missing brand name
-      return false;
-    }
-    
-    if (!formData.service.trim()) {
-      setError(componentId, "Please describe the service provided.");
-      // 🎨 DEBUG: Form validation failed - missing service description
-      return false;
-    }
-    
-    if (!formData.amount || isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
-      setError(componentId, "Please enter a valid amount greater than zero.");
-      // 🎨 DEBUG: Form validation failed - invalid amount
+    if (!formData.brand.trim() || !formData.service.trim() || !formData.amount) {
+      setError("⚠️ Please complete all required form fields.");
+      // 🎨 DEBUG: Form validation failed - missing required fields
       return false;
     }
     
@@ -106,17 +95,17 @@ const ProfessionalInvoiceCreator = () => {
     // 🚀 Set generation state and clear previous results
     setLoading(componentId, true);
     setInvoiceOutput(""); // Clear previous invoice results
-    clearError(componentId);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting invoice generation process
 
     try {
       // 🌐 Send request to backend API for invoice generation
-      const apiResponse = await postData("/api/invoice/generate", formData);
+      const apiResponse = await postData("/api/invoice/generate", formData, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (!apiResponse.success) {
-        setError(componentId, apiResponse.error || "Failed to generate invoice. Please try again.");
+      if (apiResponse.error) {
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setInvoiceOutput(apiResponse.data.invoice_text || "No invoice content generated.");
@@ -124,7 +113,7 @@ const ProfessionalInvoiceCreator = () => {
       }
     } catch (processingError) {
       // 🚨 Handle network or processing errors
-      setError(componentId, `System Error: ${processingError.message || "Invoice service unavailable"}`);
+      setError(`❌ System Error: ${processingError.message || "Invoice service unavailable"}`);
       // 🎨 DEBUG: Processing error occurred - {processingError.message}
     } finally {
       // 🎯 Always reset generation state
@@ -161,6 +150,11 @@ const ProfessionalInvoiceCreator = () => {
     // 🔄 Show loading indicator during generation
     if (isLoading(componentId)) {
       return <LoadingSpinner message="Creating professional invoice..." />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show invoice output if available

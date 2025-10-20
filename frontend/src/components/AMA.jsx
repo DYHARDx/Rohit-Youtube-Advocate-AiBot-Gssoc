@@ -30,8 +30,8 @@ const YouTubeAdvisorAMA = () => {
   // 🎯 State management for AMA functionality
   const [question, setQuestion] = useState("");          // User question input
   const [response, setResponse] = useState("");          // Advisor response from API
-  const { setError, clearError, setLoading, isLoading } = useError();
-  const componentId = "advisor-ama";
+  const [isLoading, setIsLoading] = useState(false);     // Loading state indicator
+  const [error, setError] = useState("");               // Error message state
 
   /**
    * Handle question input changes
@@ -41,7 +41,8 @@ const YouTubeAdvisorAMA = () => {
   const handleQuestionChange = (e) => {
     // 🎨 DEBUG: Question updated - {e.target.value.length} characters
     setQuestion(e.target.value);
-    clearError(componentId);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -52,7 +53,7 @@ const YouTubeAdvisorAMA = () => {
   const validateInput = () => {
     // 🎯 Check if question is empty or only whitespace
     if (!question.trim()) {
-      setError(componentId, "Please enter a valid question before submitting.");
+      setError("⚠️ Please enter a valid question before submitting.");
       // 🎨 DEBUG: Input validation failed - no question provided
       return false;
     }
@@ -85,17 +86,17 @@ const YouTubeAdvisorAMA = () => {
     // 🚀 Set loading state and clear previous response
     setLoading(componentId, true);
     setResponse("");
-    clearError(componentId);
+    setError(""); // Clear previous errors
     // 🎨 DEBUG: Starting advisor consultation process
 
     try {
       // 🌐 Send request to backend API for advisor response
-      const apiResponse = await postData("/api/ama/ask", { question });
+      const apiResponse = await postData("/api/ama/ask", { question }, 15000);
       // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (!apiResponse.success) {
-        setError(componentId, apiResponse.error || "Failed to get advisor response. Please try again.");
+      if (apiResponse.error) {
+        setError(`❌ ${apiResponse.error}`);
         // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
         setResponse(apiResponse.data.answer || "No response received from advisor.");
@@ -103,7 +104,7 @@ const YouTubeAdvisorAMA = () => {
       }
     } catch (error) {
       // 🚨 Handle network or processing errors
-      setError(componentId, `Network Error: ${error.message || "Connection failed"}`);
+      setError(`❌ Network Error: ${error.message || "Connection failed"}`);
       // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
       // 🎯 Always reset loading state
@@ -121,6 +122,11 @@ const YouTubeAdvisorAMA = () => {
     // 🔄 Show loading indicator during processing
     if (isLoading(componentId)) {
       return <LoadingSpinner message="Consulting YouTube Policy Advisor..." />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 📋 Show response if available
