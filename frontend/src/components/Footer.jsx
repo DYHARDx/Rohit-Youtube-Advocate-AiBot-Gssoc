@@ -1,9 +1,30 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
 import '../styles/Footer.css';
 
 const Footer = () => {
   const { theme } = useContext(ThemeContext);
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (email) {
+      // In a real app, this would connect to a backend service
+      console.log('Subscribing email:', email);
+      setIsSubscribed(true);
+      setEmail('');
+      // Reset success message after 3 seconds
+      setTimeout(() => setIsSubscribed(false), 3000);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <footer className={`footer ${theme}`} role="contentinfo">
@@ -12,6 +33,25 @@ const Footer = () => {
           <div className="footer-section">
             <h3>YouTube Advisor AiBot</h3>
             <p>Your AI-powered guide for YouTube content creation, monetization, and policy compliance.</p>
+            <div className="newsletter-section">
+              <h4>Stay Updated</h4>
+              <form onSubmit={handleSubscribe} className="newsletter-form">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address"
+                  className="newsletter-input"
+                  required
+                />
+                <button type="submit" className="subscribe-button">
+                  Subscribe
+                </button>
+              </form>
+              {isSubscribed && (
+                <p className="subscription-success">Thank you for subscribing!</p>
+              )}
+            </div>
           </div>
           <div className="footer-section">
             <h4>Quick Links</h4>
@@ -55,6 +95,9 @@ const Footer = () => {
           <div className="footer-links">
             <a href="/privacy">Privacy Policy</a>
             <a href="/terms">Terms of Service</a>
+            <button onClick={scrollToTop} className="back-to-top">
+              Back to Top
+            </button>
           </div>
         </div>
       </div>
