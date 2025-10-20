@@ -18,26 +18,27 @@
 
 
 /* Logo styling component */
-/* Logo styling */
-.logo {
+.brand-logo {
+
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-accent);
-  text-decoration: none;
+  /* Logo styling remains consistent */
 }
 
 
 /* Navigation Links */
 .nav-links {
+
+
   list-style: none;
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  margin: 0;
-  padding: 0;
+  /* Navigation links layout */
 }
 
-.nav-links li a {
+.navigation-links li a {
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
@@ -49,10 +50,9 @@
   outline-offset: 2px;
 }
 
-.nav-links li a:hover {
+.navigation-links li a:hover {
   color: var(--primary-accent);
-  background-color: rgba(0, 127, 255, 0.1);
-  transform: translateY(-1px);
+  transform: translateY(-1px); /* Subtle hover effect */
 }
 
 .nav-links li a:focus {
@@ -76,12 +76,14 @@
 }
 
 /* Main content area styling */
-.main-content {
+.main-content-area {
   padding: 2rem;
+  /* Content padding maintained */
 }
 
 /* Theme toggle button in navigation */
-.theme-toggle-nav {
+.theme-switcher {
+
   background: none;
   border: none;
   cursor: pointer;
@@ -98,10 +100,26 @@
   outline-offset: 2px;
 }
 
-.theme-toggle-nav:hover {
+
+/* Hamburger Menu */
+.hamburger {
+  --hamburger-size: 2rem;
+  
+
+  display: none;
+  font-size: var(--hamburger-size);
+  background: none;
+  border: none;
+  color: var(--main-text-color);
+  cursor: pointer;
+  z-index: 201;
+
+  transition: color 0.2s ease-in-out;
+}
+
+.mobile-menu-toggle:hover {
   color: var(--primary-accent);
-  background-color: rgba(0, 127, 255, 0.1);
-  transform: scale(1.1);
+  transform: rotate(90deg); /* Added rotation effect */
 }
 
 .theme-toggle-nav:focus {
@@ -177,6 +195,8 @@
   .nav-links {
     --mobile-nav-width: 250px;
     --mobile-nav-padding: 2rem;
+    
+
     position: fixed;
     top: 0;
     right: -100%;
@@ -190,26 +210,21 @@
     gap: 1.5rem;
     transition: right 0.3s ease-in-out;
     z-index: 200;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     /* Mobile menu styling */
   }
 
-  .nav-links.active {
+  .navigation-links.mobile-active {
     right: 0;
     /* Active mobile menu state */
   }
 
-  .nav-links li a {
+  .navigation-links li a {
     font-size: 1.2rem;
-    padding: 0.75rem 1rem;
-    width: 100%;
     /* Larger text for mobile */
   }
 
-  .theme-toggle-nav {
+  .theme-switcher {
     font-size: 1.8rem;
-    width: 44px;
-    height: 44px;
     /* Larger icon for mobile */
   }
   

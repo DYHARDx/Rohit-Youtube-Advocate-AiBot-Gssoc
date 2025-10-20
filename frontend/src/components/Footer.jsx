@@ -53,6 +53,7 @@ const Footer = () => {
               )}
             </div>
           </div>
+          
           <div className="footer-section">
             <h4>Quick Links</h4>
             <ul>
@@ -62,6 +63,7 @@ const Footer = () => {
               <li><a href="mailto:contact@youtube-advisor.com" aria-label="Send email to contact">Contact</a></li>
             </ul>
           </div>
+          
           <div className="footer-section">
             <h4>Tools</h4>
             <ul>
@@ -71,6 +73,7 @@ const Footer = () => {
               <li><a href="/ama">Ask Me Anything</a></li>
             </ul>
           </div>
+          
           <div className="footer-section">
             <h4>Resources</h4>
             <ul>
@@ -89,7 +92,35 @@ const Footer = () => {
               <a href="https://github.com/rohit-youtube-advocate" target="_blank" rel="noopener noreferrer" aria-label="GitHub">💻</a>
             </div>
           </div>
+          
+          {/* Newsletter Subscription Section */}
+          <div className="footer-section">
+            <h4>Stay Updated</h4>
+            <p>Subscribe to our newsletter for the latest YouTube policy updates and tips.</p>
+            <form onSubmit={handleSubscribe} className="newsletter-form" aria-label="Newsletter subscription form">
+              <label htmlFor="email-input" className="sr-only">Email address</label>
+              <input
+                type="email"
+                id="email-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                aria-required="true"
+                className="newsletter-input"
+              />
+              <button type="submit" className="newsletter-button" aria-label="Subscribe to newsletter">
+                {isSubscribed ? 'Subscribed!' : 'Subscribe'}
+              </button>
+            </form>
+            {isSubscribed && (
+              <p className="subscription-success" role="alert">
+                Thank you for subscribing!
+              </p>
+            )}
+          </div>
         </div>
+        
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} YouTube Advisor AiBot. All rights reserved.</p>
           <div className="footer-links">

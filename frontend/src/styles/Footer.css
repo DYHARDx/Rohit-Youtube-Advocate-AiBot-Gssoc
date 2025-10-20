@@ -152,8 +152,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(0, 127, 255, 0.1);
+  background: var(--card-background);
   color: var(--accent-color);
   transition: all 0.3s ease;
   text-decoration: none;
@@ -217,10 +219,6 @@
 
 /* Responsive design improvements */
 @media (max-width: 768px) {
-  .footer {
-    padding: 2rem 0 1rem;
-  }
-  
   .footer-content {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1.5rem;
