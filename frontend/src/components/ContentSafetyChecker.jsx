@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { postData } from "../utils/postData";
+import { useError } from "../context/ErrorContext";
+import ErrorDisplay from "./ErrorDisplay";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/CommonStyles.css";
 
 /**
@@ -24,22 +27,22 @@ import "../styles/CommonStyles.css";
  * )
  */
 const ContentSafetyAnalyzer = () => {
-  // 🎯 State management for content safety functionality
-  const [contentText, setContentText] = useState("");            // User content text
-  const [safetyReport, setSafetyReport] = useState("");          // Safety report from API
-  const [isAnalyzing, setIsAnalyzing] = useState(false);        // Analysis processing state
-  const [error, setError] = useState(null);                     // Error state for API calls
+  // 🎯 State management for content safety analysis functionality
+  const [content, setContent] = useState("");              // User input content for analysis
+  const [result, setResult] = useState("");               // Analysis results from API
+  const [loading, setLoading] = useState(false);           // Loading state indicator
+  const [error, setError] = useState("");                 // Error message state
 
   /**
    * Handle content text input changes
    * Updates the content text state as user types
    * @param {Event} e - Change event from textarea
    */
-  const handleContentInputChange = (e) => {
-    // 🎨 DEBUG: Content text updated - {e.target.value.length} characters
-    setContentText(e.target.value);
-    // Clear previous errors when user starts typing
-    if (error) setError(null);
+  const handleContentChange = (e) => {
+    // 🎨 DEBUG: Content updated - {e.target.value.length} characters
+    setContent(e.target.value);
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   /**
@@ -47,14 +50,22 @@ const ContentSafetyAnalyzer = () => {
    * Ensures content is provided before analysis
    * @returns {boolean} - Validation result
    */
-  const validateContentInput = () => {
-    // 🎯 Check if content text is empty or only whitespace
-    if (!contentText.trim()) {
-      setError("⚠️ Please enter content to analyze for safety.");
-      // 🎨 DEBUG: Content input validation failed - no content provided
+  const validateContent = () => {
+    // 🎯 Check if content is empty or only whitespace
+    if (!content.trim()) {
+      setError("⚠️ Please provide content for safety analysis.");
+      // 🎨 DEBUG: Content validation failed - no content provided
       return false;
     }
-    // 🎨 DEBUG: Content input validation passed
+    
+    // Check minimum length
+    if (content.trim().length < 10) {
+      setError(componentId, "Please provide more detailed content for analysis (at least 10 characters).");
+      return false;
+    }
+    
+    // 🎨 DEBUG: Content validation passed
+    clearError(componentId);
     return true;
   };
 
@@ -72,42 +83,33 @@ const ContentSafetyAnalyzer = () => {
       return;
     }
     
-    // 🚀 Set analyzing state and clear previous reports and errors
-    setIsAnalyzing(true);
-    setSafetyReport(""); // Clear previous safety reports
-    setError(null); // Clear previous errors
-    // 🎨 DEBUG: Starting content analysis process
+    // 🚀 Set loading state and clear previous results
+    setLoading(componentId, true);
+    setResult("");
+    setError(""); // Clear previous errors
+    // 🎨 DEBUG: Starting content safety analysis
 
     try {
-      // 🌐 Send request to backend API for content analysis
-      const analysisResponse = await postData("/api/content/check", { text: contentText });
-      // 🎨 DEBUG: API response received - {analysisResponse ? 'success' : 'error'}
+      // 🌐 Send request to backend API for content safety check
+      const apiResponse = await postData("/api/content/check", { text: content }, 15000);
+      // 🎨 DEBUG: API response received - {apiResponse ? 'success' : 'error'}
 
       // 📋 Handle API response
-      if (analysisResponse.error) {
-        // Handle different types of errors
-        if (analysisResponse.networkError) {
-          setError(`❌ Network Error: ${analysisResponse.error}`);
-        } else if (analysisResponse.status === 503) {
-          setError(`❌ Service Unavailable: ${analysisResponse.error}`);
-        } else if (analysisResponse.status === 400) {
-          setError(`❌ Invalid Request: ${analysisResponse.error}`);
-        } else {
-          setError(`❌ ${analysisResponse.error}${analysisResponse.details ? ` - ${analysisResponse.details}` : ''}`);
-        }
-        // 🎨 DEBUG: API returned error - {analysisResponse.error}
+      if (apiResponse.error) {
+        setError(`❌ ${apiResponse.error}`);
+        // 🎨 DEBUG: API returned error - {apiResponse.error}
       } else {
-        setSafetyReport(analysisResponse.report || "No safety report available.");
-        // 🎨 DEBUG: Content analysis completed successfully
+        setResult(apiResponse.data.report || "No safety report generated.");
+        // 🎨 DEBUG: Safety analysis completed successfully
       }
     } catch (analysisError) {
       // 🚨 Handle network or processing errors
-      setError(`❌ System Error: ${analysisError.message || "Content safety service unavailable"}`);
-      // 🎨 DEBUG: Analysis error occurred - {analysisError.message}
+      setError(`❌ Network Error: ${error.message || "Connection failed"}`);
+      // 🎨 DEBUG: Network error occurred - {error.message}
     } finally {
-      // 🎯 Always reset analyzing state
-      setIsAnalyzing(false);
-      // 🎨 DEBUG: Content analysis process completed
+      // 🎯 Always reset loading state
+      setLoading(componentId, false);
+      // 🎨 DEBUG: Content safety analysis completed
     }
   };
 
@@ -116,15 +118,15 @@ const ContentSafetyAnalyzer = () => {
    * Handles loading, empty, and result states
    * @returns {JSX.Element} - Safety report content to display
    */
-  const renderSafetyReport = () => {
-    // 🔄 Show loading indicator during analysis
-    if (isAnalyzing) {
-      return (
-        <div className="analysis-status">
-          <span className="analysis-spinner"></span>
-          🔍 Analyzing content safety...
-        </div>
-      );
+  const renderResult = () => {
+    // 🔄 Show loading indicator during processing
+    if (isLoading(componentId)) {
+      return <LoadingSpinner message="Checking content safety..." />;
+    }
+    
+    // ❌ Show error message if present
+    if (error) {
+      return <div className="error-message">{error}</div>;
     }
     
     // 🚨 Show error message if there's an error
@@ -185,27 +187,29 @@ const ContentSafetyAnalyzer = () => {
         {/* 📝 CONTENT TEXT AREA */}
         <textarea
           rows={6}
-          value={contentText}
-          onChange={handleContentInputChange}
-          placeholder="Paste your YouTube content (video description, comments, etc.) to check for policy compliance and safety concerns..."
-          disabled={isAnalyzing}
-          className="content-input"
+          value={content}
+          onChange={handleContentChange}
+          placeholder="Enter your video script or content for safety evaluation..."
+          disabled={isLoading(componentId)}
+          className="component-textarea"
+          aria-label="Content to check for safety"
         />
         
         {/* 🚀 ANALYSIS SUBMIT BUTTON */}
         <button 
           type="submit" 
-          className="analysis-button primary" 
-          disabled={isAnalyzing}
+          className="submit-button primary" 
+          disabled={isLoading(componentId)}
+          aria-label={isLoading(componentId) ? "Analyzing content" : "Run safety check"}
         >
-          {isAnalyzing ? "🔍 Analyzing..." : "Check Content Safety"}
+          {isLoading(componentId) ? "Analyzing Content..." : "Run Safety Check"}
         </button>
       </form>
-
-      {/* 📊 SAFETY REPORT DISPLAY */}
-      <div className="safety-report-container result-card">
-        {renderSafetyReport()}
-        {renderErrorMessage()}
+      
+      {/* 📊 ANALYSIS RESULTS DISPLAY */}
+      <div className="result-container result-card" role="status" aria-live="polite">
+        <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
+        {renderResult()}
       </div>
     </section>
   );

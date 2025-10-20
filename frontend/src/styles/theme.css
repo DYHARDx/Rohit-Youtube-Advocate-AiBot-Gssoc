@@ -29,6 +29,11 @@ body.light {
   --success-color: #28a745;
   --warning-color: #ffc107;
   --error-color: #dc3545;
+  --border-color: #e5e5e5;
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --accent-color: #2563eb;
 }
 
 /* 🎯 DARK THEME VARIABLES
@@ -54,6 +59,11 @@ body.dark {
   --success-color: #00ff88;
   --warning-color: #ffaa00;
   --error-color: #ff4444;
+  --border-color: #333;
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --text-secondary: #b0b0b0;
+  --accent-color: #4a9eff;
 }
 
 /* ========== GLOBAL & LAYOUT STYLES ========== */
@@ -82,6 +92,7 @@ html, body {
  * ==================== */
 .main-content {
   padding: 2rem;
+  min-height: calc(100vh - 200px); /* Adjust based on header and footer height */
 }
 
 /* ========== ICON STYLES ========== */

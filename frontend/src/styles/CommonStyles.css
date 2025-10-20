@@ -26,6 +26,104 @@
   color: var(--primary-accent);
 }
 
+.section-container h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+  color: var(--accent-color);
+}
+
+.section-container h5 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.2rem 0 0.8rem;
+  color: var(--text-color);
+}
+
+/* 🎯 PARAGRAPH STYLING
+ * =================== */
+.section-container p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* 🎯 LIST STYLING
+ * ============== */
+.section-container ul, 
+.section-container ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.section-container li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.section-container ul li {
+  list-style-type: disc;
+}
+
+.section-container ol li {
+  list-style-type: decimal;
+}
+
+/* 🎯 LINK STYLING
+ * ============== */
+.section-container a {
+  color: var(--primary-accent);
+  text-decoration: none;
+}
+
+.section-container a:hover {
+  text-decoration: underline;
+}
+
+/* 🎯 CODE BLOCK STYLING
+ * ==================== */
+.section-container code {
+  background-color: var(--card-background);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--primary-accent);
+}
+
+.section-container pre {
+  background-color: var(--card-background);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.section-container pre code {
+  background-color: transparent;
+  padding: 0;
+  color: var(--text-color);
+}
+
+/* 🎯 TABLE STYLING
+ * =============== */
+.section-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.section-container th,
+.section-container td {
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+
+.section-container th {
+  background-color: var(--card-background);
+  font-weight: 600;
+}
+
 /* 🎯 FORM ELEMENTS
  * ================ */
 .section-container form {
@@ -157,33 +255,101 @@
   height: 1rem;
 }
 
-/* 🎯 NEW ERROR MESSAGE STYLING
- * =========================== */
+/* ========== NEW ERROR DISPLAY COMPONENT ========== */
+
+/* 🎯 ERROR DISPLAY STYLING
+ * ======================== */
+.error-display {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-display.error {
+  background-color: var(--error-background);
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.error-display.success {
+  background-color: var(--success-background);
+  border: 1px solid var(--success-color);
+  color: var(--success-color);
+}
+
+.error-display.warning {
+  background-color: var(--warning-background);
+  border: 1px solid var(--warning-color);
+  color: var(--warning-color);
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .error-message {
-  color: #e74c3c;
-  background-color: #fdf2f2;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  padding: 12px 16px;
-  margin: 10px 0;
-  font-weight: 500;
-  line-height: 1.5;
+  flex: 1;
 }
 
-.error-message-container {
-  margin: 10px 0;
+.retry-button {
+  background-color: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
 }
 
-.error-suggestion {
-  color: #7b8794;
-  background-color: #f8f9fa;
-  border: 1px solid #e1e5eb;
-  border-radius: 4px;
-  padding: 10px 14px;
-  margin: 8px 0;
-  font-size: 0.9em;
-  line-height: 1.4;
+.retry-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* ========== NEW LOADING SPINNER COMPONENT ========== */
+
+/* 🎯 LOADING SPINNER STYLING
+ * ========================== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.loading-spinner {
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner.spinner-small {
+  width: 1rem;
+  height: 1rem;
+}
+
+.loading-spinner.spinner-medium {
+  width: 2rem;
+  height: 2rem;
+}
+
+.loading-spinner.spinner-large {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-message {
+  font-size: 0.875rem;
+  color: var(--secondary-text-color);
+}
+
+/* ========== EXTENDED FORM ELEMENTS ========== */
 
 /* 🎯 INPUT FIELD STYLING
  * ====================== */
@@ -224,6 +390,14 @@
     font-size: 2.2rem;
   }
 
+  .section-container h4 {
+    font-size: 1.6rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.2rem;
+  }
+
   .section-container .component-textarea,
   .policy-question-input,
   .content-input,
@@ -254,6 +428,14 @@
     align-items: flex-start;
   }
 
+  .section-container h4 {
+    font-size: 1.5rem;
+  }
+
+  .section-container h5 {
+    font-size: 1.1rem;
+  }
+
   .section-container .component-textarea,
   .policy-question-input,
   .content-input,
@@ -276,6 +458,14 @@
   .safety-report-container {
     font-size: 0.95rem;
   }
+  
+  .error-display {
+    font-size: 0.9rem;
+  }
+  
+  .loading-message {
+    font-size: 0.8rem;
+  }
 }
 
 /* 🎯 MOBILE BREAKPOINT (480px and below)
@@ -287,6 +477,10 @@
 
   .section-container h3 {
     font-size: 1.75rem;
+  }
+
+  .section-container h4 {
+    font-size: 1.4rem;
   }
 
   .section-container .component-textarea,
@@ -310,6 +504,16 @@
     font-size: 0.9rem;
     flex-direction: column;
     align-items: flex-start;
+  }
+  
+  .error-display {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+  
+  .loading-spinner.spinner-medium {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }
 
