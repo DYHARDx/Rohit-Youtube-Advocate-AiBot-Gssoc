@@ -18,88 +18,147 @@
 
 
 /* Logo styling component */
-.brand-logo {
-
+/* Logo styling */
+.logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-accent);
-  /* Logo styling remains consistent */
+  text-decoration: none;
 }
 
 
 /* Navigation Links */
 .nav-links {
-
-
   list-style: none;
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  /* Navigation links layout */
+  margin: 0;
+  padding: 0;
 }
 
-.navigation-links li a {
+.nav-links li a {
   color: var(--main-text-color);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease-in-out;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.navigation-links li a:hover {
+.nav-links li a:hover {
   color: var(--primary-accent);
-  transform: translateY(-1px); /* Subtle hover effect */
+  background-color: rgba(0, 127, 255, 0.1);
+  transform: translateY(-1px);
 }
 
+.nav-links li a:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
+}
+
+/* Active link styling */
+.nav-links li a.active {
+  color: var(--primary-accent);
+  background-color: rgba(0, 127, 255, 0.15);
+  font-weight: 600;
+}
+
+/* Focus styles for accessibility */
+.nav-links li a:focus,
+.theme-toggle-nav:focus,
+.hamburger:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
+}
 
 /* Main content area styling */
-.main-content-area {
+.main-content {
   padding: 2rem;
-  /* Content padding maintained */
 }
 
 /* Theme toggle button in navigation */
-.theme-switcher {
-
+.theme-toggle-nav {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1.6rem;
   color: var(--main-text-color);
-  transition: color 0.2s ease-in-out;
-
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.theme-switcher:hover {
+.theme-toggle-nav:hover {
   color: var(--primary-accent);
-  transform: scale(1.1); /* Added scale effect */
+  background-color: rgba(0, 127, 255, 0.1);
+  transform: scale(1.1);
 }
 
-
-/* Hamburger Menu */
-.hamburger {
-  --hamburger-size: 2rem;
-  
-
-  display: none;
-  font-size: var(--hamburger-size);
-  background: none;
-  border: none;
-  color: var(--main-text-color);
-  cursor: pointer;
-  z-index: 201;
-
-  transition: color 0.2s ease-in-out;
-}
-
-.mobile-menu-toggle:hover {
-  color: var(--primary-accent);
-  transform: rotate(90deg); /* Added rotation effect */
+.theme-toggle-nav:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
 }
 
 
 /* Main Content Area */
 .main-content {
   padding: 2rem;
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-accent);
+  color: var(--primary-text-on-accent);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 1000;
+  transform: translateY(0);
+  transition: transform 0.3s;
+}
+
+.skip-link:focus {
+  transform: translateY(40px);
+  outline: 2px solid var(--primary-text-on-accent);
+  outline-offset: 2px;
+}
+
+/* Hamburger menu button */
+.hamburger {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--main-text-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.hamburger:hover {
+  background-color: rgba(0, 127, 255, 0.1);
+}
+
+.hamburger:focus {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
 }
 
 /* ===== MOBILE RESPONSIVE STYLES ===== */
@@ -110,8 +169,7 @@
   }
   
   .hamburger {
-
-    display: block;
+    display: flex;
     /* Show hamburger on mobile */
   }
 
@@ -119,8 +177,6 @@
   .nav-links {
     --mobile-nav-width: 250px;
     --mobile-nav-padding: 2rem;
-    
-
     position: fixed;
     top: 0;
     right: -100%;
@@ -134,21 +190,26 @@
     gap: 1.5rem;
     transition: right 0.3s ease-in-out;
     z-index: 200;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     /* Mobile menu styling */
   }
 
-  .navigation-links.mobile-active {
+  .nav-links.active {
     right: 0;
     /* Active mobile menu state */
   }
 
-  .navigation-links li a {
+  .nav-links li a {
     font-size: 1.2rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
     /* Larger text for mobile */
   }
 
-  .theme-switcher {
+  .theme-toggle-nav {
     font-size: 1.8rem;
+    width: 44px;
+    height: 44px;
     /* Larger icon for mobile */
   }
   
@@ -163,7 +224,8 @@
   .nav-links,
   .nav-links li a,
   .theme-toggle-nav,
-  .hamburger {
+  .hamburger,
+  .skip-link {
     transition: none;
   }
 }
@@ -176,4 +238,13 @@
     text-decoration: underline;
   }
 
+  .nav-links li a:focus,
+  .theme-toggle-nav:focus,
+  .hamburger:focus {
+    outline: 3px solid;
+  }
+
+  .skip-link {
+    border: 2px solid;
+  }
 }
