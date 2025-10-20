@@ -70,6 +70,8 @@ const LegalContractAnalyzer = () => {
     setFileError("");
     setError("");
     setFile(uploadedFile);
+    // Clear previous errors when user uploads a file
+    if (error) setError(null);
     // 🎨 DEBUG: Valid PDF file uploaded - {uploadedFile.name}
   };
 
@@ -179,6 +181,11 @@ const LegalContractAnalyzer = () => {
       return <div className="error-message">{error}</div>;
     }
     
+    // 🚨 Show error message if there's an error
+    if (error) {
+      return <div className="error-message">{error}</div>;
+    }
+    
     // 📋 Show analysis results if available
     if (analysis) {
       return <div className="analysis-content">{analysis}</div>;
@@ -188,6 +195,30 @@ const LegalContractAnalyzer = () => {
     return (
       <div className="analysis-placeholder">
         Contract analysis results will be displayed here...
+      </div>
+    );
+  };
+
+  /**
+   * Render error message with appropriate styling
+   * @returns {JSX.Element|null} - Error message element or null
+   */
+  const renderErrorMessage = () => {
+    if (!error) return null;
+    
+    return (
+      <div className="error-message-container">
+        <div className="error-message">{error}</div>
+        {error.includes("Network error") && (
+          <div className="error-suggestion">
+            💡 Tip: Check your internet connection and make sure the backend server is running.
+          </div>
+        )}
+        {error.includes("Service Unavailable") && (
+          <div className="error-suggestion">
+            💡 Tip: The service may be temporarily unavailable. Please try again in a few minutes.
+          </div>
+        )}
       </div>
     );
   };
@@ -247,6 +278,7 @@ const LegalContractAnalyzer = () => {
       <div className="result-container result-card" role="status" aria-live="polite">
         <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderAnalysis()}
+        {renderErrorMessage()}
       </div>
     </section>
   );

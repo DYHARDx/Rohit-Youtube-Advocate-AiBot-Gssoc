@@ -16,7 +16,8 @@ import Learn from "./pages/Learn";
 import "./styles/Navbar.css";
 import "./styles/LandingPage.css";
 import "./styles/Footer.css";
-import './styles/theme.css';
+import "./styles/CommonStyles.css";
+import "./styles/theme.css";
 
 // 🎯 MAIN APPLICATION COMPONENT
 // ==============================

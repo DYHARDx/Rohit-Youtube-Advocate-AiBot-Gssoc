@@ -142,6 +142,11 @@ const YouTubePolicyAdvisor = () => {
       return <div className="error-message">{error}</div>;
     }
     
+    // 🚨 Show error message if there's an error
+    if (error) {
+      return <div className="error-message">{error}</div>;
+    }
+    
     // 📋 Show policy answer if available
     if (policyAnswer) {
       return <div className="policy-answer-content">{policyAnswer}</div>;
@@ -155,6 +160,30 @@ const YouTubePolicyAdvisor = () => {
     );
   };
 
+  /**
+   * Render error message with appropriate styling
+   * @returns {JSX.Element|null} - Error message element or null
+   */
+  const renderErrorMessage = () => {
+    if (!error) return null;
+    
+    return (
+      <div className="error-message-container">
+        <div className="error-message">{error}</div>
+        {error.includes("Network error") && (
+          <div className="error-suggestion">
+            💡 Tip: Check your internet connection and make sure the backend server is running.
+          </div>
+        )}
+        {error.includes("Service Unavailable") && (
+          <div className="error-suggestion">
+            💡 Tip: The service may be temporarily unavailable. Please try again in a few minutes.
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // 🎯 TODO: Add policy question history feature
   // 🎯 TODO: Implement policy category filtering
   // 🎯 TODO: Add bookmark functionality for important answers
@@ -162,6 +191,7 @@ const YouTubePolicyAdvisor = () => {
   return (
     <section className="section-container policy-advisor-section">
       {/* 🎯 SECTION HEADER WITH ICON AND EMOJI */}
+
       <h3 className="section-header">
         <svg className="header-icon" width="32" height="32" viewBox="0 0 38 38" fill="none" style={{ marginRight: "10px" }}>
           <rect width="38" height="38" rx="10" fill="currentColor" />
@@ -171,6 +201,7 @@ const YouTubePolicyAdvisor = () => {
       </h3>
 
       {/* 🎯 POLICY RESEARCH FORM */}
+
       <form onSubmit={handlePolicyResearch} className="policy-research-form">
         {/* ❓ POLICY QUESTION TEXT AREA */}
         <textarea
@@ -196,6 +227,7 @@ const YouTubePolicyAdvisor = () => {
       <div className="policy-response-container result-card">
         <ErrorDisplay message={isLoading(componentId) ? null : (useError().errors[componentId] || null)} />
         {renderPolicyResponse()}
+        {renderErrorMessage()}
       </div>
     </section>
   );

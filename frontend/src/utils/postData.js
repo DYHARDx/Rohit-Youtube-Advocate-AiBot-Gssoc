@@ -7,7 +7,9 @@ export async function postData(url = "", data = {}, timeout = 10000) {
 
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
       signal: controller.signal
     });
